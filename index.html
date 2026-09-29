@@ -13,13 +13,39 @@
     </header>
     <div id="overlay"></div>
     <nav id="drawer">
-      <h3>Daypart</h3>
-      <div id="dayparts"></div>
-      <h3>Export</h3>
-      <button class="menu-btn" id="expTasks">Copy open tasks</button>
-      <button class="menu-btn" id="expStock">Copy restock list</button>
+      <div class="grp" data-g="dayparts">
+        <button class="grp-h" data-view="dayparts"><span>Dayparts</span><span class="chev">&rsaquo;</span></button>
+        <div class="grp-b">
+          <div id="dayparts"></div>
+          <h3>Export</h3>
+          <button class="menu-btn" id="expTasks">Copy open tasks</button>
+          <button class="menu-btn" id="expStock">Copy restock list</button>
+        </div>
+      </div>
+      <div class="grp" data-g="projection">
+        <button class="grp-h" data-view="projection"><span>Projection</span><span class="chev">&rsaquo;</span></button>
+        <div class="grp-b">
+          <h3>Export</h3>
+          <button class="menu-btn" id="expProj">Copy projection</button>
+        </div>
+      </div>
+      <div class="drawer-foot">
+        <h3>Data</h3>
+        <button class="menu-btn danger" id="clearData">Clear website data</button>
+      </div>
     </nav>
     <main id="list"></main>
+    <main id="proj" hidden>
+      <div class="gc">
+        <label for="gcInput">Guest Count Total</label>
+        <input id="gcInput" class="def" inputmode="decimal" autocomplete="off" />
+      </div>
+      <div class="ptable">
+        <div class="prow phead"><div>Item</div><div>Weight</div><div>Yield</div><div>Target</div><div>Boxes</div></div>
+        <div id="pbody"></div>
+      </div>
+      <button class="copy-btn" id="projCopy">Copy projection</button>
+    </main>
     <div id="toast"></div>
     <script type="module" src="/src/main.js"></script>
   </body>

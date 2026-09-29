@@ -1,5 +1,6 @@
 import './style.css';
 import structure from './structure.json';
+import weightsData from './data.json';
 
 const PREFIX = 'shift:';
 const dayparts = Object.keys(structure);
@@ -55,6 +56,12 @@ function stockRow(a, n) {
     <button data-a="inc" aria-label="Increase">+</button></div>`;
 }
 
+let view = 'dayparts';
+function renderHeader() {
+  $('#title').textContent = view === 'projection' ? 'Projection' : label(daypart);
+  $('#subtitle').textContent = date;
+}
+
 function render() {
   let open = '', done = '';
   for (const a of areas()) {
@@ -69,8 +76,7 @@ function render() {
   }
   list.innerHTML = (open || '<div class="empty">Everything in this daypart is done.</div>') +
     (done ? `<div class="divider">Done</div>${done}` : '');
-  $('#title').textContent = label(daypart);
-  $('#subtitle').textContent = date;
+  renderHeader();
   $('#dayparts').innerHTML = dayparts
     .map((dp) => `<button class="dp ${dp === daypart ? 'on' : ''}" data-dp="${dp}">${label(dp)}</button>`).join('');
 }
@@ -133,7 +139,23 @@ list.addEventListener('pointerup', endGesture);
 list.addEventListener('pointercancel', endGesture);
 
 // Menu
-const toggleMenu = (v) => document.body.classList.toggle('open', v);
+const toggleMenu = (v) => { document.body.classList.toggle('open', v); if (!v) disarmClear(); };
+function setView(v) {
+  view = v;
+  document.body.dataset.view = v;
+  list.hidden = v !== 'dayparts';
+  $('#proj').hidden = v !== 'projection';
+  document.querySelector(`.grp[data-g="${v}"]`)?.classList.remove('collapsed');
+  renderHeader();
+  scrollTo(0, 0);
+}
+$('#drawer').addEventListener('click', (e) => {
+  const h = e.target.closest('.grp-h');
+  if (!h) return;
+  if (view === h.dataset.view) { h.parentElement.classList.toggle('collapsed'); return; }
+  setView(h.dataset.view);
+  if (view === 'projection') toggleMenu(false); // nothing to pick in this submenu
+});
 $('#menuBtn').onclick = () => toggleMenu(true);
 $('#overlay').onclick = () => toggleMenu(false);
 $('#dayparts').addEventListener('click', (e) => {
@@ -177,9 +199,121 @@ $('#expStock').onclick = () => {
 // Re-check the day when the app comes back to the foreground
 document.addEventListener('visibilitychange', () => {
   if (document.hidden || todayStr() === date) return;
-  date = todayStr(); load(); render();
+  date = todayStr(); load(); loadProj(); render(); renderProj();
 });
+
+// Projection
+const BASE_GC = 1000; // default weights are defined for this guest count
+const items = weightsData.weights.map((w) => {
+  const [id, v] = Object.entries(w)[0];
+  return { id, name: v.name, def: v.default, yld: v.yeld };
+});
+const WKEY = PREFIX + 'proj-weights'; // edited default weights (persistent)
+const gcKey = () => `${PREFIX}${date}:proj`; // guest count (per day, pruned with the rest)
+const YKEY = PREFIX + 'proj-yields'; // edited yields (persistent)
+let custom = {}, customY = {}, gc = null; // gc === null means "use the default"
+
+function loadProj() {
+  try { custom = JSON.parse(localStorage.getItem(WKEY)) || {}; } catch { custom = {}; }
+  try { customY = JSON.parse(localStorage.getItem(YKEY)) || {}; } catch { customY = {}; }
+  try { gc = JSON.parse(localStorage.getItem(gcKey()))?.gc ?? null; } catch { gc = null; }
+}
+function saveProj() {
+  localStorage.setItem(WKEY, JSON.stringify(custom));
+  localStorage.setItem(YKEY, JSON.stringify(customY));
+  localStorage.setItem(gcKey(), JSON.stringify({ gc }));
+}
+const num = (s) => { const n = parseFloat(String(s).replace(',', '.')); return Number.isFinite(n) && n >= 0 ? n : null; };
+const fmt = (n) => String(Math.round(n * 10) / 10);
+const trunc1 = (n) => String(Math.floor(n * 10 + 1e-9) / 10); // 2.19999 shows 2.1, matching the rounding rule
+// x.1 up to x.19999 rounds down, x.2 and above rounds up
+const roundBoxes = (x) => Math.floor(Math.round(x * 1e6) / 1e6 + 0.8 + 1e-9);
+function calc(it) {
+  const w = custom[it.id] ?? it.def;
+  const target = (w * (gc ?? BASE_GC)) / BASE_GC;
+  const y = customY[it.id] ?? it.yld;
+  const boxes = y > 0 ? target / y : null;
+  return { w, target, boxes, ask: boxes === null ? null : roundBoxes(boxes) };
+}
+function updateProj() {
+  for (const it of items) {
+    const row = $(`#pbody .prow[data-id="${it.id}"]`);
+    if (!row) continue;
+    const c = calc(it);
+    row.querySelector('.pt').textContent = fmt(c.target);
+    row.querySelector('.pb').innerHTML = c.boxes === null ? '&ndash;' : `${trunc1(c.boxes)}<small>&rarr; ${c.ask}</small>`;
+  }
+}
+function renderProj() {
+  const g = $('#gcInput');
+  g.value = gc ?? BASE_GC;
+  g.classList.toggle('def', gc === null);
+  $('#pbody').innerHTML = items.map((it) => `<div class="prow" data-id="${esc(it.id)}">
+    <div class="pn">${esc(it.name)}</div>
+    <input class="pin ${custom[it.id] === undefined ? 'def' : ''}" data-f="w" inputmode="decimal" autocomplete="off" value="${custom[it.id] ?? it.def}" aria-label="Weight ${esc(it.name)}" />
+    <input class="pin ${customY[it.id] === undefined ? 'def' : ''}" data-f="y" inputmode="decimal" autocomplete="off" value="${customY[it.id] ?? it.yld}" aria-label="Yield ${esc(it.name)}" />
+    <div class="pt"></div><div class="pb"></div></div>`).join('');
+  updateProj();
+}
+const proj = $('#proj');
+proj.addEventListener('focusin', (e) => { if (e.target.matches('input')) e.target.select(); });
+proj.addEventListener('input', (e) => {
+  const inp = e.target, v = num(inp.value);
+  if (inp.id === 'gcInput') {
+    gc = v === null || v === BASE_GC ? null : v;
+    inp.classList.toggle('def', gc === null);
+  } else {
+    const it = items.find((i) => i.id === inp.closest('.prow').dataset.id);
+    const store = inp.dataset.f === 'y' ? customY : custom, def = inp.dataset.f === 'y' ? it.yld : it.def;
+    if (v === null || v === def) delete store[it.id]; else store[it.id] = v;
+    inp.classList.toggle('def', store[it.id] === undefined);
+  }
+  saveProj(); updateProj();
+});
+// Empty or invalid input falls back to the default, so show it again when leaving the field
+proj.addEventListener('focusout', (e) => {
+  const inp = e.target;
+  if (!inp.matches('input')) return;
+  if (inp.id === 'gcInput') inp.value = gc ?? BASE_GC;
+  else {
+    const it = items.find((i) => i.id === inp.closest('.prow').dataset.id);
+    inp.value = inp.dataset.f === 'y' ? (customY[it.id] ?? it.yld) : (custom[it.id] ?? it.def);
+  }
+});
+function exportProj() {
+  const lines = items.map((it) => ({ it, c: calc(it) })).filter((x) => x.c.ask > 0).map((x) => `x${x.c.ask} ${x.it.name}`);
+  lines.length ? copy(`Projection - ${fmt(gc ?? BASE_GC)} GC\n${lines.join('\n')}`, 'Projection copied') : toast('Nothing to prepare');
+}
+$('#expProj').onclick = exportProj;
+$('#projCopy').onclick = exportProj;
+
+// Clear website data (two taps to confirm). Only removes this app's own keys, since
+// localStorage is shared by every project hosted on the same github.io origin.
+const clearBtn = $('#clearData');
+let clearTimer;
+function disarmClear() {
+  clearTimeout(clearTimer);
+  clearBtn.classList.remove('armed');
+  clearBtn.textContent = 'Clear website data';
+}
+clearBtn.onclick = () => {
+  if (!clearBtn.classList.contains('armed')) {
+    clearBtn.classList.add('armed');
+    clearBtn.textContent = 'Tap again to confirm';
+    clearTimer = setTimeout(disarmClear, 4000);
+    return;
+  }
+  disarmClear();
+  Object.keys(localStorage).filter((k) => k.startsWith(PREFIX)).forEach((k) => localStorage.removeItem(k));
+  daypart = dayparts[0];
+  load(); loadProj(); render(); renderProj();
+  toggleMenu(false);
+  toast('Website data cleared');
+};
 
 prune();
 load();
+loadProj();
 render();
+renderProj();
+setView('dayparts');

@@ -13,7 +13,8 @@ This document is context for anyone (human or AI) developing the project. It des
 - **Track two kinds of things per area:**
   1. **Tasks**: things to check or do (e.g. expiration checks, fryer shutdown). Each ends up completed or resolved.
   2. **Stock**: items whose quantity is counted and possibly needs restocking.
-- **Produce two exports** that can be pasted into a message: open tasks, and a restock list.
+- **Produce exports** that can be pasted into a message: open tasks, a restock list, and a prep projection.
+- **Project prep quantities** from an expected guest count (see 5.8).
 - **No data loss in the short term.** All state is persisted in `localStorage`.
 - **Single user, single device, no backend (for now).** Hosted as a static site on GitHub Pages.
 
@@ -43,7 +44,8 @@ shift-tracker/
 └── src/
     ├── main.js                 # All app logic (state, render, gestures, export)
     ├── style.css
-    └── structure.json          # Source of truth for dayparts, areas, tasks, stock
+    ├── structure.json          # Source of truth for dayparts, areas, tasks, stock
+    └── data.json               # Projection items: default weight (per 1000 GC) and yield
 ```
 
 ### Commands
@@ -128,29 +130,33 @@ Notes:
 - If everything is done, the top shows "Everything in this daypart is done."
 
 ### 5.5 Menu (drawer, left)
-Opened with the ☰ button, closed by tapping the overlay.
-- **Daypart selector.** Lists every daypart in `structure.json`. The selection is remembered in `localStorage` (`shift:daypart`). It defaults to the first daypart on first use. There is currently **no automatic time-based selection** because no time ranges have been defined.
-- **Copy open tasks.** Copies to the clipboard every task not yet completed/resolved, grouped by area, in the original order:
-  ```
-  McCafe
-  - Ordine
-  - Scadenza Latte
+Opened with the ☰ button, closed by tapping the overlay. The drawer is an **accordion** with two sections; tapping a section header switches the page and expands its submenu (tapping the active header collapses/expands it).
 
-  Fries
-  - Spegnimento Fryer
-  ```
-  Shows a toast "Open tasks copied", or "No open tasks" when there are none.
-- **Copy restock list.** Copies every stock item with an amount above 0 (whether or not it is in the Done block), grouped by area, in the original order, formatted as `x<amount> <item name>`:
-  ```
-  Beverages
-  x3 Bicchieri Bibite G
-  x1 Tappi Bibite
-  ```
-  Shows a toast "Restock list copied", or "Nothing to restock" when empty.
+- **Dayparts** (page: the shift list). Submenu:
+  - **Daypart selector.** Lists every daypart in `structure.json`. The selection is remembered in `localStorage` (`shift:daypart`). It defaults to the first daypart on first use. There is currently **no automatic time-based selection** because no time ranges have been defined. Picking one closes the drawer.
+  - **Copy open tasks.** Copies to the clipboard every task not yet completed/resolved, grouped by area, in the original order:
+    ```
+    McCafe
+    - Ordine
+    - Scadenza Latte
+
+    Fries
+    - Spegnimento Fryer
+    ```
+    Shows a toast "Open tasks copied", or "No open tasks" when there are none.
+  - **Copy restock list.** Copies every stock item with an amount above 0 (whether or not it is in the Done block), grouped by area, in the original order, formatted as `x<amount> <item name>`:
+    ```
+    Beverages
+    x3 Bicchieri Bibite G
+    x1 Tappi Bibite
+    ```
+    Shows a toast "Restock list copied", or "Nothing to restock" when empty.
+- **Projection** (page: the projection tab, see 5.8). Submenu: **Copy projection**. Tapping the header opens the page and closes the drawer.
+- **Clear website data** (bottom of the drawer). Two taps: the first arms the button ("Tap again to confirm", disarms after 4s or when the menu closes), the second deletes every `localStorage` key starting with `shift:` (all shift states, the remembered daypart, projection weights and guest count) and resets the UI. Only the app's own keys are removed, because `localStorage` is shared by every project on the same `github.io` origin.
 - Clipboard uses `navigator.clipboard` with a `textarea` + `execCommand('copy')` fallback.
 
 ### 5.6 Day and daypart handling
-- On load, the app takes the **local date** (`YYYY-MM-DD`) and the remembered daypart, and loads that combination's state.
+- On load, the app opens on the Dayparts page, takes the **local date** (`YYYY-MM-DD`) and the remembered daypart, and loads that combination's state.
 - When the app returns to the foreground (`visibilitychange`) and the date has rolled over, it switches to the new date with a fresh state automatically.
 - Each daypart has its **own independent state** per day.
 
@@ -166,8 +172,33 @@ Opened with the ☰ button, closed by tapping the overlay.
   ```
   - `tasks[key]` is `"done"` or `"resolved"`. A missing key means open.
   - `stock[key]` is `{ qty, done }`. A missing key means qty 0 and open.
+- Projection keys:
+  - `shift:proj-weights`: `{ "<itemId>": number }`, the edited weights. A missing item means "use the default from `data.json`". Persistent (not pruned).
+  - `shift:proj-yields`: same shape, for edited yields.
+  - `shift:<YYYY-MM-DD>:proj`: `{ "gc": number | null }`, the guest count for that day (`null` = default 1000). Pruned with the other daily keys.
 - **Automatic pruning:** on startup, entries whose date is more than 7 days old are deleted.
 - Every user action saves immediately.
+
+### 5.8 Projection tab
+A second page, reached from the drawer. It works out how many boxes of each prepared item to ask for, from the expected guest count.
+
+- **Data:** `src/data.json` holds `weights`, an array of single-key objects: `{ "<id>": { "name", "default", "yeld" } }`. `default` is the weight needed for **1000 guests** (`BASE_GC`); `yeld` (spelling kept from the file) is the weight per box; both can be overridden in the UI. Names are Italian and must not be renamed.
+- **Guest Count Total:** one big input at the top, default 1000 shown in **grey**. Turns dark once changed. Empty or invalid input falls back to the default.
+- **Table** (`Item | Weight | Yield | Target | Boxes`):
+  - **Weight** (the `default` from `data.json`) is an editable input, in **grey** while unchanged, dark once edited (to adjust to POS data). Clearing it, or typing the original value, restores the default.
+  - **Yield** is also an editable input with the same behaviour (grey until changed, empty restores the default).
+  - **Target** = `default × GC ÷ 1000` (e.g. 350 at 200 GC → 70).
+  - **Boxes** = `target ÷ yield`, shown with one decimal (truncated, so 2.19999 shows 2.1) plus the rounded ask below it (`→ 3`).
+- **Rounding rule (export):** fractional part below 0.2 rounds down (2.1 to 2.19999 → 2), 0.2 or more rounds up (2.2 → 3). Implemented as `floor(round(x, 6) + 0.8 + 1e-9)`.
+- **Copy projection** (button under the table, and in the drawer) copies items whose rounded amount is above 0:
+  ```
+  Projection - 200 GC
+  x3 Bacon Cotto
+  x1 Pomodori a Fette
+  ```
+  Toast "Projection copied", or "Nothing to prepare".
+- Everything recalculates live on every keystroke; the inputs are patched in place (no re-render) so focus is never lost. Inputs use the decimal keypad and accept `,` or `.`; fields select all on focus.
+- This is the one screen that needs typing, by design (it is a planning tool rather than a live-shift interaction).
 
 ---
 
@@ -197,7 +228,8 @@ Since data lives in the browser's `localStorage`, it is tied to the device, brow
 - `floor` and `management` share `orderId: 16` in `afternoon-1` (see section 4).
 - No automatic daypart detection by time of day, as time ranges are undefined.
 - No offline support (no service worker). The page works only after being loaded once online, and can fail if the browser evicts its cache with no connection.
-- No way to reset a shift's state from the UI (data expires automatically after 7 days).
+- No way to reset a single shift's state from the UI. "Clear website data" wipes everything, and data expires automatically after 7 days.
+- Projection items can only be edited in `src/data.json`. Only weights and yields can be adjusted in the UI.
 - No undo history beyond tapping a done row to restore it.
 - Stock amounts are integers with no per-item units or par levels.
 - Only the first daypart selection is remembered. Switching dayparts mid-shift is safe because each has separate state.
@@ -217,7 +249,7 @@ Do not implement roadmap items unless explicitly asked.
 
 1. **Never rename, translate, or reorder** strings or entries in `structure.json` without asking the owner first.
 2. Keep all UI text, code, and comments in **English**.
-3. Preserve the **mobile-first, one-handed** interaction model. Do not add features that need typing during the shift.
+3. Preserve the **mobile-first, one-handed** interaction model. Do not add features that need typing during the shift (the Projection page is the deliberate exception).
 4. Keep it lightweight: no heavy frameworks or dependencies unless there is a strong reason.
 5. Any change to storage keys or state shape must stay backward compatible or include a migration, since it is live data on the owner's phone during shifts.
 6. Ask when in doubt. The owner prefers a question over a guess about restaurant-specific behaviour.
