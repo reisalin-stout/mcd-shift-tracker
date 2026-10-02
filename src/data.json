@@ -1,8 +1,9 @@
 {
+  "categoryAdjustments": { "Bread": 120, "Sauces": 120, "Prep": 120, "Tempering": 120, "Frozen": 130, "McCafe": 100 },
   "weights": [
-    { "bacon": { "name": "Bacon Cotto", "default": 666, "yeld": 28 } },
-    { "tomatoes": { "name": "Pomodori a Fette", "default": 666, "yeld": 5 } },
-    { "salads": { "name": "Insalate Finite", "default": 666, "yeld": 5 } },
-    { "toast": { "name": "Farciture Toast", "default": 666, "yeld": 30 } }
+    { "bacon": { "name": "Bacon Cotto", "category": "Prep", "default": 666, "yeld": 28 } },
+    { "tomatoes": { "name": "Pomodori a Fette", "category": "Prep", "default": 666, "yeld": 5 } },
+    { "salads": { "name": "Insalate Finite", "category": "Verdure", "default": 666, "yeld": 5 } },
+    { "toast": { "name": "Farciture Toast", "category": "Prep", "default": 666, "yeld": 30 } }
   ]
 }

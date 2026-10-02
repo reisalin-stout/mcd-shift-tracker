@@ -4,23 +4,23 @@
       "orderId": 1,
       "name": "McCafe",
       "tasks": ["Ordine", "Scadenza Latte", "Scadenza Panna", "Scadenze Libro", "Scadenze Scorte", "Scadenza Arance"],
-      "stock": ["Bicchieri Flurry", "Bicchieri Shake", "Bicchieri Sundae"]
+      "stock": ["bicchieri-flurry", "bicchieri-shake", "bicchieri-sundae"]
     },
     "beverages": {
       "orderId": 2,
       "name": "Beverages",
       "tasks": ["Ordine", "Cucchiaini Rosa", "Scadenza McFizz", "Frigo Vetrina", "Scadenza Insalate Miste"],
       "stock": [
-        "McFizz",
-        "Toppings",
-        "Granelle",
-        "Bicchieri Bibite G",
-        "Bicchieri Bibite M",
-        "Bicchieri Bibite S",
-        "Tappi Bibite",
-        "Tappi Sundae",
-        "Courtesy Cups",
-        "Insalate Miste"
+        "mcfizz",
+        "toppings",
+        "granelle",
+        "bicchieri-bibite-g",
+        "bicchieri-bibite-m",
+        "bicchieri-bibite-s",
+        "tappi-bibite",
+        "tappi-sundae",
+        "courtesy-cups",
+        "insalate-miste"
       ]
     },
     "drive": {
@@ -39,13 +39,13 @@
       "orderId": 5,
       "name": "Fries",
       "tasks": ["Ordine", "Scadenza Bacon Bits", "Scadenza Cheddar", "Spegnimento Fryer", "Coperchi Fryer"],
-      "stock": ["Jug in Box Stock"]
+      "stock": ["jug-in-box-stock"]
     },
     "side-2": {
       "orderId": 6,
       "name": "MFY Side 2",
       "tasks": ["Ordine", "Scadenza Farciture Tost", "Scadenza Insalate", "Scadenze Varie Frigo Fresco"],
-      "stock": ["Farciture Toast", "Insalate Finite", "Pomodorini", "Bacon Bits"]
+      "stock": ["farciture-toast", "insalate-finite", "pomodorini", "bacon-bits"]
     },
     "side-4": {
       "orderId": 7,
@@ -64,7 +64,7 @@
         "Spegnimento Fryer",
         "Coperchi Fryer"
       ],
-      "stock": ["Jug in Box Stock", "Pomodori", "Bacon"]
+      "stock": ["jug-in-box-stock", "pomodori", "bacon"]
     },
     "side-3": {
       "orderId": 8,
@@ -83,7 +83,7 @@
       "orderId": 10,
       "name": "Grill",
       "tasks": ["Ordine", "Posizione Trays", "Pulizia Strumenti", "Scadenza Onion Shaker", "Scadenza Ketchup Bib", "Orologi 4:1", "Coperchi 4:1"],
-      "stock": ["Onion Shaker"]
+      "stock": ["onion-shaker"]
     },
     "cart": {
       "orderId": 11,
@@ -99,16 +99,16 @@
         "Traccia Mais/Olive/Carote"
       ],
       "stock": [
-        "Salsa Bacon",
-        "Salsa Big",
-        "Salsa Chicken",
-        "Salsa Tasty",
-        "Salsa Promotion",
-        "Salsa Fish",
-        "Salsa Cheddar",
-        "Salsa Mediterraneo",
-        "Salsa Romano",
-        "Salsa Crunchy"
+        "salsa-bacon",
+        "salsa-big",
+        "salsa-chicken",
+        "salsa-tasty",
+        "salsa-promotion",
+        "salsa-fish",
+        "salsa-cheddar",
+        "salsa-mediterraneo",
+        "salsa-romano",
+        "salsa-crunchy"
       ]
     },
     "dishwashing": {
@@ -121,13 +121,13 @@
       "orderId": 13,
       "name": "Rear",
       "tasks": ["Ordine", "Scadenza Pane", "Scadenza The", "Temperatura Celle"],
-      "stock": ["Pane Regular", "Pane Royal", "Pane Big", "Pane Shiny", "Pane Ovale", "Pane Crunchy", "Tortilla"]
+      "stock": ["pane-regular", "pane-royal", "pane-big", "pane-shiny", "pane-ovale", "pane-crunchy", "tortilla"]
     },
     "walk-in": {
       "orderId": 14,
       "name": "Walk-In Fridge/Freezer",
       "tasks": ["Ordine", "Scadenza Cipolla Ricostruita", "Scadenza Onion Shaker", "Scadenza Filetto", "Traccia Pomodori"],
-      "stock": ["Cipolla Ricostruita", "Pancake", "Senza Glutine"]
+      "stock": ["cipolla-ricostruita", "pancake", "senza-glutine"]
     },
     "storeroom": {
       "orderId": 15,

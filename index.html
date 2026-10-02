@@ -11,6 +11,7 @@
       <button id="menuBtn" aria-label="Open menu">&#9776;</button>
       <div><div id="title"></div><div id="subtitle"></div></div>
     </header>
+    <div id="warn" hidden></div>
     <div id="overlay"></div>
     <nav id="drawer">
       <div class="grp" data-g="dayparts">
@@ -32,13 +33,14 @@
       <div class="drawer-foot">
         <h3>Data</h3>
         <button class="menu-btn danger" id="clearData">Clear website data</button>
+        <div id="ver"></div>
       </div>
     </nav>
     <main id="list"></main>
     <main id="proj" hidden>
       <div class="gc">
-        <label for="gcInput">Guest Count Total</label>
-        <input id="gcInput" class="def" inputmode="decimal" autocomplete="off" />
+        <div class="gcf"><label for="gcInput">Guest Count Total</label><input id="gcInput" class="def" inputmode="decimal" autocomplete="off" /></div>
+        <div class="gcf"><label for="gAdjInput">Adj %</label><input id="gAdjInput" class="def" inputmode="decimal" autocomplete="off" /></div>
       </div>
       <div class="ptable">
         <div class="prow phead"><div>Item</div><div>Weight</div><div>Yield</div><div>Target</div><div>Boxes</div></div>

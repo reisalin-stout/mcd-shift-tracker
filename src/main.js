@@ -1,8 +1,9 @@
 import './style.css';
 import structure from './structure.json';
-import weightsData from './data.json';
+import database from './database.json';
+import config from './config.json';
 
-const PREFIX = 'shift:';
+const PREFIX = `${config.storageName}:`; // every localStorage key of this app starts with this
 const dayparts = Object.keys(structure);
 const $ = (s) => document.querySelector(s);
 const list = $('#list');
@@ -30,7 +31,7 @@ function prune() {
   const d = new Date(); d.setDate(d.getDate() - 7);
   const cutoff = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   Object.keys(localStorage).forEach((k) => {
-    const m = k.match(/^shift:(\d{4}-\d{2}-\d{2}):/);
+    const m = k.match(new RegExp('^' + PREFIX + '(\\d{4}-\\d{2}-\\d{2}):'));
     if (m && m[1] < cutoff) localStorage.removeItem(k);
   });
 }
@@ -40,7 +41,34 @@ const areas = () =>
   Object.entries(structure[daypart])
     .map(([id, a]) => ({ id, ...a }))
     .sort((a, b) => a.orderId - b.orderId);
-const kid = (a, n) => `${a.id}|${n}`;
+const kid = (a, n) => `${a.id}|${n}`; // n = task name or product id
+
+// Products (database.json) are referenced by id from the stock lists in structure.json
+const products = database.products;
+const byId = Object.fromEntries(products.map((p) => [p.id, p]));
+const pname = (id) => byId[id]?.name ?? id; // unknown ids show the raw id, so the typo is visible
+const catAdj = database.categories || {}; // category order + default Adj % for the projection
+const catDef = (c) => catAdj[c] ?? 100;
+// Category order: as listed in database.categories, then others by first appearance; '' = no category
+const categoryOrder = () => [...new Set([...Object.keys(catAdj), ...products.map((p) => p.category).filter(Boolean), ''])];
+
+// Sanity check of the data files; problems are shown in a red banner
+function validate() {
+  const bad = [], seen = new Set();
+  for (const p of products) {
+    if (!p.id) bad.push(`Product without id: ${p.name}`);
+    else if (seen.has(p.id)) bad.push(`Duplicate product id: ${p.id}`);
+    seen.add(p.id);
+    if (p.category && !(p.category in catAdj)) bad.push(`${p.id}: category "${p.category}" not in categories`);
+  }
+  for (const [dp, areasObj] of Object.entries(structure))
+    for (const [ak, a] of Object.entries(areasObj))
+      for (const id of a.stock) if (!byId[id]) bad.push(`${dp}/${ak}: unknown product id "${id}"`);
+  const w = $('#warn');
+  w.hidden = !bad.length;
+  w.innerHTML = bad.map(esc).join('<br>');
+  bad.forEach((b) => console.error(b));
+}
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 const stockOf = (k) => (state.stock[k] ||= { qty: 0, done: false });
 
@@ -48,8 +76,8 @@ function taskRow(a, t) {
   const k = kid(a, t), s = state.tasks[k] || '';
   return `<div class="row task ${s}" data-t="task" data-k="${esc(k)}"><div class="fg">${esc(t)}</div></div>`;
 }
-function stockRow(a, n) {
-  const k = kid(a, n), s = state.stock[k] || { qty: 0, done: false };
+function stockRow(a, id) {
+  const k = kid(a, id), n = pname(id), s = state.stock[k] || { qty: 0, done: false };
   return `<div class="row stock ${s.done ? 'done' : ''}" data-t="stock" data-k="${esc(k)}">
     <button data-a="dec" aria-label="Decrease">&minus;</button>
     <div class="mid"><span class="qty">${s.qty}</span><span>${esc(n)}</span></div>
@@ -189,9 +217,16 @@ $('#expTasks').onclick = () => {
   out.length ? copy(out.join('\n\n'), 'Open tasks copied') : toast('No open tasks');
 };
 $('#expStock').onclick = () => {
-  const out = areas().map((a) => {
-    const rows = a.stock.filter((n) => state.stock[kid(a, n)]?.qty > 0).map((n) => `x${state.stock[kid(a, n)].qty} ${n}`);
-    return rows.length ? `${a.name}\n${rows.join('\n')}` : '';
+  // Sum the same product across areas (e.g. Jug in Box), then group by category
+  const tot = new Map();
+  for (const a of areas())
+    for (const id of a.stock) {
+      const q = state.stock[kid(a, id)]?.qty;
+      if (q > 0) tot.set(id, (tot.get(id) || 0) + q);
+    }
+  const out = categoryOrder().map((c) => {
+    const rows = [...tot].filter(([id]) => (byId[id]?.category || '') === c).map(([id, q]) => `x${q} ${pname(id)}`);
+    return rows.length ? (c ? `${c}\n` : '') + rows.join('\n') : '';
   }).filter(Boolean);
   out.length ? copy(out.join('\n\n'), 'Restock list copied') : toast('Nothing to restock');
 };
@@ -204,24 +239,27 @@ document.addEventListener('visibilitychange', () => {
 
 // Projection
 const BASE_GC = 1000; // default weights are defined for this guest count
-const items = weightsData.weights.map((w) => {
-  const [id, v] = Object.entries(w)[0];
-  return { id, name: v.name, def: v.default, yld: v.yeld };
-});
+// Only products with a weight appear in the projection
+const items = products.filter((p) => p.weight > 0).map((p) => ({ id: p.id, name: p.name, cat: p.category || '', def: p.weight, yld: p.yield }));
 const WKEY = PREFIX + 'proj-weights'; // edited default weights (persistent)
 const gcKey = () => `${PREFIX}${date}:proj`; // guest count (per day, pruned with the rest)
 const YKEY = PREFIX + 'proj-yields'; // edited yields (persistent)
-let custom = {}, customY = {}, gc = null; // gc === null means "use the default"
+let custom = {}, customY = {}, gc = null, gadj = null, cadj = {}; // null = use the default
+const BASE_ADJ = 100;
+const catVal = (c) => cadj[c] ?? catDef(c); // category Adj %: today's override, else the database.json default
 
 function loadProj() {
   try { custom = JSON.parse(localStorage.getItem(WKEY)) || {}; } catch { custom = {}; }
   try { customY = JSON.parse(localStorage.getItem(YKEY)) || {}; } catch { customY = {}; }
-  try { gc = JSON.parse(localStorage.getItem(gcKey()))?.gc ?? null; } catch { gc = null; }
+  try {
+    const d = JSON.parse(localStorage.getItem(gcKey()));
+    gc = d?.gc ?? null; gadj = d?.gadj ?? null; cadj = d?.cadj || {};
+  } catch { gc = null; gadj = null; cadj = {}; }
 }
 function saveProj() {
   localStorage.setItem(WKEY, JSON.stringify(custom));
   localStorage.setItem(YKEY, JSON.stringify(customY));
-  localStorage.setItem(gcKey(), JSON.stringify({ gc }));
+  localStorage.setItem(gcKey(), JSON.stringify({ gc, gadj, cadj }));
 }
 const num = (s) => { const n = parseFloat(String(s).replace(',', '.')); return Number.isFinite(n) && n >= 0 ? n : null; };
 const fmt = (n) => String(Math.round(n * 10) / 10);
@@ -230,7 +268,7 @@ const trunc1 = (n) => String(Math.floor(n * 10 + 1e-9) / 10); // 2.19999 shows 2
 const roundBoxes = (x) => Math.floor(Math.round(x * 1e6) / 1e6 + 0.8 + 1e-9);
 function calc(it) {
   const w = custom[it.id] ?? it.def;
-  const target = (w * (gc ?? BASE_GC)) / BASE_GC;
+  const target = (w * (gc ?? BASE_GC) * catVal(it.cat) * (gadj ?? BASE_ADJ)) / (BASE_GC * 100 * 100);
   const y = customY[it.id] ?? it.yld;
   const boxes = y > 0 ? target / y : null;
   return { w, target, boxes, ask: boxes === null ? null : roundBoxes(boxes) };
@@ -244,17 +282,34 @@ function updateProj() {
     row.querySelector('.pb').innerHTML = c.boxes === null ? '&ndash;' : `${trunc1(c.boxes)}<small>&rarr; ${c.ask}</small>`;
   }
 }
+// Items grouped by category (order from database.json); items without a category go last, without a header
+function groups() {
+  return categoryOrder().map((name) => ({ name, items: items.filter((it) => it.cat === name) })).filter((g) => g.items.length);
+}
+function projRow(it) {
+  const inp = (f, val, isDef, label) => `<input class="pin ${isDef ? 'def' : ''}" data-f="${f}" inputmode="decimal" autocomplete="off" value="${val}" aria-label="${label} ${esc(it.name)}" />`;
+  return `<div class="prow" data-id="${esc(it.id)}">
+    <div class="pn">${esc(it.name)}</div>
+    ${inp('w', custom[it.id] ?? it.def, custom[it.id] === undefined, 'Weight')}
+    ${inp('y', customY[it.id] ?? it.yld, customY[it.id] === undefined, 'Yield')}
+    <div class="pt"></div><div class="pb"></div></div>`;
+}
+const catHead = (c) => `<div class="pcat"><span>${esc(c)}</span><label>Adj %<input class="pin ${cadj[c] === undefined ? 'def' : ''}" data-cat="${esc(c)}" inputmode="decimal" autocomplete="off" value="${catVal(c)}" aria-label="Adjustment ${esc(c)}" /></label></div>`;
 function renderProj() {
-  const g = $('#gcInput');
+  const g = $('#gcInput'), ga = $('#gAdjInput');
   g.value = gc ?? BASE_GC;
   g.classList.toggle('def', gc === null);
-  $('#pbody').innerHTML = items.map((it) => `<div class="prow" data-id="${esc(it.id)}">
-    <div class="pn">${esc(it.name)}</div>
-    <input class="pin ${custom[it.id] === undefined ? 'def' : ''}" data-f="w" inputmode="decimal" autocomplete="off" value="${custom[it.id] ?? it.def}" aria-label="Weight ${esc(it.name)}" />
-    <input class="pin ${customY[it.id] === undefined ? 'def' : ''}" data-f="y" inputmode="decimal" autocomplete="off" value="${customY[it.id] ?? it.yld}" aria-label="Yield ${esc(it.name)}" />
-    <div class="pt"></div><div class="pb"></div></div>`).join('');
+  ga.value = gadj ?? BASE_ADJ;
+  ga.classList.toggle('def', gadj === null);
+  $('#pbody').innerHTML = groups()
+    .map((c) => (c.name ? catHead(c.name) : '') + c.items.map(projRow).join('')).join('');
   updateProj();
 }
+// Editable columns: w = weight, y = yield
+const FIELDS = {
+  w: { store: () => custom, def: (it) => it.def },
+  y: { store: () => customY, def: (it) => it.yld },
+};
 const proj = $('#proj');
 proj.addEventListener('focusin', (e) => { if (e.target.matches('input')) e.target.select(); });
 proj.addEventListener('input', (e) => {
@@ -262,9 +317,16 @@ proj.addEventListener('input', (e) => {
   if (inp.id === 'gcInput') {
     gc = v === null || v === BASE_GC ? null : v;
     inp.classList.toggle('def', gc === null);
+  } else if (inp.id === 'gAdjInput') {
+    gadj = v === null || v === BASE_ADJ ? null : v;
+    inp.classList.toggle('def', gadj === null);
+  } else if (inp.dataset.cat !== undefined) {
+    const c = inp.dataset.cat;
+    if (v === null || v === catDef(c)) delete cadj[c]; else cadj[c] = v;
+    inp.classList.toggle('def', cadj[c] === undefined);
   } else {
     const it = items.find((i) => i.id === inp.closest('.prow').dataset.id);
-    const store = inp.dataset.f === 'y' ? customY : custom, def = inp.dataset.f === 'y' ? it.yld : it.def;
+    const F = FIELDS[inp.dataset.f], store = F.store(), def = F.def(it);
     if (v === null || v === def) delete store[it.id]; else store[it.id] = v;
     inp.classList.toggle('def', store[it.id] === undefined);
   }
@@ -275,14 +337,24 @@ proj.addEventListener('focusout', (e) => {
   const inp = e.target;
   if (!inp.matches('input')) return;
   if (inp.id === 'gcInput') inp.value = gc ?? BASE_GC;
+  else if (inp.id === 'gAdjInput') inp.value = gadj ?? BASE_ADJ;
+  else if (inp.dataset.cat !== undefined) inp.value = catVal(inp.dataset.cat);
   else {
     const it = items.find((i) => i.id === inp.closest('.prow').dataset.id);
-    inp.value = inp.dataset.f === 'y' ? (customY[it.id] ?? it.yld) : (custom[it.id] ?? it.def);
+    const F = FIELDS[inp.dataset.f];
+    inp.value = F.store()[it.id] ?? F.def(it);
   }
 });
+// One tap exports every category: header with the guest count (and Adj % when not 100), then each category
 function exportProj() {
-  const lines = items.map((it) => ({ it, c: calc(it) })).filter((x) => x.c.ask > 0).map((x) => `x${x.c.ask} ${x.it.name}`);
-  lines.length ? copy(`Projection - ${fmt(gc ?? BASE_GC)} GC\n${lines.join('\n')}`, 'Projection copied') : toast('Nothing to prepare');
+  const out = groups().map((c) => {
+    const lines = c.items.map((it) => ({ it, c: calc(it) })).filter((x) => x.c.ask > 0).map((x) => `x${x.c.ask} ${x.it.name}`);
+    if (!lines.length) return '';
+    const a = c.name ? catVal(c.name) : BASE_ADJ;
+    return (c.name ? `${c.name}${a !== BASE_ADJ ? ` (Adj ${fmt(a)}%)` : ''}\n` : '') + lines.join('\n');
+  }).filter(Boolean);
+  const head = `Projection - ${fmt(gc ?? BASE_GC)} GC${gadj !== null ? ` (Adj ${fmt(gadj)}%)` : ''}`;
+  out.length ? copy(`${head}\n\n${out.join('\n\n')}`, 'Projection copied') : toast('Nothing to prepare');
 }
 $('#expProj').onclick = exportProj;
 $('#projCopy').onclick = exportProj;
@@ -304,13 +376,37 @@ clearBtn.onclick = () => {
     return;
   }
   disarmClear();
-  Object.keys(localStorage).filter((k) => k.startsWith(PREFIX)).forEach((k) => localStorage.removeItem(k));
+  wipeAppData();
+  localStorage.setItem(VKEY, DATA_VERSION);
   daypart = dayparts[0];
   load(); loadProj(); render(); renderProj();
   toggleMenu(false);
   toast('Website data cleared');
 };
 
+// Versions (set in config.json). siteVersion: bump only when major content is introduced or changed (shown in
+// the menu). dataVersion: bump only on large updates that change the shape of the saved data; if the data saved
+// in the browser has a lower dataVersion (or none), all of this app's saved data is wiped.
+const SITE_VERSION = config.siteVersion;
+const DATA_VERSION = config.dataVersion;
+const VKEY = PREFIX + 'dataVersion';
+const vcmp = (a, b) => {
+  const x = a.split('.').map(Number), y = b.split('.').map(Number);
+  for (let i = 0; i < Math.max(x.length, y.length); i++) { const d = (x[i] || 0) - (y[i] || 0); if (d) return d; }
+  return 0;
+};
+const wipeAppData = () => Object.keys(localStorage).filter((k) => k.startsWith(PREFIX)).forEach((k) => localStorage.removeItem(k));
+function checkVersion() {
+  const saved = localStorage.getItem(VKEY);
+  if (!saved || !/^\d+(\.\d+)*$/.test(saved) || vcmp(saved, DATA_VERSION) < 0) {
+    wipeAppData();
+    localStorage.setItem(VKEY, DATA_VERSION);
+  }
+  $('#ver').textContent = `v${SITE_VERSION}`;
+}
+
+checkVersion();
+validate();
 prune();
 load();
 loadProj();
