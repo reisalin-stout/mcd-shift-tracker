@@ -1,10 +1,14 @@
 {
   "afternoon-1": {
+    "info": {
+      "name": "Afternoon - Early",
+      "timeframe": "14:00"
+    },
     "mccafe": {
       "orderId": 1,
       "name": "McCafe",
       "tasks": ["Ordine", "Scadenza Latte", "Scadenza Panna", "Scadenze Libro", "Scadenze Scorte", "Scadenza Arance"],
-      "stock": ["bicchieri-flurry", "bicchieri-shake", "bicchieri-sundae"]
+      "stock": ["cups-flurry", "cups-shake", "cups-sundae"]
     },
     "beverages": {
       "orderId": 2,
@@ -13,14 +17,14 @@
       "stock": [
         "mcfizz",
         "toppings",
-        "granelle",
-        "bicchieri-bibite-g",
-        "bicchieri-bibite-m",
-        "bicchieri-bibite-s",
-        "tappi-bibite",
-        "tappi-sundae",
-        "courtesy-cups",
-        "insalate-miste"
+        "sprinkles",
+        "cups-drinks-l",
+        "cups-drinks-m",
+        "cups-drinks-s",
+        "lids-drinks",
+        "lids-sundae",
+        "cups-courtesy",
+        "salad-mixed"
       ]
     },
     "drive": {
@@ -44,8 +48,8 @@
     "side-2": {
       "orderId": 6,
       "name": "MFY Side 2",
-      "tasks": ["Ordine", "Scadenza Farciture Tost", "Scadenza Insalate", "Scadenze Varie Frigo Fresco"],
-      "stock": ["farciture-toast", "insalate-finite", "pomodorini", "bacon-bits"]
+      "tasks": ["Ordine", "Scadenza Farciture Toast", "Scadenza Insalate", "Scadenze Varie Frigo Fresco"],
+      "stock": ["toast-fillings", "salad-finished", "tomatoes-cherry", "bacon-bits"]
     },
     "side-4": {
       "orderId": 7,
@@ -55,7 +59,7 @@
         "Scadenza Pane Linea",
         "Scadenza Tortilla Busta Aperta",
         "Scadenza Pomodori",
-        "Scadenza Orologi",
+        "Orologi Frigo Fritti",
         "Scadenze Varie Frigo Linea",
         "Scadenza BBQ",
         "Spegnimento UHC",
@@ -64,7 +68,7 @@
         "Spegnimento Fryer",
         "Coperchi Fryer"
       ],
-      "stock": ["jug-in-box-stock", "pomodori", "bacon"]
+      "stock": ["jug-in-box-stock", "tomatoes", "bacon-cooked"]
     },
     "side-3": {
       "orderId": 8,
@@ -99,16 +103,16 @@
         "Traccia Mais/Olive/Carote"
       ],
       "stock": [
-        "salsa-bacon",
-        "salsa-big",
-        "salsa-chicken",
-        "salsa-tasty",
-        "salsa-promotion",
-        "salsa-fish",
-        "salsa-cheddar",
-        "salsa-mediterraneo",
-        "salsa-romano",
-        "salsa-crunchy"
+        "sauce-bacon",
+        "sauce-big",
+        "sauce-chicken",
+        "sauce-tasty",
+        "sauce-promotion",
+        "sauce-fish",
+        "sauce-cheddar",
+        "sauce-mediterranean",
+        "sauce-romano",
+        "sauce-crunchy"
       ]
     },
     "dishwashing": {
@@ -121,13 +125,13 @@
       "orderId": 13,
       "name": "Rear",
       "tasks": ["Ordine", "Scadenza Pane", "Scadenza The", "Temperatura Celle"],
-      "stock": ["pane-regular", "pane-royal", "pane-big", "pane-shiny", "pane-ovale", "pane-crunchy", "tortilla"]
+      "stock": ["buns-regular", "buns-royal", "buns-big", "buns-shiny", "buns-oval", "buns-crunchy", "tortilla"]
     },
     "walk-in": {
       "orderId": 14,
       "name": "Walk-In Fridge/Freezer",
       "tasks": ["Ordine", "Scadenza Cipolla Ricostruita", "Scadenza Onion Shaker", "Scadenza Filetto", "Traccia Pomodori"],
-      "stock": ["cipolla-ricostruita", "pancake", "senza-glutine"]
+      "stock": ["onion-reconstituted", "pancakes", "gluten-free"]
     },
     "storeroom": {
       "orderId": 15,
@@ -142,17 +146,42 @@
       "stock": []
     },
     "management": {
-      "orderId": 16,
+      "orderId": 17,
       "name": "Management",
       "tasks": ["Work Assignments", "Breaks"],
       "stock": []
     }
   },
   "afternoon-2": {
+    "info": {
+      "name": "Afternoon - Midpoint",
+      "timeframe": "16:00"
+    },
     "management": {
-      "orderId": 1,
+      "orderId": 2,
       "name": "Management",
-      "tasks": ["DFS"],
+      "tasks": ["DFS", "Orologi Frigo Fritti", "Orologi 4:1"],
+      "stock": []
+    }
+  },
+  "afternoon-3": {
+    "info": {
+      "name": "Afternoon - Late",
+      "timeframe": "18:00"
+    },
+    "management": {
+      "orderId": 3,
+      "name": "Management",
+      "tasks": [
+        "Cucchiaini Rosa",
+        "Scadenza Bacon Bits",
+        "Scadenza Farciture Toast",
+        "Scadenza Pomodori",
+        "Scadenza Bacon",
+        "Scadenza Onion Shaker",
+        "Orologi Frigo Fritti",
+        "Orologi 4:1"
+      ],
       "stock": []
     }
   }

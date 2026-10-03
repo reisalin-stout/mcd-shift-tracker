@@ -2,193 +2,193 @@
   "categories": [
     {
       "id": 1,
-      "slug": "paper-paper",
+      "slug": "paper",
       "name": "Paper",
-      "macro": "Paper",
+      "macro": "",
       "adjustment": 100
     },
     {
       "id": 2,
-      "slug": "bread-frozen",
+      "slug": "bread",
       "name": "Bread",
-      "macro": "Frozen",
-      "adjustment": 120
+      "macro": "",
+      "adjustment": 100
     },
     {
       "id": 3,
-      "slug": "sauce-fresh",
-      "name": "Sauce",
-      "macro": "Fresh",
-      "adjustment": 120
+      "slug": "sauces",
+      "name": "Sauces",
+      "macro": "",
+      "adjustment": 100
     },
     {
       "id": 4,
-      "slug": "beverages-fresh",
+      "slug": "beverages",
       "name": "Beverages",
-      "macro": "Fresh",
+      "macro": "",
       "adjustment": 100
     },
     {
       "id": 5,
-      "slug": "toppings-fresh",
+      "slug": "toppings",
       "name": "Toppings",
-      "macro": "Fresh",
+      "macro": "",
       "adjustment": 100
     },
     {
       "id": 6,
-      "slug": "fillings-fresh",
+      "slug": "fillings",
       "name": "Fillings",
-      "macro": "Fresh",
+      "macro": "",
       "adjustment": 100
     },
     {
       "id": 7,
-      "slug": "vegetables-fresh",
+      "slug": "vegetables",
       "name": "Vegetables",
-      "macro": "Fresh",
+      "macro": "",
       "adjustment": 100
     },
     {
       "id": 8,
-      "slug": "preps-fresh",
+      "slug": "preps",
       "name": "Preps",
-      "macro": "Fresh",
+      "macro": "",
       "adjustment": 100
     },
     {
       "id": 9,
-      "slug": "frozen-frozen",
+      "slug": "frozen",
       "name": "Frozen",
-      "macro": "Frozen",
+      "macro": "",
       "adjustment": 100
     },
     {
       "id": 10,
-      "slug": "other-other",
+      "slug": "other",
       "name": "Other",
-      "macro": "Other",
+      "macro": "",
       "adjustment": 100
     }
   ],
   "products": [
     {
-      "slug": "cups-flurry",
-      "code": "100-100",
+      "slug": "bicchieri-flurry",
+      "code": "",
       "name": "Bicchieri Flurry",
-      "category": "paper-paper",
+      "category": "paper",
       "weight": 0,
-      "yield": 60
+      "yield": 0
     },
     {
-      "slug": "cups-shake",
+      "slug": "bicchieri-shake",
       "code": "",
       "name": "Bicchieri Shake",
-      "category": "paper-paper",
+      "category": "paper",
       "weight": 0,
       "yield": 0
     },
     {
-      "slug": "cups-sundae",
+      "slug": "bicchieri-sundae",
       "code": "",
       "name": "Bicchieri Sundae",
-      "category": "paper-paper",
+      "category": "paper",
       "weight": 0,
       "yield": 0
     },
     {
-      "slug": "cups-drinks-l",
-      "code": "100-101",
-      "name": "Bicchieri Bibita G",
-      "category": "paper-paper",
+      "slug": "bicchieri-bibite-g",
+      "code": "",
+      "name": "Bicchieri Bibite G",
+      "category": "paper",
       "weight": 0,
-      "yield": 100
+      "yield": 0
     },
     {
-      "slug": "cups-drinks-m",
+      "slug": "bicchieri-bibite-m",
       "code": "",
       "name": "Bicchieri Bibite M",
-      "category": "paper-paper",
+      "category": "paper",
       "weight": 0,
       "yield": 0
     },
     {
-      "slug": "cups-drinks-s",
+      "slug": "bicchieri-bibite-s",
       "code": "",
       "name": "Bicchieri Bibite S",
-      "category": "paper-paper",
+      "category": "paper",
       "weight": 0,
       "yield": 0
     },
     {
-      "slug": "lids-drinks",
+      "slug": "tappi-bibite",
       "code": "",
       "name": "Tappi Bibite",
-      "category": "paper-paper",
+      "category": "paper",
       "weight": 0,
       "yield": 0
     },
     {
-      "slug": "lids-sundae",
+      "slug": "tappi-sundae",
       "code": "",
       "name": "Tappi Sundae",
-      "category": "paper-paper",
+      "category": "paper",
       "weight": 0,
       "yield": 0
     },
     {
-      "slug": "cups-courtesy",
+      "slug": "courtesy-cups",
       "code": "",
       "name": "Courtesy Cups",
-      "category": "paper-paper",
+      "category": "paper",
       "weight": 0,
       "yield": 0
     },
     {
-      "slug": "buns-regular",
+      "slug": "pane-regular",
       "code": "",
       "name": "Pane Regular",
-      "category": "bread-frozen",
+      "category": "bread",
       "weight": 0,
       "yield": 0
     },
     {
-      "slug": "buns-royal",
-      "code": "200-100",
+      "slug": "pane-royal",
+      "code": "",
       "name": "Pane Royal",
-      "category": "bread-frozen",
-      "weight": 120,
-      "yield": 68
+      "category": "bread",
+      "weight": 0,
+      "yield": 0
     },
     {
-      "slug": "buns-big",
+      "slug": "pane-big",
       "code": "",
       "name": "Pane Big",
-      "category": "bread-frozen",
+      "category": "bread",
       "weight": 0,
       "yield": 0
     },
     {
-      "slug": "buns-shiny",
+      "slug": "pane-shiny",
       "code": "",
       "name": "Pane Shiny",
-      "category": "bread-frozen",
+      "category": "bread",
       "weight": 0,
       "yield": 0
     },
     {
-      "slug": "buns-oval",
+      "slug": "pane-ovale",
       "code": "",
       "name": "Pane Ovale",
-      "category": "bread-frozen",
+      "category": "bread",
       "weight": 0,
       "yield": 0
     },
     {
-      "slug": "buns-crunchy",
+      "slug": "pane-crunchy",
       "code": "",
       "name": "Pane Crunchy",
-      "category": "bread-frozen",
+      "category": "bread",
       "weight": 0,
       "yield": 0
     },
@@ -196,87 +196,87 @@
       "slug": "tortilla",
       "code": "",
       "name": "Tortilla",
-      "category": "bread-frozen",
+      "category": "bread",
       "weight": 0,
       "yield": 0
     },
     {
-      "slug": "sauce-bacon",
+      "slug": "salsa-bacon",
       "code": "",
       "name": "Salsa Bacon",
-      "category": "sauce-fresh",
+      "category": "sauces",
       "weight": 0,
       "yield": 0
     },
     {
-      "slug": "sauce-big",
+      "slug": "salsa-big",
       "code": "",
       "name": "Salsa Big",
-      "category": "sauce-fresh",
+      "category": "sauces",
       "weight": 0,
       "yield": 0
     },
     {
-      "slug": "sauce-chicken",
+      "slug": "salsa-chicken",
       "code": "",
       "name": "Salsa Chicken",
-      "category": "sauce-fresh",
+      "category": "sauces",
       "weight": 0,
       "yield": 0
     },
     {
-      "slug": "sauce-tasty",
+      "slug": "salsa-tasty",
       "code": "",
       "name": "Salsa Tasty",
-      "category": "sauce-fresh",
+      "category": "sauces",
       "weight": 0,
       "yield": 0
     },
     {
-      "slug": "sauce-promotion",
+      "slug": "salsa-promotion",
       "code": "",
       "name": "Salsa Promotion",
-      "category": "sauce-fresh",
+      "category": "sauces",
       "weight": 0,
       "yield": 0
     },
     {
-      "slug": "sauce-fish",
+      "slug": "salsa-fish",
       "code": "",
       "name": "Salsa Fish",
-      "category": "sauce-fresh",
+      "category": "sauces",
       "weight": 0,
       "yield": 0
     },
     {
-      "slug": "sauce-cheddar",
+      "slug": "salsa-cheddar",
       "code": "",
       "name": "Salsa Cheddar",
-      "category": "sauce-fresh",
+      "category": "sauces",
       "weight": 0,
       "yield": 0
     },
     {
-      "slug": "sauce-mediterranean",
+      "slug": "salsa-mediterraneo",
       "code": "",
       "name": "Salsa Mediterraneo",
-      "category": "sauce-fresh",
+      "category": "sauces",
       "weight": 0,
       "yield": 0
     },
     {
-      "slug": "sauce-romano",
+      "slug": "salsa-romano",
       "code": "",
       "name": "Salsa Romano",
-      "category": "sauce-fresh",
+      "category": "sauces",
       "weight": 0,
       "yield": 0
     },
     {
-      "slug": "sauce-crunchy",
+      "slug": "salsa-crunchy",
       "code": "",
       "name": "Salsa Crunchy",
-      "category": "sauce-fresh",
+      "category": "sauces",
       "weight": 0,
       "yield": 0
     },
@@ -284,7 +284,7 @@
       "slug": "mcfizz",
       "code": "",
       "name": "McFizz",
-      "category": "beverages-fresh",
+      "category": "beverages",
       "weight": 0,
       "yield": 0
     },
@@ -292,23 +292,23 @@
       "slug": "toppings",
       "code": "",
       "name": "Toppings",
-      "category": "toppings-fresh",
+      "category": "toppings",
       "weight": 0,
       "yield": 0
     },
     {
-      "slug": "sprinkles",
+      "slug": "granelle",
       "code": "",
       "name": "Granelle",
-      "category": "toppings-fresh",
+      "category": "toppings",
       "weight": 0,
       "yield": 0
     },
     {
-      "slug": "toast-fillings",
+      "slug": "farciture-toast",
       "code": "",
       "name": "Farciture Toast",
-      "category": "fillings-fresh",
+      "category": "fillings",
       "weight": 666,
       "yield": 30
     },
@@ -316,63 +316,63 @@
       "slug": "bacon-bits",
       "code": "",
       "name": "Bacon Bits",
-      "category": "fillings-fresh",
+      "category": "fillings",
       "weight": 0,
       "yield": 0
     },
     {
-      "slug": "bacon-raw",
+      "slug": "bacon",
       "code": "",
       "name": "Bacon",
-      "category": "fillings-fresh",
+      "category": "fillings",
       "weight": 0,
       "yield": 0
     },
     {
-      "slug": "bacon-cooked",
+      "slug": "bacon-cotto",
       "code": "",
       "name": "Bacon Cotto",
-      "category": "fillings-fresh",
+      "category": "fillings",
       "weight": 666,
       "yield": 28
     },
     {
-      "slug": "salad-mixed",
+      "slug": "insalate-miste",
       "code": "",
       "name": "Insalate Miste",
-      "category": "vegetables-fresh",
+      "category": "vegetables",
       "weight": 0,
       "yield": 0
     },
     {
-      "slug": "salad-finished",
+      "slug": "insalate-finite",
       "code": "",
       "name": "Insalate Finite",
-      "category": "vegetables-fresh",
+      "category": "vegetables",
       "weight": 666,
       "yield": 5
     },
     {
-      "slug": "tomatoes-cherry",
+      "slug": "pomodorini",
       "code": "",
       "name": "Pomodorini",
-      "category": "vegetables-fresh",
+      "category": "vegetables",
       "weight": 0,
       "yield": 0
     },
     {
-      "slug": "tomatoes",
+      "slug": "pomodori",
       "code": "",
       "name": "Pomodori",
-      "category": "vegetables-fresh",
+      "category": "vegetables",
       "weight": 0,
       "yield": 0
     },
     {
-      "slug": "tomatoes-sliced",
+      "slug": "pomodori-a-fette",
       "code": "",
       "name": "Pomodori a Fette",
-      "category": "vegetables-fresh",
+      "category": "vegetables",
       "weight": 666,
       "yield": 5
     },
@@ -380,31 +380,31 @@
       "slug": "onion-shaker",
       "code": "",
       "name": "Onion Shaker",
-      "category": "preps-fresh",
+      "category": "preps",
       "weight": 0,
       "yield": 0
     },
     {
-      "slug": "onion-reconstituted",
+      "slug": "cipolla-ricostruita",
       "code": "",
       "name": "Cipolla Ricostruita",
-      "category": "preps-fresh",
+      "category": "preps",
       "weight": 0,
       "yield": 0
     },
     {
-      "slug": "pancakes",
+      "slug": "pancake",
       "code": "",
       "name": "Pancake",
-      "category": "frozen-frozen",
+      "category": "frozen",
       "weight": 0,
       "yield": 0
     },
     {
-      "slug": "gluten-free",
+      "slug": "senza-glutine",
       "code": "",
       "name": "Senza Glutine",
-      "category": "frozen-frozen",
+      "category": "frozen",
       "weight": 0,
       "yield": 0
     },
@@ -412,7 +412,7 @@
       "slug": "jug-in-box-stock",
       "code": "",
       "name": "Jug in Box Stock",
-      "category": "other-other",
+      "category": "other",
       "weight": 0,
       "yield": 0
     }

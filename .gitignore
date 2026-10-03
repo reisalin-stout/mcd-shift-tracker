@@ -1,2 +1,4 @@
 node_modules
 dist
+dev/importer/credentials.json
+dev/importer/temp/

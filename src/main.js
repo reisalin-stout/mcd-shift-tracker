@@ -12,7 +12,6 @@ const todayStr = () => {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 };
-const label = (dp) => dp.replace('-', ' ').replace(/^./, (c) => c.toUpperCase());
 
 let date = todayStr();
 let daypart = localStorage.getItem(PREFIX + 'daypart');
@@ -36,34 +35,48 @@ function prune() {
   });
 }
 
+// A daypart in structure.json holds a reserved "info" key ({ name, timeframe }) next to its areas
+const dpInfo = (dp) => ({ name: structure[dp].info?.name ?? dp, timeframe: structure[dp].info?.timeframe ?? '' });
+const areaEntries = (dp) => Object.entries(structure[dp]).filter(([k]) => k !== 'info');
 // Areas sorted by orderId (stable: ties keep file order)
 const areas = () =>
-  Object.entries(structure[daypart])
+  areaEntries(daypart)
     .map(([id, a]) => ({ id, ...a }))
     .sort((a, b) => a.orderId - b.orderId);
-const kid = (a, n) => `${a.id}|${n}`; // n = task name or product id
+const kid = (a, n) => `${a.id}|${n}`; // n = task name or product slug
 
-// Products (database.json) are referenced by id from the stock lists in structure.json
+// Products (database.json) are referenced by slug from the stock lists in structure.json
 const products = database.products;
-const byId = Object.fromEntries(products.map((p) => [p.id, p]));
-const pname = (id) => byId[id]?.name ?? id; // unknown ids show the raw id, so the typo is visible
-const catAdj = database.categories || {}; // category order + default Adj % for the projection
-const catDef = (c) => catAdj[c] ?? 100;
+const bySlug = Object.fromEntries(products.map((p) => [p.slug, p]));
+const pname = (slug) => bySlug[slug]?.name ?? slug; // unknown slugs show the raw slug, so the typo is visible
+// Categories: [{ id, slug, name, macro, adjustment }], in sheet order. Products and saved overrides refer to a
+// category by its slug; the name is only for display. id and macro are not used by the app yet.
+const categories = database.categories;
+const catBySlug = Object.fromEntries(categories.map((c) => [c.slug, c]));
+const catName = (slug) => catBySlug[slug]?.name ?? slug; // unknown slugs show the raw slug
+const catDef = (slug) => catBySlug[slug]?.adjustment ?? 100; // default Adj % of the category
 // Category order: as listed in database.categories, then others by first appearance; '' = no category
-const categoryOrder = () => [...new Set([...Object.keys(catAdj), ...products.map((p) => p.category).filter(Boolean), ''])];
+const categoryOrder = () => [...new Set([...categories.map((c) => c.slug), ...products.map((p) => p.category).filter(Boolean), ''])];
 
 // Sanity check of the data files; problems are shown in a red banner
 function validate() {
-  const bad = [], seen = new Set();
-  for (const p of products) {
-    if (!p.id) bad.push(`Product without id: ${p.name}`);
-    else if (seen.has(p.id)) bad.push(`Duplicate product id: ${p.id}`);
-    seen.add(p.id);
-    if (p.category && !(p.category in catAdj)) bad.push(`${p.id}: category "${p.category}" not in categories`);
+  const bad = [], seen = new Set(), slugs = new Set();
+  for (const c of categories) {
+    if (!c.slug) bad.push(`Category without slug: ${c.name}`);
+    else if (slugs.has(c.slug)) bad.push(`Duplicate category slug: ${c.slug}`);
+    slugs.add(c.slug);
   }
-  for (const [dp, areasObj] of Object.entries(structure))
-    for (const [ak, a] of Object.entries(areasObj))
-      for (const id of a.stock) if (!byId[id]) bad.push(`${dp}/${ak}: unknown product id "${id}"`);
+  for (const p of products) {
+    if (!p.slug) bad.push(`Product without slug: ${p.name}`);
+    else if (seen.has(p.slug)) bad.push(`Duplicate product slug: ${p.slug}`);
+    seen.add(p.slug);
+    if (p.category && !catBySlug[p.category]) bad.push(`${p.slug}: unknown category "${p.category}"`);
+  }
+  for (const dp of Object.keys(structure)) {
+    if (!structure[dp].info?.name) bad.push(`${dp}: missing info.name`);
+    for (const [ak, a] of areaEntries(dp))
+      for (const slug of a.stock) if (!bySlug[slug]) bad.push(`${dp}/${ak}: unknown product slug "${slug}"`);
+  }
   const w = $('#warn');
   w.hidden = !bad.length;
   w.innerHTML = bad.map(esc).join('<br>');
@@ -76,8 +89,8 @@ function taskRow(a, t) {
   const k = kid(a, t), s = state.tasks[k] || '';
   return `<div class="row task ${s}" data-t="task" data-k="${esc(k)}"><div class="fg">${esc(t)}</div></div>`;
 }
-function stockRow(a, id) {
-  const k = kid(a, id), n = pname(id), s = state.stock[k] || { qty: 0, done: false };
+function stockRow(a, slug) {
+  const k = kid(a, slug), n = pname(slug), s = state.stock[k] || { qty: 0, done: false };
   return `<div class="row stock ${s.done ? 'done' : ''}" data-t="stock" data-k="${esc(k)}">
     <button data-a="dec" aria-label="Decrease">&minus;</button>
     <div class="mid"><span class="qty">${s.qty}</span><span>${esc(n)}</span></div>
@@ -86,8 +99,9 @@ function stockRow(a, id) {
 
 let view = 'dayparts';
 function renderHeader() {
-  $('#title').textContent = view === 'projection' ? 'Projection' : label(daypart);
-  $('#subtitle').textContent = date;
+  const { name, timeframe } = dpInfo(daypart);
+  $('#title').textContent = view === 'projection' ? 'Projection' : name;
+  $('#subtitle').textContent = view === 'projection' ? date : [timeframe, date].filter(Boolean).join(' · ');
 }
 
 function render() {
@@ -106,7 +120,10 @@ function render() {
     (done ? `<div class="divider">Done</div>${done}` : '');
   renderHeader();
   $('#dayparts').innerHTML = dayparts
-    .map((dp) => `<button class="dp ${dp === daypart ? 'on' : ''}" data-dp="${dp}">${label(dp)}</button>`).join('');
+    .map((dp) => {
+      const { name, timeframe } = dpInfo(dp);
+      return `<button class="dp ${dp === daypart ? 'on' : ''}" data-dp="${esc(dp)}"><span>${esc(name)}</span>${timeframe ? `<small>${esc(timeframe)}</small>` : ''}</button>`;
+    }).join('');
 }
 
 function setTask(k, status) { if (status) state.tasks[k] = status; else delete state.tasks[k]; save(); render(); }
@@ -220,13 +237,13 @@ $('#expStock').onclick = () => {
   // Sum the same product across areas (e.g. Jug in Box), then group by category
   const tot = new Map();
   for (const a of areas())
-    for (const id of a.stock) {
-      const q = state.stock[kid(a, id)]?.qty;
-      if (q > 0) tot.set(id, (tot.get(id) || 0) + q);
+    for (const slug of a.stock) {
+      const q = state.stock[kid(a, slug)]?.qty;
+      if (q > 0) tot.set(slug, (tot.get(slug) || 0) + q);
     }
   const out = categoryOrder().map((c) => {
-    const rows = [...tot].filter(([id]) => (byId[id]?.category || '') === c).map(([id, q]) => `x${q} ${pname(id)}`);
-    return rows.length ? (c ? `${c}\n` : '') + rows.join('\n') : '';
+    const rows = [...tot].filter(([slug]) => (bySlug[slug]?.category || '') === c).map(([slug, q]) => `x${q} ${pname(slug)}`);
+    return rows.length ? (c ? `${catName(c)}\n` : '') + rows.join('\n') : '';
   }).filter(Boolean);
   out.length ? copy(out.join('\n\n'), 'Restock list copied') : toast('Nothing to restock');
 };
@@ -240,13 +257,13 @@ document.addEventListener('visibilitychange', () => {
 // Projection
 const BASE_GC = 1000; // default weights are defined for this guest count
 // Only products with a weight appear in the projection
-const items = products.filter((p) => p.weight > 0).map((p) => ({ id: p.id, name: p.name, cat: p.category || '', def: p.weight, yld: p.yield }));
+const items = products.filter((p) => p.weight > 0).map((p) => ({ slug: p.slug, name: p.name, cat: p.category || '', def: p.weight, yld: p.yield }));
 const WKEY = PREFIX + 'proj-weights'; // edited default weights (persistent)
 const gcKey = () => `${PREFIX}${date}:proj`; // guest count (per day, pruned with the rest)
 const YKEY = PREFIX + 'proj-yields'; // edited yields (persistent)
 let custom = {}, customY = {}, gc = null, gadj = null, cadj = {}; // null = use the default
 const BASE_ADJ = 100;
-const catVal = (c) => cadj[c] ?? catDef(c); // category Adj %: today's override, else the database.json default
+const catVal = (c) => cadj[c] ?? catDef(c); // category Adj %: today's override (keyed by slug), else the database.json default
 
 function loadProj() {
   try { custom = JSON.parse(localStorage.getItem(WKEY)) || {}; } catch { custom = {}; }
@@ -267,15 +284,15 @@ const trunc1 = (n) => String(Math.floor(n * 10 + 1e-9) / 10); // 2.19999 shows 2
 // x.1 up to x.19999 rounds down, x.2 and above rounds up
 const roundBoxes = (x) => Math.floor(Math.round(x * 1e6) / 1e6 + 0.8 + 1e-9);
 function calc(it) {
-  const w = custom[it.id] ?? it.def;
+  const w = custom[it.slug] ?? it.def;
   const target = (w * (gc ?? BASE_GC) * catVal(it.cat) * (gadj ?? BASE_ADJ)) / (BASE_GC * 100 * 100);
-  const y = customY[it.id] ?? it.yld;
+  const y = customY[it.slug] ?? it.yld;
   const boxes = y > 0 ? target / y : null;
   return { w, target, boxes, ask: boxes === null ? null : roundBoxes(boxes) };
 }
 function updateProj() {
   for (const it of items) {
-    const row = $(`#pbody .prow[data-id="${it.id}"]`);
+    const row = $(`#pbody .prow[data-slug="${it.slug}"]`);
     if (!row) continue;
     const c = calc(it);
     row.querySelector('.pt').textContent = fmt(c.target);
@@ -284,17 +301,17 @@ function updateProj() {
 }
 // Items grouped by category (order from database.json); items without a category go last, without a header
 function groups() {
-  return categoryOrder().map((name) => ({ name, items: items.filter((it) => it.cat === name) })).filter((g) => g.items.length);
+  return categoryOrder().map((slug) => ({ slug, items: items.filter((it) => it.cat === slug) })).filter((g) => g.items.length);
 }
 function projRow(it) {
   const inp = (f, val, isDef, label) => `<input class="pin ${isDef ? 'def' : ''}" data-f="${f}" inputmode="decimal" autocomplete="off" value="${val}" aria-label="${label} ${esc(it.name)}" />`;
-  return `<div class="prow" data-id="${esc(it.id)}">
+  return `<div class="prow" data-slug="${esc(it.slug)}">
     <div class="pn">${esc(it.name)}</div>
-    ${inp('w', custom[it.id] ?? it.def, custom[it.id] === undefined, 'Weight')}
-    ${inp('y', customY[it.id] ?? it.yld, customY[it.id] === undefined, 'Yield')}
+    ${inp('w', custom[it.slug] ?? it.def, custom[it.slug] === undefined, 'Weight')}
+    ${inp('y', customY[it.slug] ?? it.yld, customY[it.slug] === undefined, 'Yield')}
     <div class="pt"></div><div class="pb"></div></div>`;
 }
-const catHead = (c) => `<div class="pcat"><span>${esc(c)}</span><label>Adj %<input class="pin ${cadj[c] === undefined ? 'def' : ''}" data-cat="${esc(c)}" inputmode="decimal" autocomplete="off" value="${catVal(c)}" aria-label="Adjustment ${esc(c)}" /></label></div>`;
+const catHead = (c) => `<div class="pcat"><span>${esc(catName(c))}</span><label>Adj %<input class="pin ${cadj[c] === undefined ? 'def' : ''}" data-cat="${esc(c)}" inputmode="decimal" autocomplete="off" value="${catVal(c)}" aria-label="Adjustment ${esc(catName(c))}" /></label></div>`;
 function renderProj() {
   const g = $('#gcInput'), ga = $('#gAdjInput');
   g.value = gc ?? BASE_GC;
@@ -302,7 +319,7 @@ function renderProj() {
   ga.value = gadj ?? BASE_ADJ;
   ga.classList.toggle('def', gadj === null);
   $('#pbody').innerHTML = groups()
-    .map((c) => (c.name ? catHead(c.name) : '') + c.items.map(projRow).join('')).join('');
+    .map((c) => (c.slug ? catHead(c.slug) : '') + c.items.map(projRow).join('')).join('');
   updateProj();
 }
 // Editable columns: w = weight, y = yield
@@ -325,10 +342,10 @@ proj.addEventListener('input', (e) => {
     if (v === null || v === catDef(c)) delete cadj[c]; else cadj[c] = v;
     inp.classList.toggle('def', cadj[c] === undefined);
   } else {
-    const it = items.find((i) => i.id === inp.closest('.prow').dataset.id);
+    const it = items.find((i) => i.slug === inp.closest('.prow').dataset.slug);
     const F = FIELDS[inp.dataset.f], store = F.store(), def = F.def(it);
-    if (v === null || v === def) delete store[it.id]; else store[it.id] = v;
-    inp.classList.toggle('def', store[it.id] === undefined);
+    if (v === null || v === def) delete store[it.slug]; else store[it.slug] = v;
+    inp.classList.toggle('def', store[it.slug] === undefined);
   }
   saveProj(); updateProj();
 });
@@ -340,9 +357,9 @@ proj.addEventListener('focusout', (e) => {
   else if (inp.id === 'gAdjInput') inp.value = gadj ?? BASE_ADJ;
   else if (inp.dataset.cat !== undefined) inp.value = catVal(inp.dataset.cat);
   else {
-    const it = items.find((i) => i.id === inp.closest('.prow').dataset.id);
+    const it = items.find((i) => i.slug === inp.closest('.prow').dataset.slug);
     const F = FIELDS[inp.dataset.f];
-    inp.value = F.store()[it.id] ?? F.def(it);
+    inp.value = F.store()[it.slug] ?? F.def(it);
   }
 });
 // One tap exports every category: header with the guest count (and Adj % when not 100), then each category
@@ -350,8 +367,8 @@ function exportProj() {
   const out = groups().map((c) => {
     const lines = c.items.map((it) => ({ it, c: calc(it) })).filter((x) => x.c.ask > 0).map((x) => `x${x.c.ask} ${x.it.name}`);
     if (!lines.length) return '';
-    const a = c.name ? catVal(c.name) : BASE_ADJ;
-    return (c.name ? `${c.name}${a !== BASE_ADJ ? ` (Adj ${fmt(a)}%)` : ''}\n` : '') + lines.join('\n');
+    const a = c.slug ? catVal(c.slug) : BASE_ADJ;
+    return (c.slug ? `${catName(c.slug)}${a !== BASE_ADJ ? ` (Adj ${fmt(a)}%)` : ''}\n` : '') + lines.join('\n');
   }).filter(Boolean);
   const head = `Projection - ${fmt(gc ?? BASE_GC)} GC${gadj !== null ? ` (Adj ${fmt(gadj)}%)` : ''}`;
   out.length ? copy(`${head}\n\n${out.join('\n\n')}`, 'Projection copied') : toast('Nothing to prepare');

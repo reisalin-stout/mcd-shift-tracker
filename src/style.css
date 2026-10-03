@@ -42,7 +42,8 @@ body.open #drawer { transform: none; }
 #drawer h3 { margin: 18px 0 8px; font-size: 14px; color: var(--muted); }
 #dayparts { display: grid; gap: 8px; }
 .menu-btn, .dp { width: 100%; padding: 14px; border: 2px solid #cfd6dc; border-radius: 10px; background: #fff; text-align: left; font-weight: 600; margin-bottom: 8px; }
-.dp { margin: 0; }
+.dp { margin: 0; display: flex; flex-direction: column; gap: 2px; }
+.dp small { font-size: 13px; font-weight: 500; opacity: .75; }
 .dp.on { border-color: var(--slate); background: var(--slate); color: #fff; }
 
 #toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom)); z-index: 20; transform: translateX(-50%); padding: 12px 18px; border-radius: 10px; background: var(--slate); color: #fff; opacity: 0; pointer-events: none; transition: opacity .2s; }
