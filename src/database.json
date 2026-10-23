@@ -69,6 +69,104 @@
       "name": "Other",
       "macro": "Other",
       "adjustment": 100
+    },
+    {
+      "id": 11,
+      "slug": "misc",
+      "name": "Misc",
+      "macro": "Other",
+      "adjustment": 100
+    },
+    {
+      "id": 30,
+      "slug": "fresh-sauce-core",
+      "name": "New",
+      "macro": "Other",
+      "adjustment": 100
+    },
+    {
+      "id": 31,
+      "slug": "fresh-sauce-event",
+      "name": "New",
+      "macro": "Other",
+      "adjustment": 100
+    },
+    {
+      "id": 32,
+      "slug": "fresh-sauce-promo",
+      "name": "New",
+      "macro": "Other",
+      "adjustment": 100
+    },
+    {
+      "id": 33,
+      "slug": "frozen-bun-core",
+      "name": "New",
+      "macro": "Other",
+      "adjustment": 100
+    },
+    {
+      "id": 34,
+      "slug": "frozen-bun-event",
+      "name": "New",
+      "macro": "Other",
+      "adjustment": 100
+    },
+    {
+      "id": 35,
+      "slug": "frozen-dessert",
+      "name": "New",
+      "macro": "Other",
+      "adjustment": 100
+    },
+    {
+      "id": 36,
+      "slug": "frozen-side",
+      "name": "New",
+      "macro": "Other",
+      "adjustment": 100
+    },
+    {
+      "id": 37,
+      "slug": "food-dessert-topping",
+      "name": "New",
+      "macro": "Other",
+      "adjustment": 100
+    },
+    {
+      "id": 38,
+      "slug": "drink-special",
+      "name": "New",
+      "macro": "Other",
+      "adjustment": 100
+    },
+    {
+      "id": 39,
+      "slug": "paper-cups",
+      "name": "New",
+      "macro": "Other",
+      "adjustment": 100
+    },
+    {
+      "id": 40,
+      "slug": "food-other",
+      "name": "New",
+      "macro": "Other",
+      "adjustment": 100
+    },
+    {
+      "id": 41,
+      "slug": "food-raw",
+      "name": "New",
+      "macro": "Other",
+      "adjustment": 100
+    },
+    {
+      "id": 42,
+      "slug": "food-sauce-core",
+      "name": "New",
+      "macro": "Other",
+      "adjustment": 100
     }
   ],
   "products": [
