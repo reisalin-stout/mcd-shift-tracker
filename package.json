@@ -4,8 +4,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
-    "build": "vite build",
-    "preview": "vite preview --host"
+    "build": "node dev/credentials/stripper.js && vite build",
+    "preview": "vite preview --host",
+    "update": "node dev/credentials/stripper.js && node dev/importer/import.js",
+    "zip": "node dev/compressor/compressor.js",
+    "zip:private": "node dev/compressor/compressor.js --private",
+    "zip:nocredentials": "node dev/compressor/compressor.js --private"
   },
   "devDependencies": {
     "vite": "^8.3.1"

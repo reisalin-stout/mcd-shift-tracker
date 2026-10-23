@@ -3,6 +3,7 @@ import structure from './structure.json';
 import database from './database.json';
 import config from './config.json';
 
+const PROJECTION = config.projection === true; // the Projection page is switched off while it is being reworked (config.json)
 const PREFIX = `${config.storageName}:`; // every localStorage key of this app starts with this
 const dayparts = Object.keys(structure);
 const $ = (s) => document.querySelector(s);
@@ -48,7 +49,13 @@ const kid = (a, n) => `${a.id}|${n}`; // n = task name or product slug
 // Products (database.json) are referenced by slug from the stock lists in structure.json
 const products = database.products;
 const bySlug = Object.fromEntries(products.map((p) => [p.slug, p]));
-const pname = (slug) => bySlug[slug]?.name ?? slug; // unknown slugs show the raw slug, so the typo is visible
+const pname = (slug) => bySlug[slug]?.name || slug; // unknown slugs show the raw slug, so the typo is visible
+// Restock step of a product (the Increment column): how much one tap of + / - changes the count. Missing or 0 counts by 1.
+const isFill = (slug) => bySlug[slug]?.increment < 0; // negative increment (-1) = "fill" product: no count, a Fill button instead of + / -
+const pstep = (slug) => { const n = bySlug[slug]?.increment; return n > 0 ? n : 1; };
+// Product code shown small under the name. Empty codes and the sheet's MISSING placeholder both show "MISSING" (in red-grey), so they get filled in
+const pcode = (slug) => { const p = bySlug[slug]; return !p ? '' : p.code && p.code !== 'MISSING' ? p.code : 'MISSING'; };
+const r2 = (n) => Math.round(n * 100) / 100; // counts can be fractional (0.5 steps): avoid 0.1 + 0.2 style noise
 // Categories: [{ id, slug, name, macro, adjustment }], in sheet order. Products and saved overrides refer to a
 // category by its slug; the name is only for display. id and macro are not used by the app yet.
 const categories = database.categories;
@@ -89,12 +96,34 @@ function taskRow(a, t) {
   const k = kid(a, t), s = state.tasks[k] || '';
   return `<div class="row task ${s}" data-t="task" data-k="${esc(k)}"><div class="fg">${esc(t)}</div></div>`;
 }
+const fillLabel = (on) => (on ? '&#10003; Fill' : 'Fill');
 function stockRow(a, slug) {
-  const k = kid(a, slug), n = pname(slug), s = state.stock[k] || { qty: 0, done: false };
-  return `<div class="row stock ${s.done ? 'done' : ''}" data-t="stock" data-k="${esc(k)}">
-    <button data-a="dec" aria-label="Decrease">&minus;</button>
-    <div class="mid"><span class="qty">${s.qty}</span><span>${esc(n)}</span></div>
-    <button data-a="inc" aria-label="Increase">+</button></div>`;
+  const k = kid(a, slug), s = state.stock[k] || { qty: 0, done: false }, code = pcode(slug);
+  const nm = `<span class="nm">${esc(pname(slug))}${code ? `<small${code === 'MISSING' ? ' class="miss"' : ''}>${esc(code)}</small>` : ''}</span>`;
+  const attrs = `data-t="stock" data-k="${esc(k)}" data-slug="${esc(slug)}"`;
+  if (isFill(slug)) { // refill product: the amount is just "needs a fill" (1) or not (0)
+    return `<div class="row stock fill ${s.done ? 'done' : ''} ${s.qty > 0 ? 'need' : ''}" ${attrs}>
+    <div class="mid">${nm}</div>
+    <button class="fillbtn" data-a="fill" aria-pressed="${s.qty > 0}">${fillLabel(s.qty > 0)}</button></div>`;
+  }
+  const step = pstep(slug);
+  const lbl = (sign) => `${sign}${step !== 1 ? `<small>${step}</small>` : ''}`; // show the step on the buttons when it is not 1
+  return `<div class="row stock ${s.done ? 'done' : ''}" ${attrs}>
+    <button data-a="dec" aria-label="Decrease">${lbl('&minus;')}</button>
+    <div class="mid"><span class="qty">${s.qty}</span>${nm}</div>
+    <button data-a="inc" aria-label="Increase">${lbl('+')}</button></div>`;
+}
+// Restock dropdown of an area (closed by default; open/closed is kept in memory only). The badge counts the items with an amount above 0.
+const openRestock = new Set();
+const rsId = (a) => `${daypart}|${a.id}`;
+const rsCount = (a) => a.stock.filter((n) => !state.stock[kid(a, n)]?.done && state.stock[kid(a, n)]?.qty > 0).length;
+function restockBlock(a, rows, total) {
+  const on = openRestock.has(rsId(a)), n = rsCount(a);
+  return `<div class="rs ${on ? 'open' : ''}" data-area="${esc(a.id)}">
+    <button class="rs-h" data-rs="${esc(rsId(a))}" aria-expanded="${on}"><span>Restock</span>
+      <span class="rs-r"><span class="rs-n" ${n ? '' : 'hidden'}>${n}</span><span class="rs-t">${total}</span><span class="chev">&rsaquo;</span></span></button>
+    <div class="rs-b"><div class="rs-in">${rows}
+      <button class="rs-f" data-rs="${esc(rsId(a))}"><span>Close Restock</span><span class="chev">&rsaquo;</span></button></div></div></div>`;
 }
 
 let view = 'dayparts';
@@ -109,8 +138,9 @@ function render() {
   for (const a of areas()) {
     const isTaskDone = (t) => !!state.tasks[kid(a, t)];
     const isStockDone = (n) => !!state.stock[kid(a, n)]?.done;
+    const openStock = a.stock.filter((n) => !isStockDone(n));
     const o = a.tasks.filter((t) => !isTaskDone(t)).map((t) => taskRow(a, t)).join('') +
-              a.stock.filter((n) => !isStockDone(n)).map((n) => stockRow(a, n)).join('');
+              (openStock.length ? restockBlock(a, openStock.map((n) => stockRow(a, n)).join(''), openStock.length) : '');
     const d = a.tasks.filter(isTaskDone).map((t) => taskRow(a, t)).join('') +
               a.stock.filter(isStockDone).map((n) => stockRow(a, n)).join('');
     if (o) open += `<section><h2>${esc(a.name)}</h2>${o}</section>`;
@@ -129,14 +159,38 @@ function render() {
 function setTask(k, status) { if (status) state.tasks[k] = status; else delete state.tasks[k]; save(); render(); }
 function setStockDone(k, v) { stockOf(k).done = v; save(); render(); }
 
-// Stock +/- buttons (update in place, no re-render)
+// Restock dropdown: open/close in place (no re-render). The header opens/closes it; the same row at the bottom closes it
+// without scrolling back up (and then brings the header into view).
+list.addEventListener('click', (e) => {
+  const h = e.target.closest('button[data-rs]');
+  if (!h) return;
+  const box = h.closest('.rs'), on = box.classList.toggle('open');
+  box.querySelector('.rs-h').setAttribute('aria-expanded', on);
+  if (on) openRestock.add(h.dataset.rs); else openRestock.delete(h.dataset.rs);
+  if (!on && h.classList.contains('rs-f')) box.querySelector('.rs-h').scrollIntoView({ block: 'nearest' });
+});
+
+// Stock buttons (update in place, no re-render): +/- change the amount by the product's increment, Fill toggles "needs a fill"
 list.addEventListener('click', (e) => {
   const b = e.target.closest('button[data-a]');
   if (!b) return;
   const row = b.closest('.row'), s = stockOf(row.dataset.k);
-  s.qty = Math.max(0, s.qty + (b.dataset.a === 'inc' ? 1 : -1));
+  if (b.dataset.a === 'fill') {
+    s.qty = s.qty > 0 ? 0 : 1;
+    row.classList.toggle('need', s.qty > 0);
+    b.setAttribute('aria-pressed', s.qty > 0);
+    b.innerHTML = fillLabel(s.qty > 0);
+  } else {
+    const step = pstep(row.dataset.slug);
+    s.qty = Math.max(0, r2(s.qty + (b.dataset.a === 'inc' ? step : -step)));
+    row.querySelector('.qty').textContent = s.qty;
+  }
   save();
-  row.querySelector('.qty').textContent = s.qty;
+  const box = row.closest('.rs'); // refresh the badge of the dropdown (open list only)
+  if (box) {
+    const a = areas().find((x) => x.id === box.dataset.area), n = rsCount(a), badge = box.querySelector('.rs-n');
+    badge.textContent = n; badge.hidden = !n;
+  }
 });
 
 // Gestures: swipe tasks, long-press stock, tap done rows to restore
@@ -196,7 +250,7 @@ function setView(v) {
 }
 $('#drawer').addEventListener('click', (e) => {
   const h = e.target.closest('.grp-h');
-  if (!h) return;
+  if (!h || (h.dataset.view === 'projection' && !PROJECTION)) return;
   if (view === h.dataset.view) { h.parentElement.classList.toggle('collapsed'); return; }
   setView(h.dataset.view);
   if (view === 'projection') toggleMenu(false); // nothing to pick in this submenu
@@ -239,10 +293,10 @@ $('#expStock').onclick = () => {
   for (const a of areas())
     for (const slug of a.stock) {
       const q = state.stock[kid(a, slug)]?.qty;
-      if (q > 0) tot.set(slug, (tot.get(slug) || 0) + q);
+      if (q > 0) tot.set(slug, r2((tot.get(slug) || 0) + q));
     }
   const out = categoryOrder().map((c) => {
-    const rows = [...tot].filter(([slug]) => (bySlug[slug]?.category || '') === c).map(([slug, q]) => `x${q} ${pname(slug)}`);
+    const rows = [...tot].filter(([slug]) => (bySlug[slug]?.category || '') === c).map(([slug, q]) => isFill(slug) ? `Fill ${pname(slug)}` : `x${q} ${pname(slug)}`);
     return rows.length ? (c ? `${catName(c)}\n` : '') + rows.join('\n') : '';
   }).filter(Boolean);
   out.length ? copy(out.join('\n\n'), 'Restock list copied') : toast('Nothing to restock');
@@ -422,6 +476,7 @@ function checkVersion() {
   $('#ver').textContent = `v${SITE_VERSION}`;
 }
 
+$('.grp[data-g="projection"]').hidden = !PROJECTION; // projection code stays, the page is only hidden
 checkVersion();
 validate();
 prune();

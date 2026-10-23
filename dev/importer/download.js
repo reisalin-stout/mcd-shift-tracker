@@ -13,7 +13,7 @@ export const TEMP_DIR = path.resolve(__dirname, "temp");
 
 function loadSpreadsheetId() {
   if (process.env.SPREADSHEET_ID) return process.env.SPREADSHEET_ID; // optional override
-  if (!fs.existsSync(CONFIG_FILE)) throw new Error(`Config not found: ${CONFIG_FILE}`);
+  if (!fs.existsSync(CONFIG_FILE)) throw new Error(`Config not found: ${CONFIG_FILE} (copy config.example.json to config.json and set spreadsheetId)`);
   const { spreadsheetId } = JSON.parse(fs.readFileSync(CONFIG_FILE, "utf8"));
   if (!spreadsheetId || spreadsheetId.startsWith("PUT_YOUR")) {
     throw new Error(`Set "spreadsheetId" in ${CONFIG_FILE}`);

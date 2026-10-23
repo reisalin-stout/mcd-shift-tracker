@@ -21,10 +21,10 @@
         "cups-drinks-l",
         "cups-drinks-m",
         "cups-drinks-s",
-        "lids-drinks",
-        "lids-sundae",
+        "cups-lids-drink",
+        "cups-lids-sundae",
         "cups-courtesy",
-        "salad-mixed"
+        "food-salad-mixed"
       ]
     },
     "drive": {
@@ -49,7 +49,7 @@
       "orderId": 6,
       "name": "MFY Side 2",
       "tasks": ["Ordine", "Scadenza Farciture Toast", "Scadenza Insalate", "Scadenze Varie Frigo Fresco"],
-      "stock": ["toast-fillings", "salad-finished", "tomatoes-cherry", "bacon-bits"]
+      "stock": ["food-toast", "food-salad-finished", "food-tomato-cherry", "bacon-bits"]
     },
     "side-4": {
       "orderId": 7,
@@ -68,7 +68,7 @@
         "Spegnimento Fryer",
         "Coperchi Fryer"
       ],
-      "stock": ["jug-in-box-stock", "tomatoes", "bacon-cooked"]
+      "stock": ["jug-in-box-stock", "tomatoes", "food-baconcooked"]
     },
     "side-3": {
       "orderId": 8,
@@ -87,7 +87,7 @@
       "orderId": 10,
       "name": "Grill",
       "tasks": ["Ordine", "Posizione Trays", "Pulizia Strumenti", "Scadenza Onion Shaker", "Scadenza Ketchup Bib", "Orologi 4:1", "Coperchi 4:1"],
-      "stock": ["onion-shaker"]
+      "stock": ["food-onionshaker"]
     },
     "cart": {
       "orderId": 11,
@@ -103,15 +103,15 @@
         "Traccia Mais/Olive/Carote"
       ],
       "stock": [
-        "sauce-bacon",
-        "sauce-big",
-        "sauce-chicken",
-        "sauce-tasty",
+        "sauce-crispybacon",
+        "sauce-bigmac",
+        "sauce-mcchicken",
+        "sauce-bigtasty",
         "sauce-promotion",
         "sauce-fish",
-        "sauce-cheddar",
-        "sauce-mediterranean",
-        "sauce-romano",
+        "sauce-nachocheese",
+        "sauce-creation-mediterranean",
+        "sauce-creation-roman",
         "sauce-crunchy"
       ]
     },
@@ -125,13 +125,13 @@
       "orderId": 13,
       "name": "Rear",
       "tasks": ["Ordine", "Scadenza Pane", "Scadenza The", "Temperatura Celle"],
-      "stock": ["buns-regular", "buns-royal", "buns-big", "buns-shiny", "buns-oval", "buns-crunchy", "tortilla"]
+      "stock": ["bun-regular", "bun-royal", "bun-bigmac", "bun-shiny", "bun-oval", "bun-crunchy", "bun-tortilla"]
     },
     "walk-in": {
       "orderId": 14,
       "name": "Walk-In Fridge/Freezer",
       "tasks": ["Ordine", "Scadenza Cipolla Ricostruita", "Scadenza Onion Shaker", "Scadenza Filetto", "Traccia Pomodori"],
-      "stock": ["onion-reconstituted", "pancakes", "gluten-free"]
+      "stock": ["food-onionprep", "pancakes", "bun-glutenfree"]
     },
     "storeroom": {
       "orderId": 15,

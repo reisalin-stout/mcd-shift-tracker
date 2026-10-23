@@ -1,5 +1,6 @@
 {
   "siteVersion": "1.0.0",
   "dataVersion": "1.0.0",
-  "storageName": "mcd-shift-companion"
+  "storageName": "mcd-shift-companion",
+  "projection": false
 }

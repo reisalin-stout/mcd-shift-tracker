@@ -14,7 +14,7 @@ This document is context for anyone (human or AI) developing the project. It des
   1. **Tasks**: things to check or do (e.g. expiration checks, fryer shutdown). Each ends up completed or resolved.
   2. **Stock**: items whose quantity is counted and possibly needs restocking.
 - **Produce exports** that can be pasted into a message: open tasks, a restock list, and a prep projection.
-- **Project prep quantities** from an expected guest count, grouped by category with adjustable multipliers (see 5.8).
+- **Project prep quantities** from an expected guest count, grouped by category with adjustable multipliers (see 5.8). **This page is switched off for now** (`projection: false` in `config.json`, see 4c) while it is being reworked; its code is still in the project.
 - **No data loss in the short term.** All state is persisted in `localStorage`.
 - **Single user, single device, no backend (for now).** Hosted as a static site on GitHub Pages.
 
@@ -33,6 +33,7 @@ This document is context for anyone (human or AI) developing the project. It des
 - **GitHub Pages** hosting via a GitHub Actions workflow (`.github/workflows/deploy.yml`)
 - `vite.config.js` uses `base: './'` (relative paths) so it works under any repo name
 - **Node scripts** in `dev/importer/` (not part of the site build) import the product data from a Google Sheet (or CSV files) into `src/database.json`, see section 4d. They use the `googleapis` npm dependency.
+- **Dev tools** (not part of the site): the private-file stripper `dev/credentials/stripper.js` (section 4e) and the project zipper `dev/compressor/compressor.js` (section 4f). Both are dependency-free Node scripts run through npm scripts.
 - **Content and settings live in JSON files** (`structure.json`, `database.json`, `config.json`). Changing them does not require touching `main.js`.
 
 ### Project layout
@@ -43,13 +44,18 @@ shift-tracker/
 ├── package.json                # npm scripts + Vite (its own "version" is unrelated to siteVersion)
 ├── package-lock.json
 ├── vite.config.js
-├── .gitignore / .gitattributes # .gitignore excludes node_modules, dist, dev/importer/credentials.json and dev/importer/temp/
+├── .gitignore / .gitattributes # .gitignore excludes node_modules, dist, dev/importer/credentials.json, dev/importer/config.json, dev/importer/temp/ and dev/compressor/output.zip
 ├── .github/workflows/deploy.yml
+├── public/                    # favicon.ico, favicon-16x16.png, favicon-32x32.png, apple-touch-icon.png (linked from index.html, copied to dist as they are)
 ├── dev/importer/              # Google Sheet / CSV importer that writes src/database.json, see section 4d
 │   ├── import.js, download.js, utils.js, parsers/
-│   ├── config.json            # spreadsheetId + keepTemp (importer settings)
+│   ├── config.json            # NOT in the repo: spreadsheetId + keepTemp + skipDownload (importer settings), see 4d
+│   ├── config.example.json    # committed template: same keys, blanked values (generated, see 4e)
 │   ├── temp/                  # downloaded CSVs, exists only during an import (git-ignored)
-│   └── credentials.json       # NOT in the repo: Google service-account key, see 4d
+│   ├── credentials.json       # NOT in the repo: Google service-account key, see 4d
+│   └── credentials.example.json # committed template: same keys as credentials.json, blanked values (generated, see 4e)
+├── dev/credentials/           # stripper.js: makes the credentials and config templates, see section 4e
+├── dev/compressor/            # compressor.js + include.json: zips the project (normal or private), output.zip (git-ignored), see section 4f
 ├── dev/database/              # automatic backups of previous src/database.json versions (created by the importer)
 └── src/
     ├── main.js                 # All app logic (state, render, gestures, export)
@@ -62,9 +68,11 @@ shift-tracker/
 ### Commands
 - `npm install`
 - `npm run dev` (dev server, exposed on the network for testing on a phone)
-- `npm run build`
+- `npm run build` (first refreshes the credentials and config templates, which does nothing for a file that is missing, e.g. on GitHub, then runs `vite build`)
 - `npm run preview`
-- `node dev/importer/import.js` (imports the Google Sheet into `src/database.json`; **no command-line options**, `skipDownload` and `keepTemp` are set in `dev/importer/config.json`), see section 4d
+- `npm run update` (refreshes the templates, then runs the importer `node dev/importer/import.js`: imports the Google Sheet into `src/database.json`; **no command-line options**, `skipDownload` and `keepTemp` are set in `dev/importer/config.json`), see section 4d
+- `npm run zip:private` (**the one to use for every zip that leaves the machine or comes back over the project**: zips the project into `dev/compressor/output.zip` with **neither `credentials.json` nor `config.json`**, only their `.example.json` templates; `npm run zip:nocredentials` and `npm run zip -- --nocredentials` still work and are the same thing), see section 4f
+- `npm run zip` (same zip, but with *stripped copies* of `credentials.json` and `config.json` at their real paths; never unzip such a zip over the project), see section 4f
 
 ---
 
@@ -106,11 +114,13 @@ Top-level keys are **dayparts**. Each daypart contains one reserved **`info`** k
 | `orderId` | Sort order of areas (ascending). Sort is stable, so ties keep file order. |
 | `name` | Display name (Italian/brand names, shown as-is). |
 | `tasks` | Ordered list of task names. |
-| `stock` | Ordered list of **product slugs** (the `slug` field in `database.json`; may be empty). The display name comes from the database. The same product may appear in several areas (e.g. `jug-in-box-stock`); each area keeps its own count. |
+| `stock` | Ordered list of **product slugs** and nothing else (the `slug` field in `database.json`; may be empty). The name, the code and the count step (`increment`) all come from the database, see 4b. These are the items of the area's **Restock dropdown** (5.3). The same product may appear in several areas (e.g. `jug-in-box-stock`); each area keeps its own count. |
 
 Notes:
 - Areas with both empty `tasks` and `stock` never render anything.
-- Currently `floor` and `management` in `afternoon-1` both have `orderId: 16`. They render in file order (Floor, then Management). This is an open question for the owner (should Management be 17?).
+- The key is still called `stock` (it is part of the saved-data shape); in the UI the list is called **Restock**.
+- `floor` (16) and `management` (17) in `afternoon-1` now have distinct `orderId`s.
+- Stock slugs that are not in `database.json` show the raw slug and trigger the red banner. After the big database update these are still unresolved in `afternoon-1`: `mcfizz`, `toppings`, `sprinkles`, `tomatoes` and `sauce-promotion` (no obvious match in the sheet; the owner will fix them in a later update, until then the red banner lists them). The other old slugs were remapped to the sheet's new ones.
 - Task identity is `"<areaKey>|<task name>"` (renaming a task orphans its saved state for the day; tasks are planned to move to ids later). Stock identity is `"<areaKey>|<productSlug>"`, so renaming a product's `name` is safe, but changing its `slug` is not.
 
 ## 4b. Data source: `database.json`
@@ -123,7 +133,7 @@ The single catalogue of products and categories, referenced by slug from `struct
     { "id": 1, "slug": "paper-paper", "name": "Paper", "macro": "Paper", "adjustment": 100 }
   ],
   "products": [
-    { "slug": "cups-flurry", "code": "100-100", "name": "Bicchieri Flurry", "category": "paper-paper", "weight": 0, "yield": 60 }
+    { "slug": "cups-flurry", "code": "6373/640", "name": "Bicchieri Flurry", "category": "paper-cups", "yield": 54, "increment": 1 }
   ]
 }
 ```
@@ -139,17 +149,17 @@ The single catalogue of products and categories, referenced by slug from `struct
 - **`products`** (every product has every field):
   | Field | Meaning |
   |---|---|
-  | `slug` | Unique string (the sheet's Slug column), the **product's identity**: stock lists in `structure.json`, saved stock counts and projection overrides all refer to it, and the app looks products up by it (`bySlug`). Products have no numeric id, only categories do. **Never change a slug once in use** (saved counts and projection overrides are keyed by it). Do not use a hash of the data: it would change whenever a weight or yield is edited. |
-  | `code` | Product code as printed on the box (string, e.g. `"19565 - 013"`). Empty if not set; reserved for later features. |
-  | `name` | Italian display name. |
+  | `slug` | Unique string (the sheet's Slug column), the **product's identity**: stock lists in `structure.json`, saved stock counts and projection overrides all refer to it, and the app looks products up by it (`bySlug`). Products have no numeric id, only categories do. **Never change a slug once in use** (saved counts and projection overrides are keyed by it). Do not use a hash of the data: it would change whenever a yield or increment is edited. |
+  | `code` | Product code as printed on the box (string, e.g. `"6373/640"`). Empty if not set. Shown small under the product name in the Restock dropdown. **An empty code or the sheet's placeholder `MISSING` is shown as `MISSING` in bold dark red-grey**, so that codes still to be entered are easy to spot. |
+  | `name` | Italian display name. **If the sheet's Name is empty the importer uses the slug as the name** (and warns), so the product still shows up; the app also falls back to the slug when a name is empty. |
   | `category` | The `slug` of a category (may be empty). |
-  | `weight` | Quantity needed per **1000 guests** (`BASE_GC`). `0` = not part of the projection. |
-  | `yield` | How many units one box/package contains. `0` = unknown. Used by the projection to compute boxes. |
-- **Projection membership:** only products with `weight > 0` appear in the projection tab. Stock-only products (cups, sauces, ...) keep `weight: 0`.
+    | `yield` | How many units one box/package contains. `0` = unknown. Used by the projection to compute boxes. |
+  | `increment` | How much one tap of `+` / `−` changes the restock count of this product (e.g. `1`, `0.5` for half boxes, `25` for trays of bags). Defaults to `1` when empty. **A negative value (`-1`) marks a "fill" product** (currently 12, e.g. the toppings, onion prep, pickles and salad dressings): it is not counted in units but refilled ("the bottle is half empty, go get the large can and refill it"), so the app shows a **Fill** button instead of `−`/`+` (see 5.3). `0` is invalid and counts as 1 (the importer warns). |
+- **Projection membership (open issue):** the `weight` field was removed from the sheet and the importer, but the projection tab (5.8) still lists only products with `weight > 0`, so the projection would be empty. It is therefore switched off (`projection: false` in `config.json`, see 4c) until the owner reworks it. The code stays in `main.js` and `index.html`.
 - **Startup check (`validate()`):** a red banner under the top bar lists dayparts without `info.name`, categories without a slug or with a duplicate slug, products without a slug, duplicate product slugs, products whose category slug does not exist, and stock slugs in `structure.json` that do not exist in the database (also logged with `console.error`). Unknown product slugs and unknown category slugs are shown raw, so the typo is visible; in the restock export, products without a (known) category land at the end without a header.
 - **Products not referenced by any stock list** are valid: they only appear in the projection (if they have a weight).
-- **Current content:** the committed `src/database.json` was imported from the sheet (10 categories, 42 products). Product slugs are English (`cups-flurry`, `buns-royal`, `sauce-big`, ...) and names are Italian. Category and macro slugs of the categories other than Paper, Bread and Sauce are provisional. **Whenever the sheet's slugs change, every slug in the `stock` lists of `structure.json` must be updated to match them**, otherwise those rows show the raw slug and the red banner lists them (the importer prints a warning with the missing slugs).
-- **Adding a product:** add a row to the sheet's Products tab and run the importer, then put its slug in the `stock` list of the relevant area(s) in `structure.json`.
+- **Current content:** the committed `src/database.json` was imported from the sheet (10 categories, 98 products). Product slugs are English (`cups-flurry`, `bun-royal`, `sauce-bigmac`, ...) and names are Italian. **The products now use new category slugs (`paper-cups`, `fresh-sauce-core`, `frozen-bun-core`, ...) but the imported Categories tab still has the old ones (`paper-paper`, `sauce-fresh`, ...)**, so every product's category is unknown (red banner, no category headers in the restock export) until the Categories tab is updated to match., which is expected for now (the red banner stays on purpose and will be cleared in a later update). Four sheet rows have a Slug and Code but no Name (`food-ham`, `food-baconslices`, `food-saladmix`, `food-baconcooked`): they are imported with the slug as their name until the sheet gets real names. **Whenever the sheet's slugs change, every slug in the `stock` lists of `structure.json` must be updated to match them**, otherwise those rows show the raw slug and the red banner lists them (the importer prints a warning with the missing slugs).
+- **Adding a product:** add a row to the sheet's Products tab and run the importer, then put its slug in the `stock` list of the relevant area(s) in `structure.json`; the Increment decides the `+`/`−` step.
 
 ---
 
@@ -159,7 +169,8 @@ The single catalogue of products and categories, referenced by slug from `struct
 {
   "siteVersion": "1.0.0",
   "dataVersion": "1.0.0",
-  "storageName": "mcd-shift-companion"
+  "storageName": "mcd-shift-companion",
+  "projection": false
 }
 ```
 
@@ -167,15 +178,16 @@ The single catalogue of products and categories, referenced by slug from `struct
 |---|---|
 | `siteVersion` | Shown at the bottom of the drawer (`v1.0.0`), to check which version is running on the phone. Bump it only when major content is introduced or changed, not on every update. It has no effect on saved data. |
 | `dataVersion` | Version of the saved-data format. Bump it only on large updates that change the shape of the saved data (like the move to slugs). If the data saved in the browser has a **lower** version, or none, all of the app's saved data is wiped on startup (see 5.7). |
+| `projection` | `true` shows the Projection page (drawer section and page, 5.8), `false` hides it. Currently `false`: the page is being reworked. The code stays in the project, so setting it back to `true` is all it takes, but it needs product weights, which the database no longer has (see 4b). Optional: a missing key counts as `false`. |
 | `storageName` | Name that prefixes every `localStorage` key of the app (`<storageName>:...`). `localStorage` is shared by every project on the same `github.io` origin, so this keeps the app's data separate. **Changing it makes the app ignore all data saved under the old name** (the old keys are left in the browser, never read or deleted by the app). |
 
 The `"version"` field in `package.json` is a separate npm field and is not used by the app.
 
-Versions are dotted numbers (`"1.0.0"`), compared part by part (`0.9.0` < `1.0.0` < `1.10.0`). All three keys are required.
+Versions are dotted numbers (`"1.0.0"`), compared part by part (`0.9.0` < `1.0.0` < `1.10.0`). `siteVersion`, `dataVersion` and `storageName` are required.
 
 ## 4d. Importer: `dev/importer/` (Google Sheet / CSV to `src/database.json`)
 
-A development-only Node tool (not bundled into the site) that is **the way database data enters the project**: it reads the owner's Google Sheet and commits the result to `src/database.json`. Run it from the project root after `npm install` (it needs the `googleapis` dependency):
+A development-only Node tool (not bundled into the site) that is **the way database data enters the project**: it reads the owner's Google Sheet and commits the result to `src/database.json`. Run it with `npm run update` (or directly with the commands below) from the project root after `npm install` (it needs the `googleapis` dependency):
 
 ```
 node dev/importer/import.js     # the import: download (or reuse), parse, back up, write, clean up
@@ -198,9 +210,11 @@ node dev/importer/download.js   # only download the CSVs into dev/importer/temp
 | `download.js` | Google Sheets download (read-only scope). |
 | `utils.js` | CSV parser, `readCsvObjects()` (rows as objects with lower-cased, trimmed headers, empty rows dropped), `toNumber()` (accepts `1,5` and `1.5`), `slugify()`. |
 | `parsers/categories.js` | Tab `Categories`, columns `Name, ID, Slug, Macro, Adjustment`. Rows without a name are skipped, as are rows with a missing or duplicate numeric `ID` or a missing or duplicate `Slug`. `Adjustment` defaults to 100. Output key `categories`: `[{ id, slug, name, macro, adjustment }]`. |
-| `parsers/products.js` | Tab `Products`, columns `Name, Code, Slug, Category, Yield, Weight`. output `slug` is the `Slug` column (a slug of the name if blank), duplicate slugs are skipped, `Category` is the slug of a category, `Code` defaults to `""`, `Weight` and `Yield` default to 0. Output key `products`: `[{ slug, code, name, category, weight, yield }]`. |
-| `config.json` | All importer settings (there are no command-line options). Not the same file as `src/config.json`. Keys: `spreadsheetId` (the id from the sheet's URL; the env var `SPREADSHEET_ID` overrides it), `keepTemp` (`true` keeps the CSVs in `temp/` after a successful run, `false` or missing deletes them), `skipDownload` (`true` parses the CSVs already in `temp/` instead of downloading, `false` or missing downloads). |
+| `parsers/products.js` | Tab `Products`, columns `Name, Code, Slug, Category, Yield, Increment`. Output `slug` is the `Slug` column (a slug of the name if blank), duplicate slugs are skipped, `Category` is the slug of a category, `Code` defaults to `""`, `Yield` defaults to 0 and `Increment` to 1 (negative values are kept: they mean "fill"). **An empty `Name` falls back to the slug** (one warning lists those products); a row with neither Name nor Slug is skipped with a warning; one warning lists products whose `Increment` is 0. Output key `products`: `[{ slug, code, name, category, yield, increment }]`. |
+| `config.json` | **Private, never committed** (listed in `.gitignore`, because it holds the spreadsheet id; the compressor also never puts the real file in a zip). All importer settings (there are no command-line options). Not the same file as `src/config.json`, which is public. Keys: `spreadsheetId` (the id from the sheet's URL; the env var `SPREADSHEET_ID` overrides it), `keepTemp` (`true` keeps the CSVs in `temp/` after a successful run, `false` or missing deletes them), `skipDownload` (`true` parses the CSVs already in `temp/` instead of downloading, `false` or missing downloads). |
 | `credentials.json` | **Secret, never committed** (listed in `.gitignore`), see below. |
+| `credentials.example.json` | Committed template of `credentials.json` (same keys, blanked values), generated by `dev/credentials/stripper.js`, see 4e. |
+| `config.example.json` | Committed template of `config.json` (`spreadsheetId` blank, `keepTemp` and `skipDownload` false), generated by the same script, see 4e. |
 
 To support a new tab, add `parsers/<name>.js` exporting `{ tab, key, parse(filePath) }` and add it to the `parsers` array in `import.js`. The app must then be taught to use the new key.
 
@@ -209,7 +223,44 @@ To support a new tab, add `parsers/<name>.js` exporting `{ tab, key, parse(fileP
 2. Create a **service account** and add a **JSON key** to it. Google downloads a JSON file.
 3. **Rename that file to `credentials.json` and put it at `dev/importer/credentials.json`.** It is a secret and is git-ignored, so each person who clones the repo must create their own. Never commit it or paste it anywhere.
 4. Open the spreadsheet and **share it (Viewer is enough) with the service account's email** (the `client_email` inside the JSON file). Without this the download fails with a permission error.
-5. Put the spreadsheet id in `dev/importer/config.json`.
+5. **Copy `dev/importer/config.example.json` to `dev/importer/config.json`** (git-ignored, so each clone has its own) and put the spreadsheet id in it.
+
+To see which keys the files must contain, open `dev/importer/credentials.example.json` and `dev/importer/config.example.json` (section 4e). If `config.json` is already tracked by git from before it was ignored, run `git rm --cached dev/importer/config.json` once.
+
+---
+
+## 4e. Private-file templates: `dev/credentials/stripper.js`
+
+Two files are private and never committed: `dev/importer/credentials.json` (the Google service-account key) and `dev/importer/config.json` (importer settings, including the id of the Google Sheet). The repo should still record which keys the project needs, so the stripper turns each real file into a **template with the same keys and blanked values**, safe to commit and to put in zips.
+
+| Real file (private, git-ignored) | Template (committed) |
+|---|---|
+| `dev/importer/credentials.json` | `dev/importer/credentials.example.json` |
+| `dev/importer/config.json` | `dev/importer/config.example.json` |
+
+- **Stripping rules:** strings become `""`, numbers `0`, booleans `false`, `null` stays `null`, arrays and objects keep their structure. For credentials the keys `type`, `auth_uri`, `token_uri`, `auth_provider_x509_cert_url` and `universe_domain` keep their value because they are the same public constants in every Google service-account key; this list is `KEEP_CREDENTIALS` in `stripper.js`. Everything else is blanked. In `config.json` **everything** is blanked, so the template always reads `{ "spreadsheetId": "", "keepTemp": false, "skipDownload": false }` and does not change when you flip a setting.
+- **`node dev/credentials/stripper.js`** rewrites every template whose real file exists. It only rewrites a file when the content changed, and prints a line when it did. It runs automatically at the start of `npm run build` and `npm run update`.
+- **It never fails a script:** if a real file is missing (a fresh clone, or the GitHub Actions build) it only prints a one-line note and leaves that template alone; if a file is not valid JSON it only prints a warning.
+- **Zips:** `dev/compressor/compressor.js` imports `TARGETS`, `stripFile()` and `toJson()` from this file (section 4f). `TARGETS` is the list of `{ name, rel, template, keep }` entries; to protect another private file, add an entry there (and to `.gitignore`).
+
+---
+
+## 4f. Sharing the project: `dev/compressor/`
+
+A development-only tool that creates a small zip of the project (for example to upload it to an AI assistant) without `node_modules`, `dist`, database backups or other bulk. Run **`npm run zip`**; it has no npm dependencies (the zip is written with `node:zlib`).
+
+- **Output:** always `dev/compressor/output.zip` (git-ignored, replaced on every run, never included in itself). The zip has no wrapper folder (files at its root).
+- **`dev/compressor/include.json`:** `{ "include": [...], "exclude": [...] }`.
+  | Key | Meaning |
+  |---|---|
+  | `include` | The **only** files and folders that go into the zip (paths relative to the project root, forward slashes; folders are added recursively; dotfiles such as `.github` must be listed explicitly). A path that does not exist is skipped with a warning; a path outside the project stops the script. |
+  | `exclude` | Files or folders to leave out even if they are inside an included folder (currently none). |
+  The default list covers the config files, `README.md`, the dotfiles, `.github`, `public`, `src`, `dev/importer` (including `dev/importer/temp/`, so CSVs kept with `keepTemp` travel with the zip for debugging), `dev/credentials` and `dev/compressor`. It leaves out `dev/database/` (old backups). **When a file or folder is added to the project, add its path to `include.json`, or it will not be in the zip.**
+- **Always skipped,** whatever `include.json` says: any `node_modules` or `.git` folder, **every file named `credentials.json`** and **`dev/importer/config.json`**, so the real Google key and the real spreadsheet id can never end up in a zip.
+- **Two modes** for the two private files (`credentials.json` and `config.json`, section 4e):
+  - **`npm run zip:private`: the private zip. Use it every time a zip leaves the machine or will be unzipped back over the project** (for example one sent to or returned by an AI assistant). It contains **neither file**, only `credentials.example.json` and `config.example.json`, so unzipping it can never overwrite the real ones. The same mode can be reached with `npm run zip -- --private`, `npm run zip --private` (npm turns the flag into the environment variable `npm_config_private`, which may stop working in a future npm version), and the older names `npm run zip:nocredentials`, `--nocredentials` and `--noconfig`, which all mean exactly this (they now wipe **both** files).
+  - **`npm run zip`: the normal zip.** It adds **stripped copies** of both files at their real paths (made from the real file, or from the `.example.json` when the real one does not exist), so the zip shows which keys are needed. The real values are never read into the zip. Never unzip a normal zip over the project, it would replace the real files with blanked ones.
+- The script prints the number of files, the sizes, a `Mode:` line, one `Private files` line per private file saying what happened to it, and the skipped paths. If a file is invalid JSON, or neither it nor its example exists, nothing is added for it and the reason is printed.
 
 ---
 
@@ -219,7 +270,7 @@ To support a new tab, add `parsers/<name>.js` exporting `{ tab, key, parse(fileP
 - One continuous list occupying the whole screen width, optimised for phone browsers (viewport meta with `viewport-fit=cover`, safe-area insets respected).
 - A sticky top bar shows the current daypart (or "Projection" on the projection page) and the date, with a ☰ button at the left.
 - Each area is a **section** with a full-width header bar (the area's `name`).
-- Within a section: **tasks first, then stock**.
+- Within a section: **tasks first, then the Restock dropdown** (5.3).
 - Areas with nothing left open are hidden from the top part of the page.
 
 ### 5.2 Tasks (swipe interaction)
@@ -232,12 +283,16 @@ To support a new tab, add `parsers/<name>.js` exporting `{ tab, key, parse(fileP
 - Once marked, the task moves to the **Done** block at the bottom of the page, still grouped under its area header, keeping its green or red colour.
 - **Tap a row in the Done block to undo** it (it returns to the open list). Added so that accidental swipes are recoverable.
 
-### 5.3 Stock (counter interaction)
-- Each stock item is a row with **`−` on the left**, **`+` on the right**, and the **amount plus item name** in the middle.
-- Amounts start at 0 and cannot go below 0. Tapping `+`/`−` updates the number in place (no re-render, no scroll jump) and saves immediately.
+### 5.3 Restock (dropdown and counters)
+- Below an area's tasks, its stock items sit in a collapsible **Restock dropdown** so the page stays short. The header row shows `Restock`, an amber badge with the number of items whose amount is above 0 (hidden when none), the number of items in the dropdown, and a chevron. **Tap the header to open or close it.** It starts **closed**; the open/closed state is only kept in memory for the current page load (a reload closes all dropdowns again). Opening or closing does not re-render the list.
+- **Sliding door:** when open, the dropdown has the closing row at **both ends**: the header at the top and an identical row at the bottom labelled **Close Restock** (chevron up). Closing from the bottom row means no scrolling back up; afterwards the page scrolls just enough to bring the dropdown's header back into view. The body slides open and closed (a short CSS animation, disabled with reduced-motion settings).
+- The dropdown only holds items that are not done; when every item of an area is done, the dropdown disappears from the top part.
+- Each item is a row with **`−` on the left**, **`+` on the right**, and in the middle the **amount**, the product **name** and, in small grey text under the name, its **code**. All of this comes from `database.json` by slug; `structure.json` only lists the slugs. An empty code or `MISSING` is shown as **MISSING** in bold dark red-grey (to be filled in the sheet).
+- **`+` / `−` change the amount by the product's `increment`** (default 1; 0 counts as 1). When the increment is not 1 it is shown in small text on both buttons (e.g. `+25`, `+0.5`). Amounts start at 0, cannot go below 0, and can be fractional (rounded to 2 decimals to avoid `0.1 + 0.2` noise). Tapping updates the number and the badge in place (no re-render, no scroll jump) and saves immediately.
+- **Fill products (`increment` below 0, i.e. `-1`)** are not counted: the row has no `−` and no number, only a wide **Fill** button on the right, where the `+` would be. Tap it once: the row turns amber and the button reads `✓ Fill` (the saved amount is `1`, counted in the badge); tap again to clear it (amount `0`). Long-press and the Done block work as for any other row.
 - **Long-press (500ms) on the row (not on the buttons)** sends the item to the Done block at the bottom, **keeping its amount**. The device vibrates briefly if supported.
 - Moving a stock item to Done means "I've handled or noted this". It does not zero the quantity.
-- In the Done block, stock rows keep working `+`/`−` buttons. **Tap the middle of a done stock row to move it back** to the open list.
+- In the Done block, stock rows are shown flat (no dropdown) and keep working `+`/`−` buttons. **Tap the middle of a done stock row to move it back** to its area's Restock dropdown.
 - Long-press does not trigger if the finger moves more than 10px (so scrolling is safe). The context menu and text selection are disabled on rows.
 
 ### 5.4 Done block
@@ -259,7 +314,7 @@ Opened with the ☰ button, closed by tapping the overlay. The drawer is an **ac
     - Spegnimento Fryer
     ```
     Shows a toast "Open tasks copied", or "No open tasks" when there are none.
-  - **Copy restock list.** Copies every stock item with an amount above 0 (whether or not it is in the Done block), formatted as `x<amount> <item name>`. **Amounts of the same product slug are summed across areas** (e.g. `jug-in-box-stock` counted in Fries and MFY Side 4 becomes one line). Lines are grouped by **category name** (order of the `categories` array in `database.json`), products in order of first appearance in the area walk:
+  - **Copy restock list.** Copies every stock item with an amount above 0 (whether or not it is in the Done block), formatted as `x<amount> <item name>` (the amount can be fractional, e.g. `x0.5`). **Fill products** are written as `Fill <item name>` (one line, whatever the number of areas that flagged it). **Amounts of the same product slug are summed across areas** (e.g. `jug-in-box-stock` counted in Fries and MFY Side 4 becomes one line). Lines are grouped by **category name** (order of the `categories` array in `database.json`), products in order of first appearance in the area walk:
     ```
     Paper
     x3 Bicchieri Bibite G
@@ -269,7 +324,7 @@ Opened with the ☰ button, closed by tapping the overlay. The drawer is an **ac
     x5 Jug in Box Stock
     ```
     Shows a toast "Restock list copied", or "Nothing to restock" when empty.
-- **Projection** (page: the projection tab, see 5.8). Submenu: **Copy projection**. Tapping the header opens the page and closes the drawer. Tapping the **Dayparts** header while on the projection page switches back to the shift list and keeps the drawer open.
+- **Projection** (page: the projection tab, see 5.8) is **hidden while `projection` is `false` in `config.json`** (the current setting), so the drawer only shows the Dayparts section. When enabled: Submenu: **Copy projection**. Tapping the header opens the page and closes the drawer. Tapping the **Dayparts** header while on the projection page switches back to the shift list and keeps the drawer open.
 - A successful copy (tasks, restock, projection) closes the drawer and shows a toast; the "nothing to export" toasts leave it open.
 - **Clear website data** (bottom of the drawer). Two taps: the first arms the button ("Tap again to confirm", disarms after 4s or when the menu closes), the second deletes every `localStorage` key starting with `<storageName>:` (all shift states, the remembered daypart, projection weights and guest count), writes the current `dataVersion` again, and resets the UI (the selected daypart goes back to the first one). Only the app's own keys are removed, because `localStorage` is shared by every project on the same `github.io` origin. The site version (`vX.Y.Z`) is shown under this button.
 - Clipboard uses `navigator.clipboard` with a `textarea` + `execCommand('copy')` fallback.
@@ -301,9 +356,9 @@ Opened with the ☰ button, closed by tapping the overlay. The drawer is an **ac
 - Every user action saves immediately.
 
 ### 5.8 Projection tab
-A second page, reached from the drawer. It works out how many boxes of each prepared item to ask for, from the expected guest count.
+**Currently switched off** (`projection: false` in `config.json`, 4c): the drawer section is hidden and the page cannot be opened. The code is kept as it is for the planned rework (the rest of this section describes it). A second page, reached from the drawer. It works out how many boxes of each prepared item to ask for, from the expected guest count.
 
-- **Data:** products come from `src/database.json` (section 4b). Only products with `weight > 0` are listed; `weight` is the quantity for **1000 guests** and `yield` the units per box, both overridable in the UI. Categories (name, default Adj % in `adjustment`) come from the `categories` array, whose order is the category order on the page; today's Adj % overrides are saved by category slug.
+- **Data (currently empty, see 4b):** products come from `src/database.json` (section 4b). Only products with `weight > 0` are listed, and the database no longer has a `weight` field, so the page has no items right now; `weight` is the quantity for **1000 guests** and `yield` the units per box, both overridable in the UI. Categories (name, default Adj % in `adjustment`) come from the `categories` array, whose order is the category order on the page; today's Adj % overrides are saved by category slug.
 - **Top fields** (side by side, default value in **grey**, dark once changed, empty or invalid input falls back to the default):
   - **Guest Count Total**: expected guests, default 1000.
   - **Adj %** (global): a quick multiplier applied to *every* category, default 100. For testing a higher or lower prep without touching the defaults.
@@ -343,21 +398,23 @@ A second page, reached from the drawer. It works out how many boxes of each prep
 ### Code map of `main.js` (top to bottom)
 1. Imports (`structure.json`, `database.json`, `config.json`), `PREFIX`, date helpers.
 2. Shift state: `load()` / `save()` / `prune()` (key `<storageName>:<date>:<daypart>`).
-3. Data helpers: `dpInfo()` (daypart `info`), `areaEntries()` (a daypart's areas, skipping the reserved `info` key), `areas()` (sorted by `orderId`), `kid()`, `products` / `bySlug` / `pname()`, `categories` / `catBySlug` / `catName()` / `catDef()`, `categoryOrder()` (category slugs in display order), `validate()`, `esc()`.
-4. Shift list: `taskRow()`, `stockRow()`, `render()`, `setTask()`, `setStockDone()`, the `+`/`−` click handler, and the pointer gesture handlers.
+3. Data helpers: `dpInfo()` (daypart `info`), `areaEntries()` (a daypart's areas, skipping the reserved `info` key), `areas()` (sorted by `orderId`), `kid()`, `products` / `bySlug` / `pname()` / `pstep()` (increment) / `isFill()` (negative increment) / `pcode()` / `r2()`, `categories` / `catBySlug` / `catName()` / `catDef()`, `categoryOrder()` (category slugs in display order), `validate()`, `esc()`.
+4. Shift list: `taskRow()`, `stockRow()`, `restockBlock()` (the dropdown, with its top and bottom close rows, `openRestock` / `rsCount()`), `fillLabel()`, `render()`, `setTask()`, `setStockDone()`, the dropdown click handler, the stock button click handler (`+`/`−` by `pstep()`, or the Fill toggle), and the pointer gesture handlers.
 5. Menu: `toggleMenu()`, `setView()`, drawer and daypart click handlers.
 6. Exports: `toast()`, `copy()`, tasks export, restock export; `visibilitychange` day roll-over.
 7. Projection: `calc()`, `groups()`, `projRow()`, `catHead()`, `renderProj()`, `updateProj()`, input/focusout handlers, `exportProj()`.
 8. Clear website data, versioning (`checkVersion()`), and the **startup sequence**: `checkVersion()` → `validate()` → `prune()` → `load()` → `loadProj()` → `render()` → `renderProj()` → `setView('dayparts')`. Keep `checkVersion()` first, so incompatible data is wiped before anything reads it.
 
-Pitfalls: every user-facing string goes through `esc()` before `innerHTML`; every `localStorage` key must start with `PREFIX` (shared origin); stock keys use product slugs, task keys use task names; do not break `touch-action: pan-y` on rows (it keeps vertical scrolling working during swipes).
+Pitfalls: the dropdown rows and the Fill button are `<button>`s, which the pointer handlers ignore, so keep them buttons; every user-facing string goes through `esc()` before `innerHTML`; every `localStorage` key must start with `PREFIX` (shared origin); stock keys use product slugs, task keys use task names; do not break `touch-action: pan-y` on rows (it keeps vertical scrolling working during swipes).
 
 ## 6b. Common changes (recipes)
 
 | I want to... | Do this |
 |---|---|
-| Add a product | Add a row in the sheet's Products tab (unique Slug = the product's identity, Category = a category slug, Weight, Yield), run `node dev/importer/import.js`, then add the slug to the `stock` list of the area(s) that count it in `structure.json`. A `weight > 0` includes it in the projection. |
+| Add a product | Add a row in the sheet's Products tab (unique Slug = the product's identity, Category = a category slug, Code, Yield, Increment = the `+`/`−` step), run `node dev/importer/import.js`, then add the slug to the `stock` list of the area(s) that count it in `structure.json`. |
 | Rename a product on screen | Change only its Name in the sheet (never its Slug), then import. |
+| Change how much `+`/`−` adds for a product | Change its Increment in the sheet, then import. Use `-1` to make it a Fill product (Fill button instead of `+`/`−`). |
+| Bring the Projection page back | Set `projection` to `true` in `src/config.json` (it needs product weights, which the database no longer has). |
 | Add a task | Append the (Italian) string to the area's `tasks` in `structure.json`. |
 | Add an area | Add a key under the daypart (anything except `info`) with `orderId`, `name`, `tasks`, `stock`. |
 | Add a daypart | Add a top-level key in `structure.json` with an `info` object (`name`, optional `timeframe`) and its areas; it shows up in the menu automatically. |
@@ -365,6 +422,7 @@ Pitfalls: every user-facing string goes through `esc()` before `innerHTML`; ever
 | Restore an older database | Copy a file from `dev/database/` over `src/database.json`. |
 | Force everyone's saved data to reset after a breaking change | Raise `dataVersion` in `config.json`. |
 | Show a new version in the menu | Change `siteVersion` in `config.json` (major content changes only). |
+| Send the project to someone (or an AI) | `npm run zip:private` (no `credentials.json`, no `config.json`; always use this one), then take `dev/compressor/output.zip`. |
 
 Before finishing any change: run `npm run build`; open the app (`npm run dev`, reachable from the phone on the same network) and check that no red banner appears and that swipe, long-press, `+`/`−` and both exports still work; update this README if behaviour, data formats, or storage keys changed. There are no automated tests.
 
@@ -374,7 +432,7 @@ Before finishing any change: run `npm run build`; open the app (`npm run dev`, r
 
 1. Push the project to a GitHub repo on the `main` branch.
 2. In the repo settings, go to Pages and set Source to **GitHub Actions** (without this the deploy step fails with a 404).
-3. `.github/workflows/deploy.yml` (a single job, with pinned action versions) runs on every push to `main` and can be run manually. It installs dependencies with `npm install`, runs `npm run build`, configures Pages, uploads `./dist` and deploys it.
+3. `.github/workflows/deploy.yml` (a single job, with pinned action versions) runs on every push to `main` and can be run manually. It installs dependencies with `npm install`, runs `npm run build` (whose credentials stripper step does nothing there, because `credentials.json` is not in the repo), configures Pages, uploads `./dist` and deploys it.
 4. Open the resulting URL on the phone. Adding it to the home screen gives a full-screen feel (no PWA manifest or service worker yet).
 
 Since data lives in the browser's `localStorage`, it is tied to the device, browser, and site origin. Clearing site data erases it.
@@ -383,14 +441,16 @@ Since data lives in the browser's `localStorage`, it is tied to the device, brow
 
 ## 8. Known limitations and open questions
 
-- `floor` and `management` share `orderId: 16` in `afternoon-1` (see section 4).
 - No automatic daypart detection by time of day, as time ranges are undefined.
 - No offline support (no service worker). The page works only after being loaded once online, and can fail if the browser evicts its cache with no connection.
 - No way to reset a single shift's state from the UI. "Clear website data" wipes everything, and data expires automatically after 7 days.
 - Products and categories can only be changed through the sheet and the importer (or by hand in `src/database.json`, which the next import overwrites). Only weights, yields, the guest count and Adj % (global and per category) can be adjusted in the UI. Default Adj % per category can only be changed in `categories` in `database.json`.
 - No undo history beyond tapping a done row to restore it.
-- Stock amounts are integers with no per-item units or par levels. Tasks are still plain strings (not ids yet; planned next).
-- Most `yield` values, all `weight` values except a few (some are still the placeholder `666`) and most `code` values are `0` / `""` in the current database. The real values come from the sheet.
+- Stock amounts have no per-item units or par levels (they can be fractional through the product's increment). Tasks are still plain strings (not ids yet; planned next).
+- Many `yield` values are `0` and some codes are `MISSING` in the current database. The real values come from the sheet.
+- The Projection page is switched off (`projection: false`) because the `weight` field was removed (see 4b); it will be reworked.
+- The Categories tab and five stock slugs in `structure.json` (`mcfizz`, `toppings`, `sprinkles`, `tomatoes`, `sauce-promotion`) still need to be brought in line with the new database; the red banner stays until then (see 4 and 4b).
+- A Fill product only records "needs a fill" (yes or no), not how much.
 - `macro` and the numeric category `id` from the sheet are stored but not used by the app yet.
 - The sheet still needs an in-depth review of products, codes, yields, weights and category macros (planned by the owner).
 - The last selected daypart is remembered. Switching dayparts mid-shift is safe because each has separate state.
@@ -420,4 +480,5 @@ Do not implement roadmap items unless explicitly asked.
 6. **Keep this README in sync** with the code and data files whenever behaviour, data formats, or storage keys change.
 7. Ask when in doubt. The owner prefers a question over a guess about restaurant-specific behaviour.
 8. **Treat `src/database.json` as generated output**: change data in the sheet and re-run the importer instead of editing it, unless asked. Keep the importer output shape (section 4b) and the app in sync.
-9. **Never commit `dev/importer/credentials.json`** (Google service-account key). It must stay git-ignored.
+9. **Never commit `dev/importer/credentials.json` or `dev/importer/config.json`** (Google service-account key, spreadsheet id). Both must stay git-ignored. Only the generated `credentials.example.json` and `config.example.json` (blanked values) are committed; never put real values in them.
+10. **Keep `dev/compressor/include.json` up to date** when files or folders are added to the project, and keep zips free of private data (the compressor never includes the real `credentials.json` or `config.json`). **Always export with `npm run zip:private`.**

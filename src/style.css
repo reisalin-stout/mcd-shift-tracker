@@ -30,10 +30,38 @@ section h2 { margin: 0; padding: 10px 14px; background: var(--slate); color: #ff
 .stock { display: flex; background: var(--card); }
 .stock button { flex: none; width: 68px; border: 0; background: #dfe5ea; font-size: 30px; font-weight: 700; }
 .stock button:active { background: #c4cdd4; }
+.stock button small { display: block; font-size: 12px; font-weight: 700; line-height: 1; color: var(--muted); }
 .stock .mid { flex: 1; display: flex; align-items: center; gap: 12px; padding: 0 12px; min-height: 58px; font-weight: 600; }
+.stock .nm { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.stock .nm small { font-size: 12px; font-weight: 500; color: var(--muted); }
+.stock .nm small.miss { font-weight: 800; letter-spacing: .03em; color: #6e2f2f; }
+/* Fill products (increment -1): a Fill button instead of - / +, amber while a fill is needed */
+.stock.fill .mid { padding-left: 14px; }
+.stock .fillbtn { width: 104px; font-size: 17px; font-weight: 800; }
+.stock.need { background: #fdf0cf; }
+.stock.need .fillbtn { background: var(--amber); }
+.stock.need .fillbtn:active { background: #dca21c; }
+.stock.done.need { background: #d5efe0; }
 .stock .qty { min-width: 2.2ch; text-align: center; font-size: 24px; font-weight: 800; }
 .stock.done { background: #d5efe0; }
 .stock.done .qty { color: var(--green); }
+
+/* Restock dropdown (one per area, below the tasks) */
+.rs-h { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 15px 14px; border: 0; border-bottom: 1px solid #cfd6dc; background: #dfe5ea; font-weight: 700; text-align: left; }
+.rs-r { display: flex; align-items: center; gap: 10px; }
+.rs-n { min-width: 22px; padding: 2px 7px; border-radius: 11px; background: var(--amber); color: var(--ink); font-size: 13px; font-weight: 800; text-align: center; }
+.rs-n[hidden] { display: none; }
+.rs-t { font-size: 13px; font-weight: 600; color: var(--muted); }
+.rs .chev { font-size: 22px; }
+.rs.open .chev { transform: rotate(90deg); }
+.rs-h, .rs-f { scroll-margin-top: calc(76px + env(safe-area-inset-top)); }
+.rs-f { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 15px 14px; border: 0; border-bottom: 1px solid #cfd6dc; background: #dfe5ea; font-weight: 700; text-align: left; }
+.rs.open .rs-f .chev { transform: rotate(-90deg); }
+/* sliding door: the body grows from 0 to its height */
+.rs-b { display: grid; grid-template-rows: 0fr; visibility: hidden; transition: grid-template-rows .22s ease, visibility .22s; }
+.rs.open .rs-b { grid-template-rows: 1fr; visibility: visible; }
+.rs-in { min-height: 0; overflow: hidden; }
+@media (prefers-reduced-motion: reduce) { .rs-b { transition: none; } }
 
 #overlay { position: fixed; inset: 0; z-index: 8; background: rgba(0,0,0,.45); opacity: 0; pointer-events: none; transition: opacity .2s; }
 #drawer { position: fixed; top: 0; bottom: 0; left: 0; z-index: 9; width: min(80vw, 300px); padding: calc(16px + env(safe-area-inset-top)) 16px 16px; background: var(--card); transform: translateX(-100%); transition: transform .2s; overflow-y: auto; }
