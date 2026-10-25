@@ -2,17 +2,15 @@ import './style.css';
 import structure from './structure.json';
 import database from './database.json';
 import config from './config.json';
+import { $, esc, toast, todayStr } from './util.js';
+import { startSession } from './session.js';
+import { initAccount } from './ui/account.js';
+import { initExtraHours } from './ui/extraHours.js';
 
 const PROJECTION = config.projection === true; // the Projection page is switched off while it is being reworked (config.json)
 const PREFIX = `${config.storageName}:`; // every localStorage key of this app starts with this
 const dayparts = Object.keys(structure);
-const $ = (s) => document.querySelector(s);
 const list = $('#list');
-
-const todayStr = () => {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-};
 
 let date = todayStr();
 let daypart = localStorage.getItem(PREFIX + 'daypart');
@@ -89,7 +87,6 @@ function validate() {
   w.innerHTML = bad.map(esc).join('<br>');
   bad.forEach((b) => console.error(b));
 }
-const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 const stockOf = (k) => (state.stock[k] ||= { qty: 0, done: false });
 
 function taskRow(a, t) {
@@ -127,10 +124,11 @@ function restockBlock(a, rows, total) {
 }
 
 let view = 'dayparts';
+const PAGE_TITLES = { projection: 'Projection', extra: 'Extra hours', account: 'Account' }; // pages other than the shift list
 function renderHeader() {
   const { name, timeframe } = dpInfo(daypart);
-  $('#title').textContent = view === 'projection' ? 'Projection' : name;
-  $('#subtitle').textContent = view === 'projection' ? date : [timeframe, date].filter(Boolean).join(' · ');
+  $('#title').textContent = PAGE_TITLES[view] ?? name;
+  $('#subtitle').textContent = view === 'dayparts' ? [timeframe, date].filter(Boolean).join(' · ') : view === 'account' ? '' : date;
 }
 
 function render() {
@@ -239,21 +237,26 @@ list.addEventListener('pointercancel', endGesture);
 
 // Menu
 const toggleMenu = (v) => { document.body.classList.toggle('open', v); if (!v) disarmClear(); };
+// Pages: the shift list ('dayparts'), 'projection', 'extra' (extra hours, Firebase) and 'account' (sign in / out)
+const PAGES = { dayparts: list, projection: $('#proj'), extra: $('#extra'), account: $('#account') };
 function setView(v) {
+  if (v === 'extra' && view !== 'extra') extraHours.enter();
+  if (v !== 'extra' && view === 'extra') extraHours.leave();
   view = v;
   document.body.dataset.view = v;
-  list.hidden = v !== 'dayparts';
-  $('#proj').hidden = v !== 'projection';
+  for (const [name, el] of Object.entries(PAGES)) el.hidden = name !== v;
+  document.querySelectorAll('.grp').forEach((g) => g.classList.toggle('active', g.dataset.g === v));
   document.querySelector(`.grp[data-g="${v}"]`)?.classList.remove('collapsed');
   renderHeader();
   scrollTo(0, 0);
 }
+const go = (v) => { setView(v); toggleMenu(false); };
 $('#drawer').addEventListener('click', (e) => {
   const h = e.target.closest('.grp-h');
   if (!h || (h.dataset.view === 'projection' && !PROJECTION)) return;
-  if (view === h.dataset.view) { h.parentElement.classList.toggle('collapsed'); return; }
+  if (view === h.dataset.view) { h.parentElement.classList.toggle('collapsed'); if (h.parentElement.classList.contains('leaf')) toggleMenu(false); return; }
   setView(h.dataset.view);
-  if (view === 'projection') toggleMenu(false); // nothing to pick in this submenu
+  if (h.parentElement.classList.contains('leaf') || view === 'projection') toggleMenu(false); // nothing to pick in these submenus
 });
 $('#menuBtn').onclick = () => toggleMenu(true);
 $('#overlay').onclick = () => toggleMenu(false);
@@ -267,11 +270,6 @@ $('#dayparts').addEventListener('click', (e) => {
 });
 
 // Export
-function toast(msg) {
-  const t = $('#toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 1800);
-}
 async function copy(text, msg) {
   try { await navigator.clipboard.writeText(text); }
   catch {
@@ -306,6 +304,7 @@ $('#expStock').onclick = () => {
 document.addEventListener('visibilitychange', () => {
   if (document.hidden || todayStr() === date) return;
   date = todayStr(); load(); loadProj(); render(); renderProj();
+  extraHours.refresh(); // new day: the extra-hours page asks for "from today" again
 });
 
 // Projection
@@ -484,4 +483,9 @@ load();
 loadProj();
 render();
 renderProj();
+// Firebase features: login (account page + top-bar avatar) and the extra-hours page. They only start working
+// once startSession() has checked the saved login; the shift tracker itself never needs them.
+const account = initAccount({ go, prefix: PREFIX, getView: () => view });
+const extraHours = initExtraHours({ openLogin: account.openLogin });
 setView('dayparts');
+startSession();

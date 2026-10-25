@@ -3,4 +3,7 @@ dist
 dev/importer/credentials.json
 dev/importer/config.json
 dev/importer/temp/
-dev/compressor/output.zip
+dev/compressor/*.zip
+.env.local
+.env.*.local
+dist-mock

@@ -9,12 +9,16 @@
     "update": "node dev/credentials/stripper.js && node dev/importer/import.js",
     "zip": "node dev/compressor/compressor.js",
     "zip:private": "node dev/compressor/compressor.js --private",
-    "zip:nocredentials": "node dev/compressor/compressor.js --private"
+    "zip:all": "node dev/compressor/compressor.js --all",
+    "dev:mock": "vite --host --mode mock",
+    "test": "node --test \"dev/tests/*.test.js\"",
+    "build:mock": "vite build --mode mock --outDir dist-mock"
   },
   "devDependencies": {
     "vite": "^8.3.1"
   },
   "dependencies": {
+    "firebase": "^13.1.0",
     "googleapis": "^182.0.0"
   }
 }

@@ -1,0 +1,35 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "userStores": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid"
+      }
+    },
+
+    "stores": {
+      "$storeId": {
+        ".read": "auth != null && root.child('userStores').child(auth.uid).val() === $storeId",
+        ".write": "auth != null && root.child('userStores').child(auth.uid).val() === $storeId",
+
+        "extraHoursRequests": {
+          ".indexOn": ["day"],
+          "$requestId": {
+            ".validate": "newData.hasChildren(['day', 'name', 'nextHours', 'status', 'createdAt', 'createdBy'])",
+            "day": { ".validate": "newData.isString() && newData.val().matches(/^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/)" },
+            "name": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 80" },
+            "originalHours": { ".validate": "newData.isString() && newData.val().length <= 80" },
+            "nextHours": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 80" },
+            "status": { ".validate": "newData.isString() && newData.val().matches(/^(pending|accepted|refused|revoked)$/)" },
+            "createdAt": { ".validate": "newData.isNumber()" },
+            "createdBy": { ".validate": "newData.isString() && (data.exists() ? newData.val() === data.val() : newData.val() === auth.uid)" },
+            "updatedAt": { ".validate": "newData.isNumber()" },
+            "$other": { ".validate": false }
+          }
+        }
+      }
+    }
+  }
+}

@@ -54,8 +54,17 @@ export function slugify(text) {
     .replace(/^-+|-+$/g, "");
 }
 
-// dev/importer/config.json: { "spreadsheetId": "...", "keepTemp": true | false, "skipDownload": true | false }
+// Importer settings come from the project's .env.local (the same private file the app uses for Firebase):
+//   SPREADSHEET_ID, IMPORT_KEEP_TEMP (true/false), IMPORT_SKIP_DOWNLOAD (true/false)
+// Variables already set in the environment win over the file, so CI or a one-off `SPREADSHEET_ID=... npm run update` works too.
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+const truthy = (v) => ["1", "true", "yes", "on"].includes(String(v ?? "").trim().toLowerCase());
 export function loadImporterConfig() {
-  const file = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "config.json");
-  return fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, "utf8")) : {};
+  const file = path.join(ROOT, ".env.local");
+  if (fs.existsSync(file)) process.loadEnvFile(file); // does not overwrite variables that are already set
+  return {
+    spreadsheetId: (process.env.SPREADSHEET_ID || "").trim(),
+    keepTemp: truthy(process.env.IMPORT_KEEP_TEMP),
+    skipDownload: truthy(process.env.IMPORT_SKIP_DOWNLOAD),
+  };
 }

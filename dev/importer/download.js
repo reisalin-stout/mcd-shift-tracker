@@ -3,20 +3,18 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { loadImporterConfig } from "./utils.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // ---- Config ----------------------------------------------------------------
 const KEY_FILE = path.resolve(__dirname, "./credentials.json");
-const CONFIG_FILE = path.resolve(__dirname, "./config.json"); // { "spreadsheetId": "..." }
 export const TEMP_DIR = path.resolve(__dirname, "temp");
 
 function loadSpreadsheetId() {
-  if (process.env.SPREADSHEET_ID) return process.env.SPREADSHEET_ID; // optional override
-  if (!fs.existsSync(CONFIG_FILE)) throw new Error(`Config not found: ${CONFIG_FILE} (copy config.example.json to config.json and set spreadsheetId)`);
-  const { spreadsheetId } = JSON.parse(fs.readFileSync(CONFIG_FILE, "utf8"));
+  const { spreadsheetId } = loadImporterConfig(); // SPREADSHEET_ID from .env.local (or the environment)
   if (!spreadsheetId || spreadsheetId.startsWith("PUT_YOUR")) {
-    throw new Error(`Set "spreadsheetId" in ${CONFIG_FILE}`);
+    throw new Error("SPREADSHEET_ID is not set: copy .env.local.example to .env.local and put the id of the Google Sheet in it");
   }
   return spreadsheetId;
 }

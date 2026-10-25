@@ -1,10 +1,10 @@
-// Main entry:  node dev/importer/import.js   (no command-line options, everything is set in config.json)
+// Main entry:  node dev/importer/import.js   (no command-line options, everything is set in .env.local)
 //   1. downloads each tab of the Google Sheet as CSV into dev/importer/temp (or, with "skipDownload": true
-//      in dev/importer/config.json, uses the CSVs already in temp)
+//      (env var IMPORT_SKIP_DOWNLOAD in .env.local), uses the CSVs already in temp)
 //   2. runs the matching parser for each tab and checks the result
 //   3. backs up the current src/database.json into dev/database/, named after its last-modified time
 //   4. writes the freshly imported data to src/database.json
-//   5. deletes the CSVs from dev/importer/temp, unless "keepTemp": true in dev/importer/config.json
+//   5. deletes the CSVs from dev/importer/temp, unless IMPORT_KEEP_TEMP=true in .env.local
 // If the download or the parsing fails (or yields no categories/products), nothing is touched and temp is kept.
 import fs from "node:fs";
 import path from "node:path";
@@ -86,7 +86,7 @@ function cleanTemp(sheets) {
   console.log("Cleaned up temp files");
 }
 
-// Options come from dev/importer/config.json (skipDownload, keepTemp); the parameters only exist to override them in tests
+// Options come from .env.local (IMPORT_SKIP_DOWNLOAD, IMPORT_KEEP_TEMP); the parameters only exist to override them in tests
 export async function run({
   skipDownload = loadImporterConfig().skipDownload === true,
   keepTemp = loadImporterConfig().keepTemp === true,
@@ -94,7 +94,7 @@ export async function run({
 } = {}) {
   let sheets;
   if (skipDownload) {
-    if (!fs.existsSync(TEMP_DIR)) throw new Error(`skipDownload is true but ${rel(TEMP_DIR)} does not exist: put the CSVs there or set skipDownload to false`);
+    if (!fs.existsSync(TEMP_DIR)) throw new Error(`IMPORT_SKIP_DOWNLOAD is true but ${rel(TEMP_DIR)} does not exist: put the CSVs there or set it to false`);
     sheets = fs
       .readdirSync(TEMP_DIR)
       .filter((f) => f.endsWith(".csv"))
@@ -116,8 +116,8 @@ export async function run({
     console.log(`Wrote ${rel(DB_FILE)} (${db.categories.length} categories, ${db.products.length} products)`);
   }
 
-  // keepTemp (config.json) true: keep the CSVs for debugging; false: delete them
-  if (keepTemp) console.log(`Kept temp files in ${rel(TEMP_DIR)} (keepTemp is true in dev/importer/config.json)`);
+  // keepTemp (IMPORT_KEEP_TEMP) true: keep the CSVs for debugging; false: delete them
+  if (keepTemp) console.log(`Kept temp files in ${rel(TEMP_DIR)} (IMPORT_KEEP_TEMP is true in .env.local)`);
   else cleanTemp(sheets);
 }
 

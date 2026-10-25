@@ -1,94 +1,86 @@
-// Zips the project with ONLY the paths listed in dev/compressor/include.json, so the zip is small and
-// contains no node_modules, dist, backups, etc.
-//   npm run zip                (or: node dev/compressor/compressor.js)
-//   npm run zip:private        (also: npm run zip -- --private; the old names --nocredentials / --noconfig and
-//                               npm run zip:nocredentials still work and mean exactly the same thing)
+// Zips the project from git's point of view. No npm dependencies (the zip is written with node:zlib). Needs a git repository.
 //
-// The zip is always written to dev/compressor/output.zip (git-ignored) and never contains itself.
+//   npm run zip          Everything git knows about (tracked files + new, not yet committed ones) minus what .gitignore
+//                        excludes. Contains no secrets. Written to dev/compressor/output.zip. The default: use this one.
+//   npm run zip:private  The same + the git-ignored paths in ALSO_INCLUDE (the importer CSVs), still without secrets.
+//                        Written to dev/compressor/output.zip. For sending debugging material while editing the data lists.
+//   npm run zip:all      The same as zip:private + the REAL private files (.env.local, dev/importer/credentials.json).
+//                        Written to dev/compressor/output-all.zip, a different file on purpose. For moving the whole
+//                        folder privately; never commit it, never send it to anyone you do not fully trust.
 //
-// include.json:
-//   include  files or folders (relative to the project root); folders are added recursively
-//   exclude  files or folders to leave out even if they are inside an included folder
+// Both zip files are git-ignored (dev/compressor/*.zip) and never contain themselves.
 //
-// Always skipped, whatever include.json says: node_modules and .git folders, every file named credentials.json
-// and dev/importer/config.json (the real private files must never end up in a zip).
-//
-// Private files (dev/importer/credentials.json and dev/importer/config.json, see dev/credentials/stripper.js):
-//   normal zip   gets STRIPPED copies at their real paths (same keys, blanked values), so the required keys are
-//                on record. Do not unzip such a zip back over the project: it would overwrite the real files.
-//   private zip  gets NEITHER file, only the committed credentials.example.json and config.example.json. Use this
-//                one for every zip that leaves your machine or comes back over the project.
-// No npm dependencies: the zip file is written with node:zlib.
+// zip and zip:private never contain a real private file, even one committed by mistake: node_modules and .git, every
+// file named credentials.json, .env.local and any other .env file that is not a .example template, and the old
+// dev/importer/config.json are skipped (the committed .example templates travel instead).
 import fs from "node:fs";
 import path from "node:path";
 import zlib from "node:zlib";
+import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { TARGETS, abs as absOf, stripFile, toJson } from "../credentials/stripper.js";
+import { TARGETS, LEGACY_PRIVATE } from "../credentials/stripper.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "../..");
-const config = JSON.parse(fs.readFileSync(path.join(__dirname, "include.json"), "utf8"));
-const OUTPUT = path.join(__dirname, "output.zip");
-// `npm run zip -- --private` passes an argument; `npm run zip --private` sets an npm env variable
+// `npm run zip -- --all` passes an argument; `npm run zip --all` sets an npm env variable
 const flag = (name) => process.argv.includes(`--${name}`) || process.env[`npm_config_${name}`] === "true";
-const privateZip = ["private", "nocredentials", "noconfig"].some(flag);
+const MODE = flag("all") ? "all" : flag("private") ? "private" : "default";
+const OUTPUT = path.join(__dirname, MODE === "all" ? "output-all.zip" : "output.zip");
+
+// Git-ignored paths added in zip:private and zip:all, because whoever receives the zip needs them (skipped when missing).
+// Keep this list tiny: it is the only thing to maintain.
+const ALSO_INCLUDE = ["dev/importer/temp"]; // the importer's CSVs (they exist when IMPORT_KEEP_TEMP=true)
 
 const NEVER_DIRS = new Set(["node_modules", ".git"]);
 const NEVER_FILES = new Set(["credentials.json"]);
-const NEVER_PATHS = new Set(TARGETS.map((t) => t.rel)); // the real private files, by path
-const norm = (p) => p.split(path.sep).join("/").replace(/^\.\//, "").replace(/\/+$/, "");
-const excluded = (config.exclude || []).map(norm);
-const isExcluded = (rel) => excluded.some((e) => rel === e || rel.startsWith(e + "/"));
-const fail = (msg) => {
+const NEVER_PATHS = new Set([...TARGETS.map((t) => t.rel), ...LEGACY_PRIVATE]); // the real private files, by path
+const isPrivateEnv = (base) => /^\.env(\..+)?$/.test(base) && !base.endsWith(".example"); // .env, .env.local, .env.production.local ...
+function fail(msg) {
   console.error(msg);
   process.exit(1);
-};
+}
 
 // ---- collect files ----
-// relative path (forward slashes) -> { abs } for a file on disk, or { data, mtime } for generated content
+// relative path (forward slashes) -> { abs } for a file on disk
 const files = new Map();
 const skipped = [];
 function collect(rel) {
   const abs = path.join(ROOT, rel);
   const base = path.basename(rel);
-  if (isExcluded(rel)) return skipped.push(rel);
   const st = fs.lstatSync(abs);
   if (st.isDirectory()) {
     if (NEVER_DIRS.has(base)) return skipped.push(rel + "/");
     for (const name of fs.readdirSync(abs).sort()) collect(`${rel}/${name}`);
   } else if (st.isFile()) {
-    if (NEVER_FILES.has(base) || NEVER_PATHS.has(rel) || abs === OUTPUT) return skipped.push(rel);
+    if (NEVER_FILES.has(base) || isPrivateEnv(base) || NEVER_PATHS.has(rel) || abs.startsWith(__dirname + path.sep + "output")) return skipped.push(rel);
     files.set(rel, { abs });
   }
 }
-for (const entry of config.include || []) {
-  const rel = norm(entry);
-  const abs = path.resolve(ROOT, rel);
-  if (abs !== ROOT && !abs.startsWith(ROOT + path.sep)) fail(`"${entry}" is outside the project`);
-  if (!fs.existsSync(abs)) console.warn(`Not found, skipped: ${entry}`);
-  else collect(rel);
-}
-if (!files.size) fail("Nothing to zip: check dev/compressor/include.json");
 
-// ---- private files: stripped copies (never the real files), or nothing in a private zip ----
-const privateNotes = [];
-if ([...files.keys()].some((k) => k.startsWith("dev/importer/"))) {
-  for (const t of TARGETS) {
-    if (privateZip) {
-      privateNotes.push(`${t.name}: no ${t.rel} added (private zip, only ${path.basename(t.template)})`);
-      continue;
-    }
-    // Strip the real file if present, else the committed example, so the zip works on a fresh clone too
-    const source = [t.rel, t.template].map(absOf).find((p) => fs.existsSync(p));
-    try {
-      if (!source) throw new Error(`neither ${path.basename(t.rel)} nor ${path.basename(t.template)} exists`);
-      files.set(t.rel, { data: Buffer.from(toJson(stripFile(source, t.keep)), "utf8"), mtime: new Date() });
-      privateNotes.push(`${t.name}: stripped ${t.rel} added (keys only, no private values)`);
-    } catch (err) {
-      privateNotes.push(`${t.name}: no ${t.rel} added (${err.message})`);
-    }
+// git's own view of the project: tracked + untracked-but-not-ignored files, minus tracked files that .gitignore now matches
+function gitFiles() {
+  const git = (...args) => execFileSync("git", args, { cwd: ROOT, encoding: "utf8", maxBuffer: 1 << 28 }).split("\0").filter(Boolean);
+  try {
+    git("rev-parse", "--is-inside-work-tree");
+  } catch {
+    fail("The zip commands need a git repository (and git installed): run them in your clone.");
+  }
+  const ignoredButTracked = new Set(git("ls-files", "-z", "--cached", "--ignored", "--exclude-standard"));
+  return [...new Set(git("ls-files", "-z", "--cached", "--others", "--exclude-standard"))].filter((f) => !ignoredButTracked.has(f));
+}
+
+for (const rel of gitFiles()) {
+  if (rel.split("/").includes("node_modules") || !fs.existsSync(path.join(ROOT, rel))) continue; // tracked but deleted
+  collect(rel);
+}
+if (MODE !== "default") for (const rel of ALSO_INCLUDE) if (fs.existsSync(path.join(ROOT, rel))) collect(rel);
+const includedSecrets = [];
+if (MODE === "all") {
+  for (const t of TARGETS) { // the real private files, added on purpose (only in this mode)
+    if (fs.existsSync(path.join(ROOT, t.rel))) { files.set(t.rel, { abs: path.join(ROOT, t.rel) }); includedSecrets.push(t.rel); }
   }
 }
+if (!files.size) fail("Nothing to zip: git lists no files");
 
 // ---- minimal zip writer ----
 const CRC_TABLE = Array.from({ length: 256 }, (_, n) => {
@@ -157,6 +149,9 @@ fs.writeFileSync(OUTPUT, Buffer.concat([...parts, centralBuf, end]));
 // ---- summary ----
 const kb = (n) => (n / 1024).toFixed(1) + " KB";
 console.log(`Zipped ${files.size} files (${kb(totalSize)}) into ${path.relative(process.cwd(), OUTPUT) || OUTPUT} (${kb(fs.statSync(OUTPUT).size)})`);
-console.log(`Mode: ${privateZip ? "PRIVATE zip" : "normal zip (stripped copies of private files, do not unzip over the project)"}`);
-for (const n of privateNotes) console.log(`Private files, ${n}`);
+console.log(
+  MODE === "all"
+    ? `Mode: ALL. CONTAINS REAL PRIVATE FILES (${includedSecrets.join(", ") || "none found"}): keep it private, never commit or publish it.`
+    : `Mode: ${MODE === "private" ? "PRIVATE (git files + ALSO_INCLUDE)" : "DEFAULT (git files)"}, no real private files.`,
+);
 if (skipped.length) console.log(`Skipped: ${skipped.join(", ")}`);

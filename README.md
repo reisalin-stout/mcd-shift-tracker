@@ -1,484 +1,322 @@
 # Shift Tracker
 
-A personal, mobile-first web app used by a single McDonald's shift manager to track progress during a shift. It replaces mental notes and paper: it sorts the restaurant by area, records expiration checks and other recurring tasks, and builds a restock list that can be sent as a message and assigned to staff quickly.
+A personal, mobile-first web app for a McDonald's shift manager: it sorts the restaurant by area, tracks expiration checks and recurring tasks, builds a restock list that can be sent as a message, and (new) lets a store's crew share extra-hours requests through a login. Context for anyone (human or AI) developing the project.
 
-This document is context for anyone (human or AI) developing the project. It describes the goals, every implemented feature, the data model, the conventions, and the planned future work.
+## Quick start
+
+```bash
+npm install
+npm run dev          # app on your network (open it on the phone)
+npm run dev:mock     # same, with a FAKE login + database, no Firebase needed (sa-luca / test1234)
+npm test             # rules + mock-backend tests
+npm run build        # production build into dist/
+```
+
+| I want to... | Do this |
+|---|---|
+| Use the real Firebase | Copy `.env.local.example` to `.env.local`, fill it in, then follow [Firebase setup](#7-firebase-login-and-shared-data) (users, `userStores`, rules). |
+| Refresh products from the Google Sheet | One-time setup in [Importer](#6-importer-and-private-files), then `npm run update`. |
+| Send the project to someone (or an AI) | `npm run zip`, then take `dev/compressor/output.zip` (git files minus `.gitignore`, no secrets). While editing the data lists use `npm run zip:private` (also adds the importer CSVs). `npm run zip:all` is for moving the whole folder privately and **contains the real secrets**. |
+| Deploy | Push to `main` (GitHub Pages, see [Deployment](#10-deployment)). Add the Firebase values as Actions variables first. |
+| Change a task, area or daypart | Edit `src/structure.json` (see [Data](#5-data-structurejson-and-databasejson)). |
+| Make saved data reset for everyone | Raise `dataVersion` in `src/config.json`. |
+
+Before finishing any change: `npm test`, `npm run build`, open the app (`npm run dev`) and check there is no red banner and that swipe, long-press, `+`/`−`, both exports and the Extra hours page still work.
 
 ---
 
 ## 1. Goals
 
-- **Speed during a live shift.** Every interaction should be doable one-handed with a thumb (swipe, tap, long-press), with no typing.
-- **Follow the physical layout of the restaurant.** Areas are listed in the exact order the manager walks them (`orderId` in the structure file).
-- **Track two kinds of things per area:**
-  1. **Tasks**: things to check or do (e.g. expiration checks, fryer shutdown). Each ends up completed or resolved.
-  2. **Stock**: items whose quantity is counted and possibly needs restocking.
-- **Produce exports** that can be pasted into a message: open tasks, a restock list, and a prep projection.
-- **Project prep quantities** from an expected guest count, grouped by category with adjustable multipliers (see 5.8). **This page is switched off for now** (`projection: false` in `config.json`, see 4c) while it is being reworked; its code is still in the project.
-- **No data loss in the short term.** All state is persisted in `localStorage`.
-- **Single user, single device, no backend (for now).** Hosted as a static site on GitHub Pages.
+- **Speed during a live shift:** everything one-handed with a thumb (swipe, tap, long-press), no typing.
+- **Follow the restaurant's layout:** areas in the order the manager walks them (`orderId`).
+- **Two kinds of things per area:** *tasks* (checks, each ends completed or resolved) and *stock* (counted items that may need restocking).
+- **Exports** pasteable into a message: open tasks and a restock list.
+- **Local first, with one shared part.** The shift list is single user, single device, in `localStorage`. The **Extra hours** page uses a shared Firebase database with a login per person, each store seeing only its own data. Static site on GitHub Pages.
 
-### Non-goals (for now)
-- No accounts, login, or multi-user support.
-- No backend or database (planned later, see section 9).
-- No editing of the structure from within the UI. The structure is edited in the JSON file.
+Non-goals: public registration (accounts are made by the owner in the Firebase console), syncing the shift list, editing `structure.json` from the UI.
 
----
+## 2. Tech stack and layout
 
-## 2. Tech stack
-
-- **Vite** (vanilla JavaScript, no framework)
-- Plain CSS (`src/style.css`), single dark-header / light-body theme
-- `localStorage` for persistence
-- **GitHub Pages** hosting via a GitHub Actions workflow (`.github/workflows/deploy.yml`)
-- `vite.config.js` uses `base: './'` (relative paths) so it works under any repo name
-- **Node scripts** in `dev/importer/` (not part of the site build) import the product data from a Google Sheet (or CSV files) into `src/database.json`, see section 4d. They use the `googleapis` npm dependency.
-- **Dev tools** (not part of the site): the private-file stripper `dev/credentials/stripper.js` (section 4e) and the project zipper `dev/compressor/compressor.js` (section 4f). Both are dependency-free Node scripts run through npm scripts.
-- **Content and settings live in JSON files** (`structure.json`, `database.json`, `config.json`). Changing them does not require touching `main.js`.
-
-### Project layout
+Vite, vanilla JavaScript (no framework), plain CSS, `localStorage`, Firebase (Auth + Realtime Database) for the shared part, GitHub Pages via GitHub Actions. `vite.config.js` uses `base: './'` so it works under any repo name. Dev tools in `dev/` are dependency-free Node scripts, except the importer (`googleapis`).
 
 ```
-shift-tracker/
-├── index.html                  # Shell: top bar, drawer menu, shift list, projection page, warning banner, toast
-├── package.json                # npm scripts + Vite (its own "version" is unrelated to siteVersion)
-├── package-lock.json
-├── vite.config.js
-├── .gitignore / .gitattributes # .gitignore excludes node_modules, dist, dev/importer/credentials.json, dev/importer/config.json, dev/importer/temp/ and dev/compressor/output.zip
+├── index.html, vite.config.js, package.json
+├── .env.local            NOT in git: Firebase config, login domain, importer options
+├── .env.local.example    committed template of .env.local (generated)
+├── database.rules.json   Realtime Database security rules (paste into the Firebase console)
 ├── .github/workflows/deploy.yml
-├── public/                    # favicon.ico, favicon-16x16.png, favicon-32x32.png, apple-touch-icon.png (linked from index.html, copied to dist as they are)
-├── dev/importer/              # Google Sheet / CSV importer that writes src/database.json, see section 4d
-│   ├── import.js, download.js, utils.js, parsers/
-│   ├── config.json            # NOT in the repo: spreadsheetId + keepTemp + skipDownload (importer settings), see 4d
-│   ├── config.example.json    # committed template: same keys, blanked values (generated, see 4e)
-│   ├── temp/                  # downloaded CSVs, exists only during an import (git-ignored)
-│   ├── credentials.json       # NOT in the repo: Google service-account key, see 4d
-│   └── credentials.example.json # committed template: same keys as credentials.json, blanked values (generated, see 4e)
-├── dev/credentials/           # stripper.js: makes the credentials and config templates, see section 4e
-├── dev/compressor/            # compressor.js + include.json: zips the project (normal or private), output.zip (git-ignored), see section 4f
-├── dev/database/              # automatic backups of previous src/database.json versions (created by the importer)
+├── public/               favicons
+├── dev/importer/         Google Sheet / CSV importer -> src/database.json
+├── dev/credentials/      stripper.js: generates the *.example templates
+├── dev/compressor/       compressor.js: zips the project (zip, zip:private, zip:all)
+├── dev/tests/            npm test
+├── dev/database/         automatic backups of earlier database.json files (importer)
 └── src/
-    ├── main.js                 # All app logic (state, render, gestures, export)
-    ├── style.css
-    ├── structure.json          # Dayparts, areas, tasks, and stock lists (as product slugs), see section 4
-    ├── database.json           # Product catalogue + categories, GENERATED by the importer, see sections 4b and 4d
-    └── config.json             # Site version, data version, storage name, see section 4c
+    ├── main.js           shift list, menu, exports, page switching, wiring of the Firebase UI
+    ├── structure.json    dayparts, areas, tasks, stock lists (Italian strings)
+    ├── database.json     product catalogue + categories, GENERATED by the importer
+    ├── config.json       siteVersion, dataVersion, storageName, projection
+    ├── util.js           $, esc, toast, local-date helpers
+    ├── firebase.js       SDK init from VITE_FIREBASE_* (the only reader of those variables)
+    ├── backend/          index.js picks firebase.js (real) or mock.js (fake, dev/test only)
+    ├── session.js        who is signed in + which store
+    ├── storeDb.js        the only way to read/write shared data (paths start with stores/<storeId>/)
+    ├── names.js, extraHours.js   pure rules, testable in Node
+    └── ui/               account.js (Account page + avatar menu), extraHours.js
 ```
 
 ### Commands
-- `npm install`
-- `npm run dev` (dev server, exposed on the network for testing on a phone)
-- `npm run build` (first refreshes the credentials and config templates, which does nothing for a file that is missing, e.g. on GitHub, then runs `vite build`)
-- `npm run preview`
-- `npm run update` (refreshes the templates, then runs the importer `node dev/importer/import.js`: imports the Google Sheet into `src/database.json`; **no command-line options**, `skipDownload` and `keepTemp` are set in `dev/importer/config.json`), see section 4d
-- `npm run zip:private` (**the one to use for every zip that leaves the machine or comes back over the project**: zips the project into `dev/compressor/output.zip` with **neither `credentials.json` nor `config.json`**, only their `.example.json` templates; `npm run zip:nocredentials` and `npm run zip -- --nocredentials` still work and are the same thing), see section 4f
-- `npm run zip` (same zip, but with *stripped copies* of `credentials.json` and `config.json` at their real paths; never unzip such a zip over the project), see section 4f
 
----
+| Command | What it does |
+|---|---|
+| `npm run dev` / `preview` | Dev server (exposed on the network) / preview of the build. |
+| `npm run dev:mock` | Dev server with the fake Firebase (`src/backend/mock.js`). |
+| `npm run build` | Refreshes the `*.example` templates (skipped for missing files, e.g. on GitHub), then `vite build`. |
+| `npm run build:mock` | Build with the mock into `dist-mock/` (git-ignored), only for browser testing. |
+| `npm test` | `node --test`, no dependencies. |
+| `npm run update` | Refreshes templates, then runs the importer. |
+| `npm run zip` | Zip of everything git sees minus `.gitignore`, no secrets (see [Sharing](#sharing-the-project)). |
+| `npm run zip:private` | Same + the importer CSVs (`ALSO_INCLUDE`), still no secrets. |
+| `npm run zip:all` | Same as `zip:private` + the **real** `.env.local` and `credentials.json`, written to `output-all.zip`. |
 
-## 3. Language convention (important)
+## 3. Conventions
 
-- **All string data in `structure.json` and the product `name` values in `database.json` are Italian and must never be renamed, translated, or "corrected"** without asking the owner first (e.g. `"Scadenza Latte"`, `"Bicchieri Flurry"`). Category names (`Paper`, `Bread`, ...) are English.
-- **Everything else is English:** UI labels, buttons, toasts, code, comments, CSS classes, this document, commit messages.
-- The order of areas, tasks, and stock items must match the order in the JSON. Ids (in `database.json`) are technical, lowercase, and never shown in the UI.
+- **All string data in `structure.json` and product `name`s in `database.json` are Italian and must never be renamed, translated or "corrected"** without asking the owner (e.g. `"Scadenza Latte"`). Category names are English. **Everything else is English** (UI, code, comments, this file, commits).
+- Order of areas, tasks and stock items must match the JSON. Ids (slugs) are technical, lowercase, never shown in the UI.
 
----
+## 4. Settings: `src/config.json` and `.env.local`
 
-## 4. Data source: `structure.json`
+```json
+{ "siteVersion": "1.1.0", "dataVersion": "1.0.0", "storageName": "mcd-shift-companion", "projection": false }
+```
 
-Top-level keys are **dayparts**. Each daypart contains one reserved **`info`** key (display name and timeframe) plus its **areas**, keyed by an id.
+| Key | Meaning |
+|---|---|
+| `siteVersion` | Shown at the bottom of the drawer. Bump only for major content changes; no effect on saved data. |
+| `dataVersion` | Version of the saved-data format. If the saved version is missing or **lower**, all of the app's saved data is wiped at startup (no migrations, ever). Bump only for breaking changes of the saved shape. |
+| `storageName` | Prefix of every `localStorage` key (`<storageName>:...`; the origin is shared with other projects). **Changing it orphans all saved data.** |
+| `projection` | `true` shows the Projection page; currently `false` (see [Projection](#projection-page-switched-off)). |
+
+Versions are dotted numbers compared part by part (`0.9.0` < `1.0.0` < `1.10.0`).
+
+**Which file for what:** `config.json` is public and versioned with the code (anything that must change together with a commit). `.env.local` is private/per machine and git-ignored; only its blanked template `.env.local.example` is committed. Do not move `dataVersion`/`siteVersion` into `.env.local`. Variables already set in the environment win over the file.
+
+| `.env.local` key | Meaning |
+|---|---|
+| `VITE_FIREBASE_API_KEY`, `_AUTH_DOMAIN`, `_DATABASE_URL`, `_PROJECT_ID`, `_APP_ID` | Required for login/database (Firebase Console, Project settings, Your apps). Not secret (they ship inside the site); security comes from `database.rules.json`. If one is missing the app still starts and the Account page lists what is missing. |
+| `VITE_FIREBASE_STORAGE_BUCKET`, `_MESSAGING_SENDER_ID` | Part of the Firebase config, unused so far. |
+| `VITE_AUTH_EMAIL_DOMAIN` | Appended to the typed username (`sa-luca` -> `sa-luca@shift.local`). Default `shift.local`; must match the accounts in Firebase. |
+| `SPREADSHEET_ID` | Google Sheet id for the importer. |
+| `IMPORT_KEEP_TEMP`, `IMPORT_SKIP_DOWNLOAD` | Importer options (`true`/`false`, empty = false). |
+
+Only `VITE_*` keys reach the browser.
+
+## 5. Data: `structure.json` and `database.json`
+
+### `structure.json`
+
+Top-level keys are **dayparts**; each has a reserved **`info`** key plus its **areas**.
 
 ```json
 {
   "afternoon-1": {
     "info": { "name": "Afternoon", "timeframe": "14:00 - 16:00" },
-    "mccafe": {
-      "orderId": 1,
-      "name": "McCafe",
-      "tasks": ["Ordine", "Scadenza Latte"],
-      "stock": ["cups-flurry"]
-    }
-  },
-  "afternoon-2": {
-    "info": { "name": "Afternoon", "timeframe": "16:00 - 18:00" },
-    "management": { "orderId": 2, "name": "Management", "tasks": ["DFS"], "stock": [] }
+    "mccafe": { "orderId": 1, "name": "McCafe", "tasks": ["Ordine", "Scadenza Latte"], "stock": ["cups-flurry"] }
   }
 }
 ```
 
 | Field | Meaning |
 |---|---|
-| Daypart key (`afternoon-1`, `afternoon-2`, `afternoon-3`) | A part of the day. Different dayparts have different areas/tasks. The key is technical (it is part of the saved-data keys) and is **not** used for display. |
-| `info` (inside a daypart) | **Reserved key**, so no area may be called `info`. `name` (required) is the daypart's display name; `timeframe` (optional, free text such as `"14:00 - 16:00"`) is shown next to it. The app never reads times from it, it is display only. If `timeframe` is set, do not repeat the time inside `name`. A daypart without `info.name` shows its raw key and triggers a red warning banner. |
-| Area key (`mccafe`, `side-2`, ...) | Stable id used in stored state. **Do not change keys casually**, as they are part of the storage keys of saved data. |
-| `orderId` | Sort order of areas (ascending). Sort is stable, so ties keep file order. |
-| `name` | Display name (Italian/brand names, shown as-is). |
-| `tasks` | Ordered list of task names. |
-| `stock` | Ordered list of **product slugs** and nothing else (the `slug` field in `database.json`; may be empty). The name, the code and the count step (`increment`) all come from the database, see 4b. These are the items of the area's **Restock dropdown** (5.3). The same product may appear in several areas (e.g. `jug-in-box-stock`); each area keeps its own count. |
+| Daypart key (`afternoon-1`) | Technical id (part of the saved-data keys), not shown. |
+| `info` | Reserved (no area may be called `info`). `name` is required (a daypart without it shows its raw key and triggers the red banner); `timeframe` is optional display text only (never parsed; do not repeat it in `name`). |
+| Area key (`mccafe`) | Stable id used in saved state. **Do not change casually.** |
+| `orderId` | Ascending sort order of areas (stable). |
+| `name` | Display name (Italian/brand, shown as is). |
+| `tasks` | Ordered task names. Identity is `"<areaKey>\|<task name>"`: renaming a task orphans its state for the day. |
+| `stock` | Ordered **product slugs** only (name, code and `+`/`−` step come from the database). Identity is `"<areaKey>\|<slug>"`; the same product may appear in several areas, each keeps its own count. Called **Restock** in the UI. |
 
-Notes:
-- Areas with both empty `tasks` and `stock` never render anything.
-- The key is still called `stock` (it is part of the saved-data shape); in the UI the list is called **Restock**.
-- `floor` (16) and `management` (17) in `afternoon-1` now have distinct `orderId`s.
-- Stock slugs that are not in `database.json` show the raw slug and trigger the red banner. After the big database update these are still unresolved in `afternoon-1`: `mcfizz`, `toppings`, `sprinkles`, `tomatoes` and `sauce-promotion` (no obvious match in the sheet; the owner will fix them in a later update, until then the red banner lists them). The other old slugs were remapped to the sheet's new ones.
-- Task identity is `"<areaKey>|<task name>"` (renaming a task orphans its saved state for the day; tasks are planned to move to ids later). Stock identity is `"<areaKey>|<productSlug>"`, so renaming a product's `name` is safe, but changing its `slug` is not.
+Areas with no tasks and no stock render nothing.
 
-## 4b. Data source: `database.json`
+### `database.json`
 
-The single catalogue of products and categories, referenced by slug from `structure.json` (stock lists) and used by the projection tab. **`src/database.json` is generated by the importer (section 4d) from the owner's Google Sheet, which is the source of truth for this data.** The shape below is the standard; the importer's parsers produce it. A manual edit is possible (for example to override bad data), but the next import overwrites the file (the previous version is always backed up in `dev/database/`).
+The catalogue of products and categories. **Generated by the importer from the owner's Google Sheet (the source of truth)**; edit the sheet and re-import rather than editing the file.
 
 ```json
 {
-  "categories": [
-    { "id": 1, "slug": "paper-paper", "name": "Paper", "macro": "Paper", "adjustment": 100 }
-  ],
-  "products": [
-    { "slug": "cups-flurry", "code": "6373/640", "name": "Bicchieri Flurry", "category": "paper-cups", "yield": 54, "increment": 1 }
-  ]
+  "categories": [{ "id": 1, "slug": "paper-cups", "name": "Paper", "macro": "Paper", "adjustment": 100 }],
+  "products": [{ "slug": "cups-flurry", "code": "6373/640", "name": "Bicchieri Flurry", "category": "paper-cups", "yield": 54, "increment": 1 }]
 }
 ```
 
-- **`categories`** (array, **array order = category order** in the projection and the restock export):
-  | Field | Meaning |
-  |---|---|
-  | `id` | Unique number from the sheet. Not used by the app yet. |
-  | `slug` | Unique string. **This is the category's identity**: products refer to it and the saved per-day Adj % overrides are keyed by it. Never change it once in use. |
-  | `name` | Display name (shown in the projection and exports). |
-  | `macro` | Higher-level grouping from the sheet (e.g. `Frozen`, `Fresh`). Not used by the app yet. |
-  | `adjustment` | Default Adj % of the whole category (100 = no change), see 5.8. |
-- **`products`** (every product has every field):
-  | Field | Meaning |
-  |---|---|
-  | `slug` | Unique string (the sheet's Slug column), the **product's identity**: stock lists in `structure.json`, saved stock counts and projection overrides all refer to it, and the app looks products up by it (`bySlug`). Products have no numeric id, only categories do. **Never change a slug once in use** (saved counts and projection overrides are keyed by it). Do not use a hash of the data: it would change whenever a yield or increment is edited. |
-  | `code` | Product code as printed on the box (string, e.g. `"6373/640"`). Empty if not set. Shown small under the product name in the Restock dropdown. **An empty code or the sheet's placeholder `MISSING` is shown as `MISSING` in bold dark red-grey**, so that codes still to be entered are easy to spot. |
-  | `name` | Italian display name. **If the sheet's Name is empty the importer uses the slug as the name** (and warns), so the product still shows up; the app also falls back to the slug when a name is empty. |
-  | `category` | The `slug` of a category (may be empty). |
-    | `yield` | How many units one box/package contains. `0` = unknown. Used by the projection to compute boxes. |
-  | `increment` | How much one tap of `+` / `−` changes the restock count of this product (e.g. `1`, `0.5` for half boxes, `25` for trays of bags). Defaults to `1` when empty. **A negative value (`-1`) marks a "fill" product** (currently 12, e.g. the toppings, onion prep, pickles and salad dressings): it is not counted in units but refilled ("the bottle is half empty, go get the large can and refill it"), so the app shows a **Fill** button instead of `−`/`+` (see 5.3). `0` is invalid and counts as 1 (the importer warns). |
-- **Projection membership (open issue):** the `weight` field was removed from the sheet and the importer, but the projection tab (5.8) still lists only products with `weight > 0`, so the projection would be empty. It is therefore switched off (`projection: false` in `config.json`, see 4c) until the owner reworks it. The code stays in `main.js` and `index.html`.
-- **Startup check (`validate()`):** a red banner under the top bar lists dayparts without `info.name`, categories without a slug or with a duplicate slug, products without a slug, duplicate product slugs, products whose category slug does not exist, and stock slugs in `structure.json` that do not exist in the database (also logged with `console.error`). Unknown product slugs and unknown category slugs are shown raw, so the typo is visible; in the restock export, products without a (known) category land at the end without a header.
-- **Products not referenced by any stock list** are valid: they only appear in the projection (if they have a weight).
-- **Current content:** the committed `src/database.json` was imported from the sheet (10 categories, 98 products). Product slugs are English (`cups-flurry`, `bun-royal`, `sauce-bigmac`, ...) and names are Italian. **The products now use new category slugs (`paper-cups`, `fresh-sauce-core`, `frozen-bun-core`, ...) but the imported Categories tab still has the old ones (`paper-paper`, `sauce-fresh`, ...)**, so every product's category is unknown (red banner, no category headers in the restock export) until the Categories tab is updated to match., which is expected for now (the red banner stays on purpose and will be cleared in a later update). Four sheet rows have a Slug and Code but no Name (`food-ham`, `food-baconslices`, `food-saladmix`, `food-baconcooked`): they are imported with the slug as their name until the sheet gets real names. **Whenever the sheet's slugs change, every slug in the `stock` lists of `structure.json` must be updated to match them**, otherwise those rows show the raw slug and the red banner lists them (the importer prints a warning with the missing slugs).
-- **Adding a product:** add a row to the sheet's Products tab and run the importer, then put its slug in the `stock` list of the relevant area(s) in `structure.json`; the Increment decides the `+`/`−` step.
+- **Categories** (array order = display order in the restock export): `slug` is the identity (never change once in use); `name` display; `id`, `macro` and `adjustment` are stored but unused while the Projection is off.
+- **Products:** `slug` is the identity (stock lists and saved counts refer to it; never change it once in use, never derive it from data); `name` Italian (an empty name falls back to the slug); `code` as printed on the box (empty or `MISSING` is shown as bold **MISSING**); `category` a category slug; `yield` units per box (0 = unknown); `increment` is the step of one `+`/`−` tap (default 1, e.g. `0.5`, `25`). **`increment` below 0 (`-1`) marks a "Fill" product**: not counted, refilled, so the app shows a Fill button instead of `−`/`+`. `0` is invalid and counts as 1.
+- **Startup check (`validate()`):** a red banner under the top bar lists dayparts without `info.name`, categories without or with duplicate slugs, products without or with duplicate slugs, unknown category slugs, and stock slugs missing from the database (also `console.error`). Unknown slugs are shown raw so typos are visible.
+- **Whenever the sheet's slugs change, update the slugs in the `stock` lists of `structure.json`** (the importer warns with the missing ones). Some stock slugs are known to be unresolved right now, so the banner may show; that is expected until the owner updates them.
 
----
+## 6. Importer and private files
 
-## 4c. Settings: `config.json`
+### Importer (`dev/importer/`)
 
-```json
-{
-  "siteVersion": "1.0.0",
-  "dataVersion": "1.0.0",
-  "storageName": "mcd-shift-companion",
-  "projection": false
-}
-```
+Development-only tool that reads the Google Sheet and writes `src/database.json`. **No command-line options**; behaviour comes from `.env.local`.
 
-| Key | Meaning |
-|---|---|
-| `siteVersion` | Shown at the bottom of the drawer (`v1.0.0`), to check which version is running on the phone. Bump it only when major content is introduced or changed, not on every update. It has no effect on saved data. |
-| `dataVersion` | Version of the saved-data format. Bump it only on large updates that change the shape of the saved data (like the move to slugs). If the data saved in the browser has a **lower** version, or none, all of the app's saved data is wiped on startup (see 5.7). |
-| `projection` | `true` shows the Projection page (drawer section and page, 5.8), `false` hides it. Currently `false`: the page is being reworked. The code stays in the project, so setting it back to `true` is all it takes, but it needs product weights, which the database no longer has (see 4b). Optional: a missing key counts as `false`. |
-| `storageName` | Name that prefixes every `localStorage` key of the app (`<storageName>:...`). `localStorage` is shared by every project on the same `github.io` origin, so this keeps the app's data separate. **Changing it makes the app ignore all data saved under the old name** (the old keys are left in the browser, never read or deleted by the app). |
+**One-time setup (per machine):**
+1. Google Cloud Console: create a project, enable the **Google Sheets API**, create a **service account** and download a **JSON key**.
+2. Save it as `dev/importer/credentials.json` (secret, git-ignored).
+3. Share the sheet (Viewer) with the service account's `client_email`.
+4. Copy `.env.local.example` to `.env.local` and set `SPREADSHEET_ID`.
 
-The `"version"` field in `package.json` is a separate npm field and is not used by the app.
+**Run:** `npm run update` (or `node dev/importer/import.js`; `node dev/importer/download.js` only downloads the CSVs).
 
-Versions are dotted numbers (`"1.0.0"`), compared part by part (`0.9.0` < `1.0.0` < `1.10.0`). `siteVersion`, `dataVersion` and `storageName` are required.
+A run: downloads every tab to `dev/importer/temp/<Tab>.csv` (skipped with `IMPORT_SKIP_DOWNLOAD=true`, which parses the CSVs already there); runs the parser for each tab (tabs without a parser are skipped with a warning); **stops with an error and changes nothing** if a tab is missing or empty; if the data differs, backs up the current file to `dev/database/database-<last-modified>.json` and writes `src/database.json`; deletes `temp/` unless `IMPORT_KEEP_TEMP=true` (always kept when a run fails).
 
-## 4d. Importer: `dev/importer/` (Google Sheet / CSV to `src/database.json`)
+Parsers (`parsers/`): `categories.js` (tab `Categories`: `Name, ID, Slug, Macro, Adjustment`; rows without name, with missing/duplicate ID or slug are skipped; adjustment defaults to 100) and `products.js` (tab `Products`: `Name, Code, Slug, Category, Yield, Increment`; empty name falls back to the slug, duplicate slugs skipped, negative increments kept). To support a new tab add `parsers/<name>.js` exporting `{ tab, key, parse(filePath) }`, register it in `import.js`, and teach the app the new key. Restore an older database by copying a file from `dev/database/` over `src/database.json`.
 
-A development-only Node tool (not bundled into the site) that is **the way database data enters the project**: it reads the owner's Google Sheet and commits the result to `src/database.json`. Run it with `npm run update` (or directly with the commands below) from the project root after `npm install` (it needs the `googleapis` dependency):
+### Private-file templates (`dev/credentials/stripper.js`)
+
+Two files are private and never committed: `dev/importer/credentials.json` and `.env.local`. The stripper turns each into a committed **template with the same keys and blanked values**: `credentials.example.json` (JSON: strings become `""`, numbers `0`, booleans `false`; the public Google constants such as `type` and `token_uri` are kept) and `.env.local.example` (`KEY=value` becomes `KEY=`; `VITE_AUTH_EMAIL_DOMAIN` is kept). For the env file **the committed template is the master for comments and order**: regenerating blanks the values and only appends keys the template does not have yet.
+
+It runs at the start of `npm run build` and `npm run update`, rewrites a template only when it changed, and never fails a script (a missing real file, as on GitHub, is just a one-line note). To protect another private file add it to `TARGETS` in `stripper.js` and to `.gitignore`.
+
+### Sharing the project
+
+The zip commands (`dev/compressor/compressor.js`, no dependencies) build the file list from **git**: every tracked file plus new, not-yet-committed files, minus what `.gitignore` excludes (including files committed before being ignored). There is no list to maintain, and they need a git repository. Output goes to `dev/compressor/` (both zip files are git-ignored, no wrapper folder).
+
+| Command | Contains | Output | Use |
+|---|---|---|---|
+| `npm run zip` | git files minus `.gitignore`; no secrets (only the `.example` templates) | `output.zip` | The default: sharing with an AI or anyone, safe to unzip over the project. |
+| `npm run zip:private` | the above + `ALSO_INCLUDE` (the importer CSVs in `dev/importer/temp/`, present when `IMPORT_KEEP_TEMP=true`) | `output.zip` | Sending debugging material while editing the data lists. Still no secrets. |
+| `npm run zip:all` | the above + the **real** `.env.local` and `dev/importer/credentials.json` | `output-all.zip` | Moving the whole folder privately. **Contains secrets: never commit, publish or send it to anyone you do not fully trust.** A different file name on purpose, so it cannot be mistaken for the safe one. |
+
+`ALSO_INCLUDE` at the top of `compressor.js` is the only list to maintain: git-ignored paths that `zip:private` / `zip:all` add anyway (currently just `dev/importer/temp`). In `zip` and `zip:private` these are never zipped even if committed by mistake: `node_modules`, `.git`, any `credentials.json`, `.env.local` and other non-`.example` `.env*` files, and the old `dev/importer/config.json`.
+
+## 7. Firebase: login and shared data
 
 ```
-node dev/importer/import.js     # the import: download (or reuse), parse, back up, write, clean up
-node dev/importer/download.js   # only download the CSVs into dev/importer/temp
+ui/*.js -> session.js (who am I, which store) -> storeDb.js (stores/<storeId>/...) -> backend/index.js -> backend/firebase.js (real)
+                                                                                                       or backend/mock.js     (fake)
 ```
 
-**The importer has no command-line options** (any arguments are ignored). Its behaviour is set in `dev/importer/config.json` (see the table below): `skipDownload` (reuse the CSVs already in `temp/` instead of downloading, no Google access needed) and `keepTemp` (keep or delete the CSVs afterwards).
-
-**What a run does, in order**
-1. Unless `skipDownload` is `true` in `config.json`, `download.js` fetches every tab of the spreadsheet and saves each as `dev/importer/temp/<Tab name>.csv` (numbers are fetched unformatted, so locale formats like `1.234,5` do not matter). Any CSVs already in `temp/` are deleted first, so kept files from an earlier run are replaced by the fresh download. With `skipDownload: true` this step is skipped and the CSVs already in `temp/` are parsed instead (the run stops with an error if `temp/` does not exist).
-2. `import.js` runs the parser whose `tab` matches each CSV name (case-insensitive; tabs without a parser are skipped with a warning) and checks the result. If a tab is missing or yields nothing, **it stops with an error and nothing is changed**, so a good `database.json` is never replaced by an empty one. It only warns about products with unknown category slugs and about product slugs used in `structure.json` that are not in the imported data.
-3. If the new data differs from the current `src/database.json`, the current file is **copied to `dev/database/database-YYYY-MM-DD_HH-mm-ss.json`**, named after the file's *last-modified* date/time (local time; a `-2`, `-3`... suffix is added if that name exists). If the data is identical, nothing is written and no backup is made.
-4. The new data is written to **`src/database.json`** (2-space JSON, trailing newline). If the data looks wrong, restore a backup from `dev/database/` or edit the file by hand, and fix the sheet.
-5. The setting **`keepTemp` in `dev/importer/config.json`** decides what happens to the CSVs in `temp/`: `true` keeps them (handy for debugging or for sharing them), `false` deletes them (and the folder when empty). This applies to `skipDownload` runs too, so keep it `true` if you want to re-run on the same CSVs. When a run fails the CSVs are always kept. A missing `keepTemp` counts as `false`.
-
-**Files**
-| File | Purpose |
+| File | Role |
 |---|---|
-| `import.js` | Entry point (also exports `run()`). The `parsers` array registers one parser per tab type. |
-| `download.js` | Google Sheets download (read-only scope). |
-| `utils.js` | CSV parser, `readCsvObjects()` (rows as objects with lower-cased, trimmed headers, empty rows dropped), `toNumber()` (accepts `1,5` and `1.5`), `slugify()`. |
-| `parsers/categories.js` | Tab `Categories`, columns `Name, ID, Slug, Macro, Adjustment`. Rows without a name are skipped, as are rows with a missing or duplicate numeric `ID` or a missing or duplicate `Slug`. `Adjustment` defaults to 100. Output key `categories`: `[{ id, slug, name, macro, adjustment }]`. |
-| `parsers/products.js` | Tab `Products`, columns `Name, Code, Slug, Category, Yield, Increment`. Output `slug` is the `Slug` column (a slug of the name if blank), duplicate slugs are skipped, `Category` is the slug of a category, `Code` defaults to `""`, `Yield` defaults to 0 and `Increment` to 1 (negative values are kept: they mean "fill"). **An empty `Name` falls back to the slug** (one warning lists those products); a row with neither Name nor Slug is skipped with a warning; one warning lists products whose `Increment` is 0. Output key `products`: `[{ slug, code, name, category, yield, increment }]`. |
-| `config.json` | **Private, never committed** (listed in `.gitignore`, because it holds the spreadsheet id; the compressor also never puts the real file in a zip). All importer settings (there are no command-line options). Not the same file as `src/config.json`, which is public. Keys: `spreadsheetId` (the id from the sheet's URL; the env var `SPREADSHEET_ID` overrides it), `keepTemp` (`true` keeps the CSVs in `temp/` after a successful run, `false` or missing deletes them), `skipDownload` (`true` parses the CSVs already in `temp/` instead of downloading, `false` or missing downloads). |
-| `credentials.json` | **Secret, never committed** (listed in `.gitignore`), see below. |
-| `credentials.example.json` | Committed template of `credentials.json` (same keys, blanked values), generated by `dev/credentials/stripper.js`, see 4e. |
-| `config.example.json` | Committed template of `config.json` (`spreadsheetId` blank, `keepTemp` and `skipDownload` false), generated by the same script, see 4e. |
+| `src/firebase.js` | Initialises the SDK from `VITE_FIREBASE_*`; exports `configured` / `missingConfig` (no config = no SDK start and a notice, not a crash). Login is persisted on the device. |
+| `src/backend/index.js` | Picks the implementation. Interface: `onAuthChange`, `signIn`, `signOut`, `getValue`, `watchList` (live list, optional `orderBy` + `startAt`), `push`, `update`, `remove`. Errors carry a normalised `code` (`permission-denied`, `bad-credentials`, `too-many-requests`, `network`, `user-disabled`, `unknown`). |
+| `src/backend/firebase.js` | Real Auth (Email/Password) + Realtime Database. The only file besides `firebase.js` that imports the SDK. |
+| `src/backend/mock.js` | Fake backend (memory + `localStorage`, survives reloads) that also imitates the rules. Accounts, password `test1234`: `sa-luca` (store SolbiateArno), `ca-michele` (Castellanza), `sa-nostore` (no store). Only included in Vite mode `mock`, so `npm run build` never contains it. |
+| `src/session.js` | Status `unconfigured / loading / out / nostore / in`. After login the **store id is read from `userStores/<uid>`**, never from anything typed. |
+| `src/storeDb.js` | `watchList/getValue/push/update/remove` with store-relative paths; adds `stores/<storeId>/` itself and refuses to run without a store. |
+| `database.rules.json` | A user reads only `userStores/<own uid>`; reads/writes `stores/<id>` only if `userStores/<uid>` equals `<id>`; clients never write `userStores`; `extraHoursRequests` is validated (fields, lengths, status values, `createdBy` = signed-in user) and indexed on `day`. |
 
-To support a new tab, add `parsers/<name>.js` exporting `{ tab, key, parse(filePath) }` and add it to the `parsers` array in `import.js`. The app must then be taught to use the new key.
+Data model:
 
-**Setting up Google credentials (needed once per machine)**
-1. In Google Cloud Console, create a project and enable the **Google Sheets API**.
-2. Create a **service account** and add a **JSON key** to it. Google downloads a JSON file.
-3. **Rename that file to `credentials.json` and put it at `dev/importer/credentials.json`.** It is a secret and is git-ignored, so each person who clones the repo must create their own. Never commit it or paste it anywhere.
-4. Open the spreadsheet and **share it (Viewer is enough) with the service account's email** (the `client_email` inside the JSON file). Without this the download fails with a permission error.
-5. **Copy `dev/importer/config.example.json` to `dev/importer/config.json`** (git-ignored, so each clone has its own) and put the spreadsheet id in it.
+```
+userStores/<firebase uid>: "SolbiateArno"                     (set by hand in the console)
+stores/SolbiateArno/extraHoursRequests/<pushId>: { day, name, originalHours, nextHours, status, createdAt, createdBy, updatedAt? }
+```
 
-To see which keys the files must contain, open `dev/importer/credentials.example.json` and `dev/importer/config.example.json` (section 4e). If `config.json` is already tracked by git from before it was ignored, run `git rm --cached dev/importer/config.json` once.
+**Tests:** `npm test` covers the pure rules and the mock backend (wrong password, persistence, own mapping only, cross-store read/write/update/delete denied, `userStores` not writable, no-store account blocked, "from today" query, validation). The mock only *imitates* the rules, so check the real ones in Firebase (step 5 below).
 
----
+### Firebase setup (once)
 
-## 4e. Private-file templates: `dev/credentials/stripper.js`
+1. **Config:** Firebase Console, Project settings, Your apps: copy the values into `.env.local`. Open the app, Account page: it should show the sign-in form.
+2. **Users:** Authentication, enable Email/Password, add users `sa-luca@shift.local`, ... (the domain must equal `VITE_AUTH_EMAIL_DOMAIN`). Copy each **UID** (also shown on the user's Account page).
+3. **Mappings:** Realtime Database, add `userStores/<UID>` = store id (letters, digits, `-`, `_`; e.g. `SolbiateArno`). A new store needs no rules change.
+4. **Rules:** Realtime Database, Rules: paste `database.rules.json`, Publish. Old data outside `stores/` becomes unreachable (migrate or ignore).
+5. **Test the rules** (Rules Playground, as *authenticated* with the stated UID):
 
-Two files are private and never committed: `dev/importer/credentials.json` (the Google service-account key) and `dev/importer/config.json` (importer settings, including the id of the Google Sheet). The repo should still record which keys the project needs, so the stripper turns each real file into a **template with the same keys and blanked values**, safe to commit and to put in zips.
+| Simulate | Path | Expected |
+|---|---|---|
+| read, Luca | `/userStores/<Luca UID>` | allowed |
+| read, Luca | `/userStores/<Michele UID>` or `/userStores` | **denied** |
+| write, Luca | `/userStores/<Luca UID>` | **denied** |
+| read, Luca | `/stores/SolbiateArno/extraHoursRequests` | allowed |
+| read or write, Luca | `/stores/Castellanza/...` | **denied** |
+| read, unauthenticated | `/stores/SolbiateArno` | **denied** |
+| write, Luca, own store, `{day:"2026-10-25",name:"A",nextHours:"10-12",status:"pending",createdAt:1,createdBy:"<Luca UID>"}` | `/stores/SolbiateArno/extraHoursRequests/x` | allowed |
+| same with `status:"hacked"` or an extra field | same path | **denied** |
 
-| Real file (private, git-ignored) | Template (committed) |
-|---|---|
-| `dev/importer/credentials.json` | `dev/importer/credentials.example.json` |
-| `dev/importer/config.json` | `dev/importer/config.example.json` |
+Then sign in as each user in the app and confirm each sees only their own store.
 
-- **Stripping rules:** strings become `""`, numbers `0`, booleans `false`, `null` stays `null`, arrays and objects keep their structure. For credentials the keys `type`, `auth_uri`, `token_uri`, `auth_provider_x509_cert_url` and `universe_domain` keep their value because they are the same public constants in every Google service-account key; this list is `KEEP_CREDENTIALS` in `stripper.js`. Everything else is blanked. In `config.json` **everything** is blanked, so the template always reads `{ "spreadsheetId": "", "keepTemp": false, "skipDownload": false }` and does not change when you flip a setting.
-- **`node dev/credentials/stripper.js`** rewrites every template whose real file exists. It only rewrites a file when the content changed, and prints a line when it did. It runs automatically at the start of `npm run build` and `npm run update`.
-- **It never fails a script:** if a real file is missing (a fresh clone, or the GitHub Actions build) it only prints a one-line note and leaves that template alone; if a file is not valid JSON it only prints a warning.
-- **Zips:** `dev/compressor/compressor.js` imports `TARGETS`, `stripFile()` and `toJson()` from this file (section 4f). `TARGETS` is the list of `{ name, rel, template, keep }` entries; to protect another private file, add an entry there (and to `.gitignore`).
+6. **GitHub:** add the variables (see [Deployment](#10-deployment)).
 
----
+Troubleshooting: *"Wrong username or password"* with correct values usually means the user's email is not `<username>@<VITE_AUTH_EMAIL_DOMAIN>`. *"This account is not allowed to do that"*: check the `userStores` mapping and that the rules are published. Console warning *"Using an unspecified index"*: `.indexOn: ["day"]` is missing from the published rules.
 
-## 4f. Sharing the project: `dev/compressor/`
+## 8. Features
 
-A development-only tool that creates a small zip of the project (for example to upload it to an AI assistant) without `node_modules`, `dist`, database backups or other bulk. Run **`npm run zip`**; it has no npm dependencies (the zip is written with `node:zlib`).
+### Shift list
+- One full-width list, sticky top bar (daypart name + `timeframe · date`, ☰ at the left, account avatar at the right). Each area is a section: **tasks first, then the Restock dropdown**. Areas with nothing open are hidden; completed items go to the **Done** block at the bottom (same area order), and "Everything in this daypart is done." shows when nothing is open.
+- **Tasks:** swipe **right** = completed (green), swipe **left** = resolved (red, an issue was found and fixed); threshold 90px, mostly-horizontal gestures only (vertical scrolling is kept). **Tap a row in Done to undo.**
+- **Restock dropdown** (starts closed; open state is kept in memory only): header shows `Restock`, an amber badge with the number of items above 0, the item count and a chevron; a **Close Restock** row at the bottom closes it without scrolling back up. Each item: `−` left, `+` right, amount, name, and the code in small grey text. Taps change the amount by the product's `increment` (shown on the buttons when not 1), never below 0, fractions rounded to 2 decimals, saved immediately, patched in place (no re-render). **Fill products** have no number and a single **Fill** button (tap = flagged amber `✓ Fill`, amount 1; tap again clears). **Long-press (500ms) on a row** sends it to Done *keeping its amount* (not if the finger moves more than 10px); in Done, stock rows keep `+`/`−` and a tap on the middle moves them back.
+- **Day and daypart:** on load, the app takes the local date and the remembered daypart. Each daypart has independent state per day. When the app returns to the foreground on a new date it switches to a fresh state.
 
-- **Output:** always `dev/compressor/output.zip` (git-ignored, replaced on every run, never included in itself). The zip has no wrapper folder (files at its root).
-- **`dev/compressor/include.json`:** `{ "include": [...], "exclude": [...] }`.
-  | Key | Meaning |
-  |---|---|
-  | `include` | The **only** files and folders that go into the zip (paths relative to the project root, forward slashes; folders are added recursively; dotfiles such as `.github` must be listed explicitly). A path that does not exist is skipped with a warning; a path outside the project stops the script. |
-  | `exclude` | Files or folders to leave out even if they are inside an included folder (currently none). |
-  The default list covers the config files, `README.md`, the dotfiles, `.github`, `public`, `src`, `dev/importer` (including `dev/importer/temp/`, so CSVs kept with `keepTemp` travel with the zip for debugging), `dev/credentials` and `dev/compressor`. It leaves out `dev/database/` (old backups). **When a file or folder is added to the project, add its path to `include.json`, or it will not be in the zip.**
-- **Always skipped,** whatever `include.json` says: any `node_modules` or `.git` folder, **every file named `credentials.json`** and **`dev/importer/config.json`**, so the real Google key and the real spreadsheet id can never end up in a zip.
-- **Two modes** for the two private files (`credentials.json` and `config.json`, section 4e):
-  - **`npm run zip:private`: the private zip. Use it every time a zip leaves the machine or will be unzipped back over the project** (for example one sent to or returned by an AI assistant). It contains **neither file**, only `credentials.example.json` and `config.example.json`, so unzipping it can never overwrite the real ones. The same mode can be reached with `npm run zip -- --private`, `npm run zip --private` (npm turns the flag into the environment variable `npm_config_private`, which may stop working in a future npm version), and the older names `npm run zip:nocredentials`, `--nocredentials` and `--noconfig`, which all mean exactly this (they now wipe **both** files).
-  - **`npm run zip`: the normal zip.** It adds **stripped copies** of both files at their real paths (made from the real file, or from the `.example.json` when the real one does not exist), so the zip shows which keys are needed. The real values are never read into the zip. Never unzip a normal zip over the project, it would replace the real files with blanked ones.
-- The script prints the number of files, the sizes, a `Mode:` line, one `Private files` line per private file saying what happened to it, and the skipped paths. If a file is invalid JSON, or neither it nor its example exists, nothing is added for it and the reason is printed.
+### Menu (drawer)
+Opened with ☰, closed by tapping the overlay. **Dayparts** (accordion section): daypart selector (name + `timeframe`; remembered as `<storageName>:daypart`, defaults to the first, no time-based auto selection), **Copy open tasks** (grouped by area) and **Copy restock list** (every item above 0, done or not, as `x<amount> <name>`, Fill products as `Fill <name>`, amounts of the same slug summed across areas, grouped by category name in `categories` order, products without a known category at the end without a header). Copy toasts: "Open tasks copied" / "No open tasks", "Restock list copied" / "Nothing to restock"; a successful copy closes the drawer. **Extra hours** and **Account** are plain entries that open their page. **Clear website data** (bottom; two taps, "Tap again to confirm", disarms after 4s) deletes every `localStorage` key starting with `<storageName>:`, rewrites `dataVersion` and resets the UI; it does **not** sign you out. The site version is shown under it. Clipboard uses `navigator.clipboard` with a `textarea` + `execCommand` fallback.
 
----
+### Persistence
+- Keys: `<storageName>:<YYYY-MM-DD>:<daypart>` (state), `<storageName>:daypart`, `<storageName>:dataVersion`, `<storageName>:lastUser` (remembered username). Entries dated more than 7 days ago are pruned at startup.
+- State shape: `{ "tasks": { "mccafe|Ordine": "done" | "resolved" }, "stock": { "beverages|cups-flurry": { "qty": 3, "done": true } } }`. A missing key means open / qty 0.
+- **Versioning without migrations:** at startup `main.js` compares the saved `dataVersion` with `config.json`; missing, malformed or lower wipes every `<storageName>:` key (other projects on the origin are never touched).
 
-## 5. Features
+### Account and sign-in
+- **Avatar in the top bar:** grey = signed out, green with the first letter = signed in, amber = signed in but no store. It opens a dropdown (name and store, Extra hours, Account, Log out; or just Sign in). Outside tap or Escape closes it.
+- **Account page** (also in the drawer, reading *Sign in* or *Account · Luca*): signed out, a username + password form (type `sa-luca`; the domain is added, case and spaces ignored, a full email also works; plain-language errors; the last username is remembered, never the password; standard `autocomplete` so the phone's password manager works). Signed in: name, username, store, **account ID** (tap to copy: the administrator needs it for `userStores`), Log out. No store assigned: explains it and shows the ID to send.
+- **Stays signed in** on the device until Log out. A sign-in started from Extra hours (or the dropdown) returns to Extra hours. Without Firebase settings the avatar is grey and the page says what is missing; the shift list is unaffected.
 
-### 5.1 Layout
-- One continuous list occupying the whole screen width, optimised for phone browsers (viewport meta with `viewport-fit=cover`, safe-area insets respected).
-- A sticky top bar shows the current daypart (or "Projection" on the projection page) and the date, with a ☰ button at the left.
-- Each area is a **section** with a full-width header bar (the area's `name`).
-- Within a section: **tasks first, then the Restock dropdown** (5.3).
-- Areas with nothing left open are hidden from the top part of the page.
+### Extra hours page
+- Needs sign-in. Data: `stores/<your store>/extraHoursRequests`.
+- **+ Add request:** **Day** (today or later; kept after adding so several people for one day are quick), **Name**, **Original hours** (optional), **New hours**. Hours are free text (`10-14 / 18-22` for split shifts), max 80 characters. New requests start **Pending**.
+- **List:** only **today and later** is requested (`orderByChild('day').startAt(today)`), so old days are never downloaded or shown; the query is renewed when the app returns to the foreground on a new day. Split by day (*Today*, *Tomorrow*, then the date) with a count per day; oldest request first within a day; live updates from other phones.
+- **Status:** Pending → Accept / Refuse; Accepted → Revoke; Refused or Revoked → Accept. Each press writes `status` + `updatedAt`. **×** deletes (two taps). No edit: delete and re-add.
 
-### 5.2 Tasks (swipe interaction)
-- Each task is a full-width row.
-- **Swipe right** → **completed**. The row turns **green**.
-- **Swipe left** → **resolved** (an issue was found and fixed, e.g. an expiration label was missing). The row turns **red**.
-- While dragging, the row slides and reveals the colour underneath (green on the left for a right swipe, red on the right for a left swipe).
-- The swipe threshold is 90px. Below that the row snaps back with no change.
-- Vertical scrolling is preserved (`touch-action: pan-y`). A gesture counts as a swipe only if it is mainly horizontal.
-- Once marked, the task moves to the **Done** block at the bottom of the page, still grouped under its area header, keeping its green or red colour.
-- **Tap a row in the Done block to undo** it (it returns to the open list). Added so that accidental swipes are recoverable.
+### Projection page (switched off)
+`projection: false` hides it, because the sheet's `weight` field was removed and the page lists only products with `weight > 0`, so it would be empty. Its code (in `main.js`, `index.html`, `style.css`) is kept for a planned rework: guest count and Adj % inputs, a per-category table (weight, yield, target, boxes) and a *Copy projection* export. Setting `projection` to `true` shows it again but it needs weights in the database first. Candidate for deletion if the rework is dropped.
 
-### 5.3 Restock (dropdown and counters)
-- Below an area's tasks, its stock items sit in a collapsible **Restock dropdown** so the page stays short. The header row shows `Restock`, an amber badge with the number of items whose amount is above 0 (hidden when none), the number of items in the dropdown, and a chevron. **Tap the header to open or close it.** It starts **closed**; the open/closed state is only kept in memory for the current page load (a reload closes all dropdowns again). Opening or closing does not re-render the list.
-- **Sliding door:** when open, the dropdown has the closing row at **both ends**: the header at the top and an identical row at the bottom labelled **Close Restock** (chevron up). Closing from the bottom row means no scrolling back up; afterwards the page scrolls just enough to bring the dropdown's header back into view. The body slides open and closed (a short CSS animation, disabled with reduced-motion settings).
-- The dropdown only holds items that are not done; when every item of an area is done, the dropdown disappears from the top part.
-- Each item is a row with **`−` on the left**, **`+` on the right**, and in the middle the **amount**, the product **name** and, in small grey text under the name, its **code**. All of this comes from `database.json` by slug; `structure.json` only lists the slugs. An empty code or `MISSING` is shown as **MISSING** in bold dark red-grey (to be filled in the sheet).
-- **`+` / `−` change the amount by the product's `increment`** (default 1; 0 counts as 1). When the increment is not 1 it is shown in small text on both buttons (e.g. `+25`, `+0.5`). Amounts start at 0, cannot go below 0, and can be fractional (rounded to 2 decimals to avoid `0.1 + 0.2` noise). Tapping updates the number and the badge in place (no re-render, no scroll jump) and saves immediately.
-- **Fill products (`increment` below 0, i.e. `-1`)** are not counted: the row has no `−` and no number, only a wide **Fill** button on the right, where the `+` would be. Tap it once: the row turns amber and the button reads `✓ Fill` (the saved amount is `1`, counted in the badge); tap again to clear it (amount `0`). Long-press and the Done block work as for any other row.
-- **Long-press (500ms) on the row (not on the buttons)** sends the item to the Done block at the bottom, **keeping its amount**. The device vibrates briefly if supported.
-- Moving a stock item to Done means "I've handled or noted this". It does not zero the quantity.
-- In the Done block, stock rows are shown flat (no dropdown) and keep working `+`/`−` buttons. **Tap the middle of a done stock row to move it back** to its area's Restock dropdown.
-- Long-press does not trigger if the finger moves more than 10px (so scrolling is safe). The context menu and text selection are disabled on rows.
+## 9. Developer notes
 
-### 5.4 Done block
-- After all open sections, a yellow "Done" divider precedes a second set of sections (same area order and headers) containing completed/resolved tasks and done stock.
-- If everything is done, the top shows "Everything in this daypart is done."
-
-### 5.5 Menu (drawer, left)
-Opened with the ☰ button, closed by tapping the overlay. The drawer is an **accordion** with two sections; tapping a section header switches the page and expands its submenu (tapping the active header collapses/expands it).
-
-- **Dayparts** (page: the shift list). Submenu:
-  - **Daypart selector.** Lists every daypart in `structure.json`, each button showing `info.name` with `info.timeframe` underneath (when set). The top bar shows the name as title and `timeframe · date` as subtitle (just the date on the projection page). The selection is remembered in `localStorage` (`<storageName>:daypart`). It defaults to the first daypart on first use. There is currently **no automatic time-based selection** because no time ranges have been defined. Picking one closes the drawer.
-  - **Copy open tasks.** Copies to the clipboard every task not yet completed/resolved, grouped by area, in the original order:
-    ```
-    McCafe
-    - Ordine
-    - Scadenza Latte
-
-    Fries
-    - Spegnimento Fryer
-    ```
-    Shows a toast "Open tasks copied", or "No open tasks" when there are none.
-  - **Copy restock list.** Copies every stock item with an amount above 0 (whether or not it is in the Done block), formatted as `x<amount> <item name>` (the amount can be fractional, e.g. `x0.5`). **Fill products** are written as `Fill <item name>` (one line, whatever the number of areas that flagged it). **Amounts of the same product slug are summed across areas** (e.g. `jug-in-box-stock` counted in Fries and MFY Side 4 becomes one line). Lines are grouped by **category name** (order of the `categories` array in `database.json`), products in order of first appearance in the area walk:
-    ```
-    Paper
-    x3 Bicchieri Bibite G
-    x1 Tappi Bibite
-
-    Other
-    x5 Jug in Box Stock
-    ```
-    Shows a toast "Restock list copied", or "Nothing to restock" when empty.
-- **Projection** (page: the projection tab, see 5.8) is **hidden while `projection` is `false` in `config.json`** (the current setting), so the drawer only shows the Dayparts section. When enabled: Submenu: **Copy projection**. Tapping the header opens the page and closes the drawer. Tapping the **Dayparts** header while on the projection page switches back to the shift list and keeps the drawer open.
-- A successful copy (tasks, restock, projection) closes the drawer and shows a toast; the "nothing to export" toasts leave it open.
-- **Clear website data** (bottom of the drawer). Two taps: the first arms the button ("Tap again to confirm", disarms after 4s or when the menu closes), the second deletes every `localStorage` key starting with `<storageName>:` (all shift states, the remembered daypart, projection weights and guest count), writes the current `dataVersion` again, and resets the UI (the selected daypart goes back to the first one). Only the app's own keys are removed, because `localStorage` is shared by every project on the same `github.io` origin. The site version (`vX.Y.Z`) is shown under this button.
-- Clipboard uses `navigator.clipboard` with a `textarea` + `execCommand('copy')` fallback.
-
-### 5.6 Day and daypart handling
-- On load, the app opens on the Dayparts page, takes the **local date** (`YYYY-MM-DD`) and the remembered daypart, and loads that combination's state.
-- When the app returns to the foreground (`visibilitychange`) and the date has rolled over, it switches to the new date with a fresh state automatically.
-- Each daypart has its **own independent state** per day.
-
-### 5.7 Persistence
-- All keys start with `<storageName>:` (from `config.json`, currently `mcd-shift-companion`). Below, `<storageName>:` stands for that prefix.
-- `localStorage` key per shift state: `<storageName>:<YYYY-MM-DD>:<daypart>`.
-- Extra keys: `<storageName>:daypart` (last selected daypart) and `<storageName>:dataVersion` (see data versioning below).
-- State shape:
-  ```json
-  {
-    "tasks": { "mccafe|Ordine": "done", "fries|Coperchi Fryer": "resolved" },
-    "stock": { "beverages|mcfizz": { "qty": 3, "done": true } }
-  }
-  ```
-  - `tasks[key]` is `"done"` or `"resolved"`. A missing key means open.
-  - `stock[key]` is `{ qty, done }`, keyed by `"<areaKey>|<productSlug>"`. A missing key means qty 0 and open.
-- Projection keys:
-  - `<storageName>:proj-weights`: `{ "<itemId>": number }`, the edited weights. A missing item means "use the default from `database.json`". Persistent (not pruned).
-  - `<storageName>:proj-yields`: same shape, for edited yields.
-  - `<storageName>:<YYYY-MM-DD>:proj`: `{ "gc": number | null, "gadj": number | null, "cadj": { "<categorySlug>": number } }`: the guest count (`null` = 1000), the global Adj % (`null` = 100) and today's category Adj % overrides (missing = the `database.json` default). Pruned with the other daily keys.
-- **Data versioning (no migrations):** the saved data version is stored in `<storageName>:dataVersion`. On startup `main.js` compares it with `dataVersion` from `config.json`: if it is missing, malformed, or **lower**, all keys starting with `<storageName>:` are wiped and the current `dataVersion` is written. An equal or higher saved version is left untouched. Keys without the prefix (other projects on the same `github.io` origin) are never touched. There is deliberately no migration code: old data is dropped, not converted. See 4c for how `siteVersion` and `dataVersion` are used.
-- **Automatic pruning:** on startup, entries whose date is more than 7 days old are deleted (only keys with the `<storageName>:` prefix and a date in the name).
-- Every user action saves immediately.
-
-### 5.8 Projection tab
-**Currently switched off** (`projection: false` in `config.json`, 4c): the drawer section is hidden and the page cannot be opened. The code is kept as it is for the planned rework (the rest of this section describes it). A second page, reached from the drawer. It works out how many boxes of each prepared item to ask for, from the expected guest count.
-
-- **Data (currently empty, see 4b):** products come from `src/database.json` (section 4b). Only products with `weight > 0` are listed, and the database no longer has a `weight` field, so the page has no items right now; `weight` is the quantity for **1000 guests** and `yield` the units per box, both overridable in the UI. Categories (name, default Adj % in `adjustment`) come from the `categories` array, whose order is the category order on the page; today's Adj % overrides are saved by category slug.
-- **Top fields** (side by side, default value in **grey**, dark once changed, empty or invalid input falls back to the default):
-  - **Guest Count Total**: expected guests, default 1000.
-  - **Adj %** (global): a quick multiplier applied to *every* category, default 100. For testing a higher or lower prep without touching the defaults.
-- **Table** (`Item | Weight | Yield | Target | Boxes`), split into **categories**. Each category has a dark header row with its name and its own editable **Adj %** input:
-  - **Category Adj %** starts at the category's `adjustment` in `database.json` (grey) and can be overridden for today (dark). Clearing it, or typing the default again, restores the default. Applies to all items in the category.
-  - **Weight** (the `weight` from `database.json`) is an editable input, in **grey** while unchanged, dark once edited (to adjust to POS data). Clearing it, or typing the original value, restores the default.
-  - **Yield** is also an editable input with the same behaviour (grey until changed, empty restores the default).
-  - **Target** = `weight × GC ÷ 1000 × category Adj ÷ 100 × global Adj ÷ 100` (e.g. 400 at 300 GC with category Adj 120 → 144).
-  - **Boxes** = `target ÷ yield`, shown with one decimal (truncated, so 2.19999 shows 2.1) plus the rounded ask below it (`→ 3`). With a yield of 0 it shows `–` and the item is left out of the export.
-- **Rounding rule (export):** fractional part below 0.2 rounds down (2.1 to 2.19999 → 2), 0.2 or more rounds up (2.2 → 3). Implemented as `floor(round(x, 6) + 0.8 + 1e-9)`.
-- **Copy projection** (button under the table, and in the drawer) exports **everything in one tap** (all categories), listing items whose rounded amount is above 0, grouped by category with a blank line between groups (categories with nothing to prepare are skipped). The header shows the guest count, and the global Adj % or a category's Adj % are added in brackets only when they differ from 100:
-  ```
-  Projection - 200 GC (Adj 110%)
-
-  Fillings (Adj 120%)
-  x6 Farciture Toast
-  x7 Bacon Cotto
-
-  Vegetables
-  x30 Insalate Finite
-  x30 Pomodori a Fette
-  ```
-  Toast "Projection copied", or "Nothing to prepare".
-- Everything recalculates live on every keystroke; the inputs are patched in place (no re-render) so focus is never lost. Inputs use the decimal keypad and accept `,` or `.`; fields select all on focus.
-- This is the one screen that needs typing, by design (it is a planning tool rather than a live-shift interaction).
-
----
-
-## 6. Interaction details and edge cases (for developers)
-
-- Gestures use **Pointer Events** with event delegation on `#list`. State for the active gesture is held in a single variable `g`.
-- Stock `+`/`−` are real `<button>`s handled by a separate `click` listener. The pointer handlers ignore events that start on a button.
-- `pointercancel` (e.g. the browser starts vertical scrolling) aborts the gesture and resets the row transform with no state change.
-- Rendering is a full `innerHTML` rebuild of the list (`render()`), except for the stock quantity update, which patches the number only. Strings are HTML-escaped before insertion.
-- Colour tokens live as CSS variables in `:root` (`--green`, `--red`, `--slate`, `--amber`, etc.).
-
-### Code map of `main.js` (top to bottom)
-1. Imports (`structure.json`, `database.json`, `config.json`), `PREFIX`, date helpers.
-2. Shift state: `load()` / `save()` / `prune()` (key `<storageName>:<date>:<daypart>`).
-3. Data helpers: `dpInfo()` (daypart `info`), `areaEntries()` (a daypart's areas, skipping the reserved `info` key), `areas()` (sorted by `orderId`), `kid()`, `products` / `bySlug` / `pname()` / `pstep()` (increment) / `isFill()` (negative increment) / `pcode()` / `r2()`, `categories` / `catBySlug` / `catName()` / `catDef()`, `categoryOrder()` (category slugs in display order), `validate()`, `esc()`.
-4. Shift list: `taskRow()`, `stockRow()`, `restockBlock()` (the dropdown, with its top and bottom close rows, `openRestock` / `rsCount()`), `fillLabel()`, `render()`, `setTask()`, `setStockDone()`, the dropdown click handler, the stock button click handler (`+`/`−` by `pstep()`, or the Fill toggle), and the pointer gesture handlers.
-5. Menu: `toggleMenu()`, `setView()`, drawer and daypart click handlers.
-6. Exports: `toast()`, `copy()`, tasks export, restock export; `visibilitychange` day roll-over.
-7. Projection: `calc()`, `groups()`, `projRow()`, `catHead()`, `renderProj()`, `updateProj()`, input/focusout handlers, `exportProj()`.
-8. Clear website data, versioning (`checkVersion()`), and the **startup sequence**: `checkVersion()` → `validate()` → `prune()` → `load()` → `loadProj()` → `render()` → `renderProj()` → `setView('dayparts')`. Keep `checkVersion()` first, so incompatible data is wiped before anything reads it.
-
-Pitfalls: the dropdown rows and the Fill button are `<button>`s, which the pointer handlers ignore, so keep them buttons; every user-facing string goes through `esc()` before `innerHTML`; every `localStorage` key must start with `PREFIX` (shared origin); stock keys use product slugs, task keys use task names; do not break `touch-action: pan-y` on rows (it keeps vertical scrolling working during swipes).
-
-## 6b. Common changes (recipes)
+- Gestures use **Pointer Events** with delegation on `#list`; one variable `g` holds the active gesture. Stock `+`/`−`, the dropdown rows and the Fill button are real `<button>`s, ignored by the pointer handlers (keep them buttons). `pointercancel` aborts a gesture with no state change. Rendering is a full `innerHTML` rebuild (`render()`), except for the stock amount update. Every user-facing string goes through `esc()` before `innerHTML`. Colour tokens are CSS variables in `:root`. Do not break `touch-action: pan-y` on rows. Every `localStorage` key must start with `PREFIX`.
+- **`main.js`, top to bottom:** imports and `PREFIX` / date; shift state (`load`/`save`/`prune`); data helpers (`areas()`, `pname()`, `pstep()`, `isFill()`, `bySlug`, `validate()`, ...); list rendering (`taskRow`, `stockRow`, `restockBlock`, `render`) and gestures; menu and `setView()` (pages `dayparts`, `projection`, `extra`, `account`); exports; projection code; clear data, `checkVersion()` and the **startup sequence**: `checkVersion()` → `validate()` → `prune()` → `load()` → `loadProj()` → `render()` → `renderProj()` → `initAccount()` → `initExtraHours()` → `setView('dayparts')` → `startSession()`. Keep `checkVersion()` first.
 
 | I want to... | Do this |
 |---|---|
-| Add a product | Add a row in the sheet's Products tab (unique Slug = the product's identity, Category = a category slug, Code, Yield, Increment = the `+`/`−` step), run `node dev/importer/import.js`, then add the slug to the `stock` list of the area(s) that count it in `structure.json`. |
+| Add a product | Add a row in the sheet's Products tab, run `npm run update`, then add its slug to the `stock` list of the area(s) in `structure.json`. |
 | Rename a product on screen | Change only its Name in the sheet (never its Slug), then import. |
-| Change how much `+`/`−` adds for a product | Change its Increment in the sheet, then import. Use `-1` to make it a Fill product (Fill button instead of `+`/`−`). |
-| Bring the Projection page back | Set `projection` to `true` in `src/config.json` (it needs product weights, which the database no longer has). |
-| Add a task | Append the (Italian) string to the area's `tasks` in `structure.json`. |
-| Add an area | Add a key under the daypart (anything except `info`) with `orderId`, `name`, `tasks`, `stock`. |
-| Add a daypart | Add a top-level key in `structure.json` with an `info` object (`name`, optional `timeframe`) and its areas; it shows up in the menu automatically. |
-| Add or reorder a category, or set its default Adj % | Edit the sheet's Categories tab (row order = display order, Adjustment = default Adj %), then import. |
-| Restore an older database | Copy a file from `dev/database/` over `src/database.json`. |
-| Force everyone's saved data to reset after a breaking change | Raise `dataVersion` in `config.json`. |
-| Show a new version in the menu | Change `siteVersion` in `config.json` (major content changes only). |
-| Send the project to someone (or an AI) | `npm run zip:private` (no `credentials.json`, no `config.json`; always use this one), then take `dev/compressor/output.zip`. |
+| Change a product's `+`/`−` step or make it a Fill product | Change its Increment in the sheet (`-1` = Fill), then import. |
+| Add or reorder a category | Edit the sheet's Categories tab (row order = display order), then import. |
+| Add a task / area / daypart | Edit `structure.json`: append to `tasks`; add an area key with `orderId`, `name`, `tasks`, `stock`; or add a top-level daypart key with `info` and its areas (it appears in the menu automatically). |
+| Add a user | Firebase Console, Authentication, add `<name>@<domain>`; copy the UID; add `userStores/<UID>` = store id. |
+| Add a store | Pick a store id and map the users' UIDs to it in `userStores`; no rules change. |
+| Store another kind of shared data | Go through `src/storeDb.js`, add its validation block (and an `.indexOn` for queried children) to `database.rules.json`, publish, and extend `validWrite()` in `src/backend/mock.js` the same way. |
 
-Before finishing any change: run `npm run build`; open the app (`npm run dev`, reachable from the phone on the same network) and check that no red banner appears and that swipe, long-press, `+`/`−` and both exports still work; update this README if behaviour, data formats, or storage keys changed. There are no automated tests.
+## 10. Deployment
 
----
+1. Push to the `main` branch of a GitHub repo.
+2. Repo settings, Pages, Source: **GitHub Actions** (otherwise the deploy fails with a 404).
+3. `.github/workflows/deploy.yml` runs on every push to `main` (and manually): `npm install`, `npm run build`, upload `./dist`, deploy.
+4. **Firebase variables:** repo Settings, Secrets and variables, Actions: create `VITE_FIREBASE_API_KEY`, `_AUTH_DOMAIN`, `_DATABASE_URL`, `_PROJECT_ID`, `_STORAGE_BUCKET`, `_MESSAGING_SENDER_ID`, `_APP_ID` and `VITE_AUTH_EMAIL_DOMAIN` (same names and values as `.env.local`) as **Variables** (a Secret of the same name also works). They are baked into the built site either way. Without them the deploy succeeds but the site shows "Firebase is not set up" (and the build log prints a `[firebase] Missing ...` warning). Re-run the workflow after changing one. If sign-in reports an unauthorized domain, add `<user>.github.io` under Firebase Console, Authentication, Settings, Authorized domains.
+5. Open the URL on the phone; "Add to Home Screen" gives a full-screen feel (no PWA yet).
 
-## 7. Deployment (GitHub Pages)
+Shift data lives in the browser's `localStorage`: tied to device, browser and origin; clearing site data erases it.
 
-1. Push the project to a GitHub repo on the `main` branch.
-2. In the repo settings, go to Pages and set Source to **GitHub Actions** (without this the deploy step fails with a 404).
-3. `.github/workflows/deploy.yml` (a single job, with pinned action versions) runs on every push to `main` and can be run manually. It installs dependencies with `npm install`, runs `npm run build` (whose credentials stripper step does nothing there, because `credentials.json` is not in the repo), configures Pages, uploads `./dist` and deploys it.
-4. Open the resulting URL on the phone. Adding it to the home screen gives a full-screen feel (no PWA manifest or service worker yet).
+## 11. Known limitations and roadmap
 
-Since data lives in the browser's `localStorage`, it is tied to the device, browser, and site origin. Clearing site data erases it.
+- No automatic daypart detection (no time ranges defined); no offline support (no service worker); no way to reset a single shift (Clear website data wipes everything; data expires after 7 days); no undo beyond tapping a done row; tasks are plain strings (ids planned); a Fill product only records yes/no.
+- Products and categories change only through the sheet and importer. Many `yield` values are `0` and some codes are `MISSING`; the real values come from the sheet.
+- Extra hours: no edit, no offline persistence, no per-user roles (everyone in a store can change any of its requests), no push notifications, no password reset (the mock emails have no inbox: the administrator changes passwords in the Firebase console).
+- Firebase packages ask for Node `>=24.12.0` (npm warns on Node 22): move to Node 24 LTS, then run `npm audit`, `npm test`, `npm run build`.
+- `database.rules.json` was verified only against the mock; run the Rules Playground checks above.
+- Roadmap (do not implement unless asked): end-of-day recap stored in Firebase (with `localStorage` staying the offline cache), tasks as ids, using `macro` and `code`, time-based daypart selection, a "reset shift" action, a PWA manifest and service worker, per-item par levels, reworking or deleting the Projection page. **Project rename** is planned by the owner: the repo/package name and page `<title>` still say "Shift Tracker"; do not change `storageName` as part of it (it would orphan saved data).
 
----
+## 12. Rules for contributors / AI assistants
 
-## 8. Known limitations and open questions
-
-- No automatic daypart detection by time of day, as time ranges are undefined.
-- No offline support (no service worker). The page works only after being loaded once online, and can fail if the browser evicts its cache with no connection.
-- No way to reset a single shift's state from the UI. "Clear website data" wipes everything, and data expires automatically after 7 days.
-- Products and categories can only be changed through the sheet and the importer (or by hand in `src/database.json`, which the next import overwrites). Only weights, yields, the guest count and Adj % (global and per category) can be adjusted in the UI. Default Adj % per category can only be changed in `categories` in `database.json`.
-- No undo history beyond tapping a done row to restore it.
-- Stock amounts have no per-item units or par levels (they can be fractional through the product's increment). Tasks are still plain strings (not ids yet; planned next).
-- Many `yield` values are `0` and some codes are `MISSING` in the current database. The real values come from the sheet.
-- The Projection page is switched off (`projection: false`) because the `weight` field was removed (see 4b); it will be reworked.
-- The Categories tab and five stock slugs in `structure.json` (`mcfizz`, `toppings`, `sprinkles`, `tomatoes`, `sauce-promotion`) still need to be brought in line with the new database; the red banner stays until then (see 4 and 4b).
-- A Fill product only records "needs a fill" (yes or no), not how much.
-- `macro` and the numeric category `id` from the sheet are stored but not used by the app yet.
-- The sheet still needs an in-depth review of products, codes, yields, weights and category macros (planned by the owner).
-- The last selected daypart is remembered. Switching dayparts mid-shift is safe because each has separate state.
-
----
-
-## 9. Roadmap (planned, NOT part of the current scope)
-
-- **External small database** to keep a recap of each day (end-of-day summary of what was completed, resolved, and restocked). The current per-day, per-daypart storage shape is intentionally simple to make syncing or migrating easy. When implemented, `localStorage` should remain the offline-first cache.
-- Possible later ideas (only if requested): time-based daypart auto-selection, a "reset shift" action, a PWA manifest and service worker for offline use, per-item par levels.
-
-- **Project rename** (planned by the owner, not done yet): the repo/package name (`mcd-shift-tracker`), the page `<title>` and the README heading still say "Shift Tracker", while `storageName` is already `mcd-shift-companion`. Renaming is done by the owner at another time; do not change `storageName` as part of it (that would orphan the saved data).
-
-- **The app will rely more and more on `database.json` / the Google Sheet** (the sheet is the reference for data entry). Planned follow-ups: tasks as ids, using `macro` and `code`.
-
-Do not implement roadmap items unless explicitly asked.
-
----
-
-## 10. Rules for contributors / AI assistants
-
-1. **Never rename, translate, or reorder** strings or entries in `structure.json`, or product names in `database.json` (they come from the sheet), without asking the owner first. Never change a product `slug` already in use.
-2. Keep all UI text, code, and comments in **English**.
-3. Preserve the **mobile-first, one-handed** interaction model. Do not add features that need typing during the shift (the Projection page is the deliberate exception).
-4. Keep it lightweight: no heavy frameworks or dependencies unless there is a strong reason.
-5. **No legacy or migration code.** When the shape of saved data (or the meaning of a storage key) changes in a breaking way, raise `dataVersion` in `config.json` so old data is wiped, instead of converting it. Raise `siteVersion` only for major content changes. Versions and the storage name live in `config.json`; never hard-code them in `main.js`.
-6. **Keep this README in sync** with the code and data files whenever behaviour, data formats, or storage keys change.
-7. Ask when in doubt. The owner prefers a question over a guess about restaurant-specific behaviour.
-8. **Treat `src/database.json` as generated output**: change data in the sheet and re-run the importer instead of editing it, unless asked. Keep the importer output shape (section 4b) and the app in sync.
-9. **Never commit `dev/importer/credentials.json` or `dev/importer/config.json`** (Google service-account key, spreadsheet id). Both must stay git-ignored. Only the generated `credentials.example.json` and `config.example.json` (blanked values) are committed; never put real values in them.
-10. **Keep `dev/compressor/include.json` up to date** when files or folders are added to the project, and keep zips free of private data (the compressor never includes the real `credentials.json` or `config.json`). **Always export with `npm run zip:private`.**
+1. **Never rename, translate or reorder** strings or entries in `structure.json`, or product names in `database.json`, without asking the owner. Never change a product `slug` already in use.
+2. Keep all UI text, code and comments in **English**.
+3. Preserve the **mobile-first, one-handed** model: no features that need typing during the shift (Extra hours is a planning page, the deliberate exception).
+4. Keep it lightweight: no heavy frameworks or dependencies without a strong reason.
+5. **No legacy or migration code.** When the shape of saved data (or the meaning of a storage key) changes in a breaking way, raise `dataVersion` instead of converting. Raise `siteVersion` only for major content changes. Never hard-code versions or the storage name in `main.js`.
+6. **Keep this README in sync** whenever behaviour, data formats, storage keys or commands change.
+7. Ask when in doubt; the owner prefers a question over a guess about restaurant-specific behaviour.
+8. **Treat `src/database.json` as generated output:** change data in the sheet and re-run the importer.
+9. **Never commit `dev/importer/credentials.json` or `.env.local`.** Only the generated `*.example` templates (blanked values) are committed; never put real values in them. Never put a Firebase service-account or admin credential anywhere in the project (the `VITE_*` web config is the only Firebase value the site may contain).
+10. **Zips:** export with `npm run zip` (or `zip:private` for debug material); never hand-zip the folder. The zips follow `.gitignore`, so keep it correct when adding new private or generated files. `zip:all` contains secrets and is for the owner only.
+11. **Firebase:** never import the SDK outside `src/firebase.js` and `src/backend/firebase.js`; read and write shared data only through `src/storeDb.js` (the store id comes from the verified login, never from input); never let the client write `userStores`; UI filtering is not authorisation, so every store-level restriction must also exist in `database.rules.json`, kept in sync with what the app writes and with the mock's `validWrite()`.
+12. **Never enable the mock in production:** it is selected only by Vite mode `mock` (`dev:mock`, `build:mock`) and is absent from `npm run build`.
