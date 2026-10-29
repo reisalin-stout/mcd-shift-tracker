@@ -15,9 +15,11 @@
       "name": "Beverages",
       "tasks": ["Ordine", "Cucchiaini Rosa", "Scadenza McFizz", "Frigo Vetrina", "Scadenza Insalate Miste"],
       "stock": [
-        "mcfizz",
-        "toppings",
-        "sprinkles",
+        "mcfizz-sakura",
+        "topping-oreo",
+        "topping-smarties",
+        "topping-bacio",
+        "topping-pistacchiokataifi",
         "cups-drinks-l",
         "cups-drinks-m",
         "cups-drinks-s",
@@ -68,7 +70,7 @@
         "Spegnimento Fryer",
         "Coperchi Fryer"
       ],
-      "stock": ["jug-in-box-stock", "tomatoes", "food-baconcooked"]
+      "stock": ["jug-in-box-stock", "food-tomato-slices", "food-baconcooked"]
     },
     "side-3": {
       "orderId": 8,
@@ -107,7 +109,7 @@
         "sauce-bigmac",
         "sauce-mcchicken",
         "sauce-bigtasty",
-        "sauce-promotion",
+        "sauce-caesar",
         "sauce-fish",
         "sauce-nachocheese",
         "sauce-creation-mediterranean",

@@ -1,11 +1,13 @@
 // Main entry:  node dev/importer/import.js   (no command-line options, everything is set in .env.local)
 //   1. downloads each tab of the Google Sheet as CSV into dev/importer/temp (or, with "skipDownload": true
 //      (env var IMPORT_SKIP_DOWNLOAD in .env.local), uses the CSVs already in temp)
-//   2. runs the matching parser for each tab and checks the result
+//   2. runs the matching parser (parsers/<tab>.js) for each tab and checks the result
 //   3. backs up the current src/database.json into dev/database/, named after its last-modified time
 //   4. writes the freshly imported data to src/database.json
-//   5. deletes the CSVs from dev/importer/temp, unless IMPORT_KEEP_TEMP=true in .env.local
-// If the download or the parsing fails (or yields no categories/products), nothing is touched and temp is kept.
+//   5. parsers with a push() step send their changes back to the sheet (the Dictionary tab: new slugs + Status),
+//      unless IMPORT_SKIP_UPLOAD=true or IMPORT_SKIP_DOWNLOAD=true (the CSVs may be out of date)
+//   6. deletes the CSVs from dev/importer/temp, unless IMPORT_KEEP_TEMP=true in .env.local
+// If the download or the parsing fails (or a required tab yields nothing), nothing is touched and temp is kept.
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -13,9 +15,17 @@ import { downloadAll, TEMP_DIR } from "./download.js";
 import { loadImporterConfig } from "./utils.js";
 
 // Register one parser per tab type here.
+// Order matters: a parser can use what the ones before it imported (the dictionary uses everything).
 import categories from "./parsers/categories.js";
 import products from "./parsers/products.js";
-const parsers = [categories, products];
+import areas from "./parsers/areas.js";
+import tasks from "./parsers/tasks.js";
+import buildups from "./parsers/buildups.js";
+import types from "./parsers/types.js";
+import timeframes from "./parsers/timeframes.js";
+import dayparts from "./parsers/dayparts.js";
+import dictionary from "./parsers/dictionary.js";
+const parsers = [categories, products, areas, tasks, buildups, types, timeframes, dayparts, dictionary];
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "../..");
@@ -30,16 +40,19 @@ const stamp = (d) =>
   `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}_${pad(d.getHours())}-${pad(d.getMinutes())}-${pad(d.getSeconds())}`;
 const normalize = (s) => s.replace(/\r\n/g, "\n");
 
+// A parser is { tab, key, parse(filePath, { db, parsers, sheets }), required?, push?(options), check?(db) }
+// (see parsers/; most are built with table() / slugList() from utils.js). Parsers run in registry order.
 function parseSheets(sheets) {
   const db = {};
   for (const sheet of sheets) {
-    const parser = parsers.find((p) => p.tab.toLowerCase() === sheet.name.toLowerCase());
-    if (!parser) {
-      console.warn(`No parser for tab "${sheet.name}", skipped`);
-      continue;
-    }
+    if (!parsers.some((p) => p.tab.toLowerCase() === sheet.name.toLowerCase())) console.warn(`No parser for tab "${sheet.name}", skipped`);
+  }
+  for (const parser of parsers) {
+    const sheet = sheets.find((s) => s.name.toLowerCase() === parser.tab.toLowerCase());
+    if (!sheet) continue; // a missing required tab is reported by check()
     console.log(`Parsing "${sheet.name}"...`);
-    db[parser.key] = parser.parse(sheet.filePath);
+    const data = parser.parse(sheet.filePath, { db, parsers, sheets });
+    if (data !== undefined) db[parser.key] = data;
   }
   return db;
 }
@@ -48,11 +61,9 @@ function parseSheets(sheets) {
 // only warns about things that are wrong but do not make the data unusable.
 function check(db) {
   for (const p of parsers) {
-    if (!db[p.key]?.length) throw new Error(`Nothing imported for "${p.tab}" (missing or empty tab), src/database.json left untouched`);
+    if (p.required !== false && !db[p.key]?.length) throw new Error(`Nothing imported for "${p.tab}" (missing or empty tab), src/database.json left untouched`);
   }
-  const known = new Set(db.categories.map((c) => c.slug));
-  const unknown = new Set(db.products.map((p) => p.category).filter((c) => !known.has(c)));
-  if (unknown.size) console.warn(`Products use unknown categories: ${[...unknown].join(", ")}`);
+  for (const p of parsers) for (const warning of p.check?.(db) ?? []) console.warn(warning);
 
   // The app shows a red banner for stock ids that do not exist, so warn here first
   if (fs.existsSync(STRUCTURE_FILE)) {
@@ -89,6 +100,7 @@ function cleanTemp(sheets) {
 // Options come from .env.local (IMPORT_SKIP_DOWNLOAD, IMPORT_KEEP_TEMP); the parameters only exist to override them in tests
 export async function run({
   skipDownload = loadImporterConfig().skipDownload === true,
+  skipUpload = loadImporterConfig().skipUpload === true,
   keepTemp = loadImporterConfig().keepTemp === true,
   download = downloadAll,
 } = {}) {
@@ -113,7 +125,17 @@ export async function run({
     const backup = backupCurrent();
     if (backup) console.log(`Backed up the previous database to ${rel(backup)}`);
     fs.writeFileSync(DB_FILE, next, "utf8");
-    console.log(`Wrote ${rel(DB_FILE)} (${db.categories.length} categories, ${db.products.length} products)`);
+    console.log(`Wrote ${rel(DB_FILE)} (${Object.entries(db).map(([key, list]) => `${list.length} ${key}`).join(", ")})`);
+  }
+
+  // Send the parsers' own changes back to the sheet (only after everything above succeeded)
+  for (const parser of parsers) {
+    if (parser.push) {
+      await parser.push({
+        upload: !skipDownload && !skipUpload,
+        skipReason: skipDownload ? "IMPORT_SKIP_DOWNLOAD is true, the CSVs may be out of date" : "IMPORT_SKIP_UPLOAD is true",
+      });
+    }
   }
 
   // keepTemp (IMPORT_KEEP_TEMP) true: keep the CSVs for debugging; false: delete them

@@ -1,0 +1,2102 @@
+{
+  "categories": [
+    {
+      "slug": "storage-cafe",
+      "id": 1
+    },
+    {
+      "slug": "storage-water",
+      "id": 2
+    },
+    {
+      "slug": "storage-cups",
+      "id": 3
+    },
+    {
+      "slug": "storage-bags",
+      "id": 4
+    },
+    {
+      "slug": "storage-dessert",
+      "id": 5
+    },
+    {
+      "slug": "storage-condiments",
+      "id": 6
+    },
+    {
+      "slug": "storage-packaging",
+      "id": 7
+    },
+    {
+      "slug": "storage-wraps",
+      "id": 8
+    },
+    {
+      "slug": "storage-food",
+      "id": 9
+    },
+    {
+      "slug": "fridge-cafe",
+      "id": 10
+    },
+    {
+      "slug": "fridge-dessert",
+      "id": 11
+    },
+    {
+      "slug": "fridge-alcohol",
+      "id": 12
+    },
+    {
+      "slug": "fridge-grabngo",
+      "id": 13
+    },
+    {
+      "slug": "fridge-rack",
+      "id": 14
+    },
+    {
+      "slug": "fridge-salad",
+      "id": 15
+    },
+    {
+      "slug": "fridge-prep",
+      "id": 16
+    },
+    {
+      "slug": "freezer-cafe",
+      "id": 17
+    },
+    {
+      "slug": "freezer-bread",
+      "id": 18
+    },
+    {
+      "slug": "freezer-boxes",
+      "id": 19
+    },
+    {
+      "slug": "operative-detergents",
+      "id": 20
+    },
+    {
+      "slug": "operative-bags",
+      "id": 21
+    },
+    {
+      "slug": "operative-equip",
+      "id": 22
+    }
+  ],
+  "products": [
+    {
+      "slug": "sauce-crispybacon",
+      "category": "fridge-rack",
+      "id": "04552",
+      "extension": "116",
+      "yield": 75,
+      "unit": 1
+    },
+    {
+      "slug": "sauce-bigmac",
+      "category": "fridge-rack",
+      "id": "00055",
+      "extension": "341",
+      "yield": 25,
+      "unit": 1
+    },
+    {
+      "slug": "sauce-mcchicken",
+      "category": "fridge-rack",
+      "id": "00010",
+      "extension": "070",
+      "yield": 37.3,
+      "unit": 1
+    },
+    {
+      "slug": "sauce-caesar",
+      "category": "fridge-rack",
+      "id": "10685",
+      "extension": "026",
+      "yield": 75,
+      "unit": 1
+    },
+    {
+      "slug": "sauce-fish",
+      "category": "fridge-rack",
+      "id": "00009",
+      "extension": "328",
+      "yield": 37.5,
+      "unit": 1
+    },
+    {
+      "slug": "sauce-bigtasty",
+      "category": "fridge-rack",
+      "id": "07919",
+      "extension": "101",
+      "yield": 37.5,
+      "unit": 1
+    },
+    {
+      "slug": "sauce-crunchy",
+      "category": "fridge-rack",
+      "id": "02970",
+      "extension": "104",
+      "yield": 25,
+      "unit": 1
+    },
+    {
+      "slug": "sauce-creation-mediterranean",
+      "category": "fridge-rack",
+      "id": "07970",
+      "extension": "063",
+      "yield": 25,
+      "unit": 1
+    },
+    {
+      "slug": "sauce-creation-roman",
+      "category": "fridge-rack",
+      "id": "17484",
+      "extension": "000",
+      "yield": 25,
+      "unit": 1
+    },
+    {
+      "slug": "sauce-nachocheese",
+      "category": "fridge-rack",
+      "id": "03467",
+      "extension": "080",
+      "yield": 16.67,
+      "unit": 1
+    },
+    {
+      "slug": "sauce-honeybbq",
+      "category": "fridge-rack",
+      "id": "04180",
+      "extension": "144",
+      "yield": 37.5,
+      "unit": 1
+    },
+    {
+      "slug": "sauce-ketchupbib",
+      "category": "fridge-rack",
+      "id": "02679",
+      "extension": "079",
+      "yield": 100,
+      "unit": 1
+    },
+    {
+      "slug": "sauce-mustardbib",
+      "category": "fridge-rack",
+      "id": "00026",
+      "extension": "054",
+      "yield": 1428.5,
+      "unit": 1
+    },
+    {
+      "slug": "sauce-bbqhoney",
+      "category": "fridge-rack",
+      "id": "04180",
+      "extension": "222",
+      "yield": 37.5,
+      "unit": 1
+    },
+    {
+      "slug": "bun-regular",
+      "category": "fridge-rack",
+      "id": "00001",
+      "extension": "911",
+      "yield": 68,
+      "unit": 1
+    },
+    {
+      "slug": "bun-royal",
+      "category": "fridge-rack",
+      "id": "00002",
+      "extension": "770",
+      "yield": 60,
+      "unit": 1
+    },
+    {
+      "slug": "bun-bigmac",
+      "category": "fridge-rack",
+      "id": "90003",
+      "extension": "588",
+      "yield": 30,
+      "unit": 1
+    },
+    {
+      "slug": "bun-shiny",
+      "category": "fridge-rack",
+      "id": "10332",
+      "extension": "057",
+      "yield": 40,
+      "unit": 1
+    },
+    {
+      "slug": "bun-crunchy",
+      "category": "fridge-rack",
+      "id": "17581",
+      "extension": "047",
+      "yield": 60,
+      "unit": 0.5
+    },
+    {
+      "slug": "bun-oval",
+      "category": "fridge-rack",
+      "id": "03463",
+      "extension": "330",
+      "yield": 48,
+      "unit": 0.5
+    },
+    {
+      "slug": "bun-tortilla",
+      "category": "fridge-rack",
+      "id": "02683",
+      "extension": "081",
+      "yield": 18,
+      "unit": 1
+    },
+    {
+      "slug": "bun-glutenfree",
+      "category": "fridge-rack",
+      "id": "12342",
+      "extension": "003",
+      "yield": 1,
+      "unit": 3
+    },
+    {
+      "slug": "pancakes",
+      "category": "fridge-rack",
+      "id": "05358",
+      "extension": "001",
+      "yield": 6,
+      "unit": 1
+    },
+    {
+      "slug": "bacon-bits",
+      "category": "fridge-rack",
+      "id": "00425",
+      "extension": "107",
+      "yield": 50,
+      "unit": 1
+    },
+    {
+      "slug": "topping-bacio",
+      "category": "fridge-rack",
+      "id": "99008",
+      "extension": "004",
+      "yield": 166.6,
+      "unit": -1
+    },
+    {
+      "slug": "topping-pistacchiokataifi",
+      "category": "fridge-rack",
+      "id": "20170",
+      "extension": "001",
+      "yield": 200,
+      "unit": -1
+    },
+    {
+      "slug": "topping-crunchychoco",
+      "category": "fridge-rack",
+      "id": "90867",
+      "extension": "000",
+      "yield": 98,
+      "unit": 1
+    },
+    {
+      "slug": "topping-hotfudge",
+      "category": "fridge-rack",
+      "id": "00065",
+      "extension": "023",
+      "yield": 33.8,
+      "unit": -1
+    },
+    {
+      "slug": "topping-hotcaramel",
+      "category": "fridge-rack",
+      "id": "00069",
+      "extension": "026",
+      "yield": 33.8,
+      "unit": -1
+    },
+    {
+      "slug": "topping-smarties",
+      "category": "fridge-rack",
+      "id": "01839",
+      "extension": "068",
+      "yield": 0,
+      "unit": -1
+    },
+    {
+      "slug": "topping-oreo",
+      "category": "fridge-rack",
+      "id": "03471",
+      "extension": "101",
+      "yield": 22.22,
+      "unit": -1
+    },
+    {
+      "slug": "mcfizz-sakura",
+      "category": "fridge-rack",
+      "id": "12599",
+      "extension": "004",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "cups-tray-4",
+      "category": "fridge-rack",
+      "id": "00397",
+      "extension": "117",
+      "yield": 240,
+      "unit": 25
+    },
+    {
+      "slug": "cups-tray-2",
+      "category": "fridge-rack",
+      "id": "00247",
+      "extension": "016",
+      "yield": 480,
+      "unit": 25
+    },
+    {
+      "slug": "cups-flurry",
+      "category": "fridge-rack",
+      "id": "06373",
+      "extension": "640",
+      "yield": 54,
+      "unit": 1
+    },
+    {
+      "slug": "cups-shake-grimace",
+      "category": "fridge-rack",
+      "id": "00191",
+      "extension": "141",
+      "yield": 110,
+      "unit": 1
+    },
+    {
+      "slug": "cups-shake",
+      "category": "fridge-rack",
+      "id": "90155",
+      "extension": "869",
+      "yield": 110,
+      "unit": 1
+    },
+    {
+      "slug": "cups-sundae",
+      "category": "fridge-rack",
+      "id": "90261",
+      "extension": "258",
+      "yield": 56,
+      "unit": 1
+    },
+    {
+      "slug": "cups-drinks-l",
+      "category": "fridge-rack",
+      "id": "00768",
+      "extension": "130",
+      "yield": 60,
+      "unit": 1
+    },
+    {
+      "slug": "cups-drinks-m",
+      "category": "fridge-rack",
+      "id": "07334",
+      "extension": "712",
+      "yield": 65,
+      "unit": 1
+    },
+    {
+      "slug": "cups-drinks-s",
+      "category": "fridge-rack",
+      "id": "00191",
+      "extension": "126",
+      "yield": 110,
+      "unit": 1
+    },
+    {
+      "slug": "cups-courtesy",
+      "category": "fridge-rack",
+      "id": "00101",
+      "extension": "242",
+      "yield": 110,
+      "unit": 1
+    },
+    {
+      "slug": "cups-lids-drink",
+      "category": "fridge-rack",
+      "id": "15268",
+      "extension": "012",
+      "yield": 45,
+      "unit": 1
+    },
+    {
+      "slug": "cups-lids-sundae",
+      "category": "fridge-rack",
+      "id": "00335",
+      "extension": "179",
+      "yield": 32,
+      "unit": 1
+    },
+    {
+      "slug": "cups-straws",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "jug-in-box-stock",
+      "category": "fridge-rack",
+      "id": "02589",
+      "extension": "489",
+      "yield": 2,
+      "unit": 1
+    },
+    {
+      "slug": "food-ham",
+      "category": "fridge-rack",
+      "id": "03601",
+      "extension": "176",
+      "yield": 30,
+      "unit": 1
+    },
+    {
+      "slug": "food-baconslices",
+      "category": "fridge-rack",
+      "id": "91197",
+      "extension": "125",
+      "yield": 28,
+      "unit": 1
+    },
+    {
+      "slug": "food-saladmix",
+      "category": "fridge-rack",
+      "id": "05239",
+      "extension": "080",
+      "yield": 5,
+      "unit": 1
+    },
+    {
+      "slug": "food-baconcooked",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 1,
+      "unit": 1
+    },
+    {
+      "slug": "food-toast",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 1,
+      "unit": 5
+    },
+    {
+      "slug": "food-salad-mixed",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "food-salad-finished",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 5,
+      "unit": 1
+    },
+    {
+      "slug": "food-tomato-cherry",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 4
+    },
+    {
+      "slug": "food-tomato-ready",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 8
+    },
+    {
+      "slug": "food-tomato-slices",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 5,
+      "unit": 1
+    },
+    {
+      "slug": "food-onionshaker",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": -1
+    },
+    {
+      "slug": "food-onionprep",
+      "category": "fridge-rack",
+      "id": "00056",
+      "extension": "072",
+      "yield": 0,
+      "unit": -1
+    },
+    {
+      "slug": "food-pickles",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": -1
+    },
+    {
+      "slug": "food-saladbag-iceberg",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 4,
+      "unit": 1
+    },
+    {
+      "slug": "food-saladtray-iceberg",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 1,
+      "unit": 1
+    },
+    {
+      "slug": "food-onionbag-fresh",
+      "category": "fridge-rack",
+      "id": "00028",
+      "extension": "325",
+      "yield": 25,
+      "unit": 1
+    },
+    {
+      "slug": "food-onionbag-fried",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "food-cheese-cheddar",
+      "category": "fridge-rack",
+      "id": "00013",
+      "extension": "333",
+      "yield": 140,
+      "unit": 1
+    },
+    {
+      "slug": "food-cheese-whitecheddar",
+      "category": "fridge-rack",
+      "id": "19285",
+      "extension": "002",
+      "yield": 176,
+      "unit": 1
+    },
+    {
+      "slug": "food-cheese-grana",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "fridge-beercan",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "fridge-beerbottle-red",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "fridge-beerbottle-unfiltered",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "fridge-tropicana",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "fridge-hm-parmesan",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "fridge-hm-apple",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 0.5
+    },
+    {
+      "slug": "fridge-hm-grape",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "frige-hm-carrots",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 0.5
+    },
+    {
+      "slug": "fridge-hm-actimel",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 6
+    },
+    {
+      "slug": "drink-water-still",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "drink-water-carbonated",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "bag-carry-large",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 25
+    },
+    {
+      "slug": "bag-carry-salad",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 25
+    },
+    {
+      "slug": "bag-food-a",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 25
+    },
+    {
+      "slug": "bag-food-b",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 25
+    },
+    {
+      "slug": "bag-food-c",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 25
+    },
+    {
+      "slug": "paper-tissues",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "paper-tissues-cafe",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "paper-spoons",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "paper-cutlery",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "dip-ketchup",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "dip-mayo",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "dip-bbq",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "dip-sweetsour",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "dip-hotdevil",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "dip-event-sajaboys",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "dip-event-huntrix",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "dip-event-honeymustard",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "food-saladserve-oil",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": -1
+    },
+    {
+      "slug": "food-saladserve-vinegar",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": -1
+    },
+    {
+      "slug": "food-saladserve-balsamic",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": -1
+    },
+    {
+      "slug": "food-saladserve-breadsticks",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    }
+  ],
+  "areas": [
+    "mccafe",
+    "bdap",
+    "mcdrive",
+    "oat",
+    "fries",
+    "mfy-2",
+    "mfy-4",
+    "mfy-3",
+    "mfy-1",
+    "grill",
+    "cart",
+    "dishwashing",
+    "rear",
+    "walk-in",
+    "storeroom",
+    "floor",
+    "office",
+    "bop"
+  ],
+  "tasks": [
+    "dfs-intermediate"
+  ],
+  "buildups": [
+    "big-mac",
+    "crispy-mcbacon",
+    "mcchicken",
+    "big-tasty"
+  ],
+  "types": [
+    "expiration"
+  ],
+  "timeframes": [
+    "morning",
+    "intermediate",
+    "evening",
+    "night"
+  ],
+  "dictionary": [
+    {
+      "slug": "storage-cafe",
+      "status": "active",
+      "type": "categories",
+      "translations": {
+        "Italian": "Secco McCafe"
+      }
+    },
+    {
+      "slug": "storage-water",
+      "status": "active",
+      "type": "categories",
+      "translations": {
+        "Italian": "Acqua"
+      }
+    },
+    {
+      "slug": "storage-cups",
+      "status": "active",
+      "type": "categories",
+      "translations": {
+        "Italian": "Bibite"
+      }
+    },
+    {
+      "slug": "storage-bags",
+      "status": "active",
+      "type": "categories",
+      "translations": {
+        "Italian": "Sacchetti"
+      }
+    },
+    {
+      "slug": "storage-dessert",
+      "status": "active",
+      "type": "categories",
+      "translations": {
+        "Italian": "Toppings"
+      }
+    },
+    {
+      "slug": "storage-condiments",
+      "status": "active",
+      "type": "categories",
+      "translations": {
+        "Italian": "Condimenti"
+      }
+    },
+    {
+      "slug": "storage-packaging",
+      "status": "active",
+      "type": "categories",
+      "translations": {
+        "Italian": "Incarti"
+      }
+    },
+    {
+      "slug": "storage-wraps",
+      "status": "active",
+      "type": "categories",
+      "translations": {
+        "Italian": "Wraps"
+      }
+    },
+    {
+      "slug": "storage-food",
+      "status": "active",
+      "type": "categories",
+      "translations": {
+        "Italian": "Alimentare"
+      }
+    },
+    {
+      "slug": "fridge-cafe",
+      "status": "active",
+      "type": "categories",
+      "translations": {
+        "Italian": "Latte"
+      }
+    },
+    {
+      "slug": "fridge-dessert",
+      "status": "active",
+      "type": "categories",
+      "translations": {
+        "Italian": "Gelati"
+      }
+    },
+    {
+      "slug": "fridge-alcohol",
+      "status": "active",
+      "type": "categories",
+      "translations": {
+        "Italian": "Birre"
+      }
+    },
+    {
+      "slug": "fridge-grabngo",
+      "status": "active",
+      "type": "categories",
+      "translations": {
+        "Italian": "Grab&Go"
+      }
+    },
+    {
+      "slug": "fridge-rack",
+      "status": "active",
+      "type": "categories",
+      "translations": {
+        "Italian": "Tempering"
+      }
+    },
+    {
+      "slug": "fridge-salad",
+      "status": "active",
+      "type": "categories",
+      "translations": {
+        "Italian": "Insalate"
+      }
+    },
+    {
+      "slug": "fridge-prep",
+      "status": "active",
+      "type": "categories",
+      "translations": {
+        "Italian": "Fresco"
+      }
+    },
+    {
+      "slug": "freezer-cafe",
+      "status": "active",
+      "type": "categories",
+      "translations": {
+        "Italian": "Dolci"
+      }
+    },
+    {
+      "slug": "freezer-bread",
+      "status": "active",
+      "type": "categories",
+      "translations": {
+        "Italian": "Pane"
+      }
+    },
+    {
+      "slug": "freezer-boxes",
+      "status": "active",
+      "type": "categories",
+      "translations": {
+        "Italian": "Congelato"
+      }
+    },
+    {
+      "slug": "operative-detergents",
+      "status": "active",
+      "type": "categories",
+      "translations": {
+        "Italian": "Detersivi"
+      }
+    },
+    {
+      "slug": "operative-bags",
+      "status": "active",
+      "type": "categories",
+      "translations": {
+        "Italian": "Sacchetti"
+      }
+    },
+    {
+      "slug": "operative-equip",
+      "status": "active",
+      "type": "categories",
+      "translations": {
+        "Italian": "Equip"
+      }
+    },
+    {
+      "slug": "sauce-crispybacon",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Salsa Crispy"
+      }
+    },
+    {
+      "slug": "sauce-bigmac",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Salsa Big Mac"
+      }
+    },
+    {
+      "slug": "sauce-mcchicken",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Salsa McChicken"
+      }
+    },
+    {
+      "slug": "sauce-caesar",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Salsa Caesar"
+      }
+    },
+    {
+      "slug": "sauce-fish",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Salsa Filet o Fish"
+      }
+    },
+    {
+      "slug": "sauce-bigtasty",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Salsa Big Tasty"
+      }
+    },
+    {
+      "slug": "sauce-crunchy",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Salsa Yogurt"
+      }
+    },
+    {
+      "slug": "sauce-creation-mediterranean",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Salsa Mediterraneo"
+      }
+    },
+    {
+      "slug": "sauce-creation-roman",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Salsa Romano"
+      }
+    },
+    {
+      "slug": "sauce-nachocheese",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Salsa Cheddar"
+      }
+    },
+    {
+      "slug": "sauce-honeybbq",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Salsa BBQ Squeeze"
+      }
+    },
+    {
+      "slug": "sauce-ketchupbib",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Ketchup Dispenser"
+      }
+    },
+    {
+      "slug": "sauce-mustardbib",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Senape Dispenser"
+      }
+    },
+    {
+      "slug": "sauce-bbqhoney",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Salsa BBQ Squeeze"
+      }
+    },
+    {
+      "slug": "bun-regular",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Pane Regolare"
+      }
+    },
+    {
+      "slug": "bun-royal",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Pane Royal"
+      }
+    },
+    {
+      "slug": "bun-bigmac",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Pane Big Mac"
+      }
+    },
+    {
+      "slug": "bun-shiny",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Pane Shiny"
+      }
+    },
+    {
+      "slug": "bun-crunchy",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Pane Crunchy"
+      }
+    },
+    {
+      "slug": "bun-oval",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Pane Ovale"
+      }
+    },
+    {
+      "slug": "bun-tortilla",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Tortilla"
+      }
+    },
+    {
+      "slug": "bun-glutenfree",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Senza Glutine"
+      }
+    },
+    {
+      "slug": "pancakes",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Pancakes"
+      }
+    },
+    {
+      "slug": "bacon-bits",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Bacon Bits"
+      }
+    },
+    {
+      "slug": "topping-bacio",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Topping Bacio"
+      }
+    },
+    {
+      "slug": "topping-pistacchiokataifi",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Topping Pistacchio e Kataifi"
+      }
+    },
+    {
+      "slug": "topping-crunchychoco",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Topping Cioccolato Dubai"
+      }
+    },
+    {
+      "slug": "topping-hotfudge",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Topping Sundae Cioccolato"
+      }
+    },
+    {
+      "slug": "topping-hotcaramel",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Topping Sundae Caramello"
+      }
+    },
+    {
+      "slug": "topping-smarties",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Granella Smarties"
+      }
+    },
+    {
+      "slug": "topping-oreo",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Granella Oreo"
+      }
+    },
+    {
+      "slug": "mcfizz-sakura",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "McFizz Sakura"
+      }
+    },
+    {
+      "slug": "cups-tray-4",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Portabibite da 4"
+      }
+    },
+    {
+      "slug": "cups-tray-2",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Portabibite da 2"
+      }
+    },
+    {
+      "slug": "cups-flurry",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Bicchieri Flurry"
+      }
+    },
+    {
+      "slug": "cups-shake-grimace",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Bicchieri Shake (Grimace)"
+      }
+    },
+    {
+      "slug": "cups-shake",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Bicchieri Shake"
+      }
+    },
+    {
+      "slug": "cups-sundae",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Bicchieri Sundae"
+      }
+    },
+    {
+      "slug": "cups-drinks-l",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Bicchieri Bibita G"
+      }
+    },
+    {
+      "slug": "cups-drinks-m",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Bicchieri Bibite M"
+      }
+    },
+    {
+      "slug": "cups-drinks-s",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Bicchieri Bibite S"
+      }
+    },
+    {
+      "slug": "cups-courtesy",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Courtesy Cups"
+      }
+    },
+    {
+      "slug": "cups-lids-drink",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Tappi Bibite"
+      }
+    },
+    {
+      "slug": "cups-lids-sundae",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Tappi Sundae"
+      }
+    },
+    {
+      "slug": "cups-straws",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Cannucce"
+      }
+    },
+    {
+      "slug": "jug-in-box-stock",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Jug in Box Stock"
+      }
+    },
+    {
+      "slug": "food-ham",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Prosciutto Toast"
+      }
+    },
+    {
+      "slug": "food-baconslices",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Bacon a Fette"
+      }
+    },
+    {
+      "slug": "food-saladmix",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Salad Mix"
+      }
+    },
+    {
+      "slug": "food-baconcooked",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Bacon Cotto"
+      }
+    },
+    {
+      "slug": "food-toast",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Farciture Toast"
+      }
+    },
+    {
+      "slug": "food-salad-mixed",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Insalate Miste"
+      }
+    },
+    {
+      "slug": "food-salad-finished",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Insalate Finite"
+      }
+    },
+    {
+      "slug": "food-tomato-cherry",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Pomodori Ciliegini"
+      }
+    },
+    {
+      "slug": "food-tomato-ready",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Pomodori"
+      }
+    },
+    {
+      "slug": "food-tomato-slices",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Pomodori a Fette"
+      }
+    },
+    {
+      "slug": "food-onionshaker",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Onion Shaker"
+      }
+    },
+    {
+      "slug": "food-onionprep",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Cipolla Ricostruita"
+      }
+    },
+    {
+      "slug": "food-pickles",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Cetrioli"
+      }
+    },
+    {
+      "slug": "food-saladbag-iceberg",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Insalata Iceberg Busta"
+      }
+    },
+    {
+      "slug": "food-saladtray-iceberg",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Insalata Iceberg Cambro"
+      }
+    },
+    {
+      "slug": "food-onionbag-fresh",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Cipolla Fresca a Fette"
+      }
+    },
+    {
+      "slug": "food-onionbag-fried",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Cipolla Fritta"
+      }
+    },
+    {
+      "slug": "food-cheese-cheddar",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Formaggio Cheddar Stecca"
+      }
+    },
+    {
+      "slug": "food-cheese-whitecheddar",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Formaggio W. Cheddar Stecca"
+      }
+    },
+    {
+      "slug": "food-cheese-grana",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Formaggio Grana Scaglie"
+      }
+    },
+    {
+      "slug": "fridge-beercan",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Peroni Lattina"
+      }
+    },
+    {
+      "slug": "fridge-beerbottle-red",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Peroni Rossa"
+      }
+    },
+    {
+      "slug": "fridge-beerbottle-unfiltered",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Peroni Non Filtrata"
+      }
+    },
+    {
+      "slug": "fridge-tropicana",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Tropicana"
+      }
+    },
+    {
+      "slug": "fridge-hm-parmesan",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "HM Parmigiano"
+      }
+    },
+    {
+      "slug": "fridge-hm-apple",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "HM Mela"
+      }
+    },
+    {
+      "slug": "fridge-hm-grape",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "HM Uva"
+      }
+    },
+    {
+      "slug": "frige-hm-carrots",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "HM Carotine"
+      }
+    },
+    {
+      "slug": "fridge-hm-actimel",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "HM Actimel"
+      }
+    },
+    {
+      "slug": "drink-water-still",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Acqua Naturale Cassa"
+      }
+    },
+    {
+      "slug": "drink-water-carbonated",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Acqua Frizzante Cassa"
+      }
+    },
+    {
+      "slug": "bag-carry-large",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Carry Bag Large"
+      }
+    },
+    {
+      "slug": "bag-carry-salad",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Carry Bag Small"
+      }
+    },
+    {
+      "slug": "bag-food-a",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Sacchetto A"
+      }
+    },
+    {
+      "slug": "bag-food-b",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Sacchetto B"
+      }
+    },
+    {
+      "slug": "bag-food-c",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Sacchetto C"
+      }
+    },
+    {
+      "slug": "paper-tissues",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Tovaglioli"
+      }
+    },
+    {
+      "slug": "paper-tissues-cafe",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Tovaglioli McCafe"
+      }
+    },
+    {
+      "slug": "paper-spoons",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Cucchiaini Carta"
+      }
+    },
+    {
+      "slug": "paper-cutlery",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Posate Carta"
+      }
+    },
+    {
+      "slug": "dip-ketchup",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Dip Ketchup"
+      }
+    },
+    {
+      "slug": "dip-mayo",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Dip Mayo"
+      }
+    },
+    {
+      "slug": "dip-bbq",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Dip Barbecue"
+      }
+    },
+    {
+      "slug": "dip-sweetsour",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Dip Agrodolce"
+      }
+    },
+    {
+      "slug": "dip-hotdevil",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Dip Hot Devil"
+      }
+    },
+    {
+      "slug": "dip-event-sajaboys",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Dip Demon"
+      }
+    },
+    {
+      "slug": "dip-event-huntrix",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Dip Hunter"
+      }
+    },
+    {
+      "slug": "dip-event-honeymustard",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Dip Honey Mustard"
+      }
+    },
+    {
+      "slug": "food-saladserve-oil",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Condimento Olio"
+      }
+    },
+    {
+      "slug": "food-saladserve-vinegar",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Condimento Olio e Aceto"
+      }
+    },
+    {
+      "slug": "food-saladserve-balsamic",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Condimento Olio e Aceto B"
+      }
+    },
+    {
+      "slug": "food-saladserve-breadsticks",
+      "status": "active",
+      "type": "products",
+      "translations": {
+        "Italian": "Grissini"
+      }
+    },
+    {
+      "slug": "dfs-intermediate",
+      "status": "active",
+      "type": "tasks",
+      "translations": {
+        "Italian": "DFS (Intermezzo)"
+      }
+    },
+    {
+      "slug": "big-mac",
+      "status": "active",
+      "type": "buildups",
+      "translations": {
+        "Italian": "Big Mac"
+      }
+    },
+    {
+      "slug": "mccafe",
+      "status": "active",
+      "type": "areas",
+      "translations": {
+        "Italian": "McCafe"
+      }
+    },
+    {
+      "slug": "bdap",
+      "status": "active",
+      "type": "areas",
+      "translations": {
+        "Italian": "Beverage"
+      }
+    },
+    {
+      "slug": "mcdrive",
+      "status": "active",
+      "type": "areas",
+      "translations": {
+        "Italian": "McDrive"
+      }
+    },
+    {
+      "slug": "oat",
+      "status": "active",
+      "type": "areas",
+      "translations": {
+        "Italian": "Front Counter"
+      }
+    },
+    {
+      "slug": "fries",
+      "status": "active",
+      "type": "areas",
+      "translations": {
+        "Italian": "Patate"
+      }
+    },
+    {
+      "slug": "mfy-2",
+      "status": "active",
+      "type": "areas",
+      "translations": {
+        "Italian": "Linea 2"
+      }
+    },
+    {
+      "slug": "mfy-4",
+      "status": "active",
+      "type": "areas",
+      "translations": {
+        "Italian": "Linea 4"
+      }
+    },
+    {
+      "slug": "mfy-3",
+      "status": "active",
+      "type": "areas",
+      "translations": {
+        "Italian": "Linea 3"
+      }
+    },
+    {
+      "slug": "mfy-1",
+      "status": "active",
+      "type": "areas",
+      "translations": {
+        "Italian": "Linea 1"
+      }
+    },
+    {
+      "slug": "grill",
+      "status": "active",
+      "type": "areas",
+      "translations": {
+        "Italian": "Griglia"
+      }
+    },
+    {
+      "slug": "cart",
+      "status": "active",
+      "type": "areas",
+      "translations": {
+        "Italian": "Carrello"
+      }
+    },
+    {
+      "slug": "dishwashing",
+      "status": "active",
+      "type": "areas",
+      "translations": {
+        "Italian": "Lavaggio"
+      }
+    },
+    {
+      "slug": "rear",
+      "status": "active",
+      "type": "areas",
+      "translations": {
+        "Italian": "Retro"
+      }
+    },
+    {
+      "slug": "walk-in",
+      "status": "active",
+      "type": "areas",
+      "translations": {
+        "Italian": "Cella Positiva/Negativa"
+      }
+    },
+    {
+      "slug": "storeroom",
+      "status": "active",
+      "type": "areas",
+      "translations": {
+        "Italian": "Magazzino"
+      }
+    },
+    {
+      "slug": "floor",
+      "status": "active",
+      "type": "areas",
+      "translations": {
+        "Italian": "Floor"
+      }
+    },
+    {
+      "slug": "office",
+      "status": "active",
+      "type": "areas",
+      "translations": {
+        "Italian": "Ufficio"
+      }
+    },
+    {
+      "slug": "bop",
+      "status": "active",
+      "type": "areas",
+      "translations": {
+        "Italian": "Fritti"
+      }
+    },
+    {
+      "slug": "morning",
+      "status": "active",
+      "type": "timeframes",
+      "translations": {
+        "Italian": "Apertura"
+      }
+    },
+    {
+      "slug": "intermediate",
+      "status": "active",
+      "type": "timeframes",
+      "translations": {
+        "Italian": "Intermezzo"
+      }
+    },
+    {
+      "slug": "evening",
+      "status": "active",
+      "type": "timeframes",
+      "translations": {
+        "Italian": "Chiusura"
+      }
+    },
+    {
+      "slug": "night",
+      "status": "active",
+      "type": "timeframes",
+      "translations": {
+        "Italian": "Notte"
+      }
+    },
+    {
+      "slug": "expiration",
+      "status": "active",
+      "type": "types",
+      "translations": {
+        "Italian": "Scadenza"
+      }
+    },
+    {
+      "slug": "crispy-mcbacon",
+      "status": "missing",
+      "type": "buildups",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "mcchicken",
+      "status": "missing",
+      "type": "buildups",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "big-tasty",
+      "status": "missing",
+      "type": "buildups",
+      "translations": {
+        "Italian": ""
+      }
+    }
+  ]
+}

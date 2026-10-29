@@ -1,0 +1,3091 @@
+{
+  "categories": [
+    {
+      "slug": "storage-cafe",
+      "id": 1
+    },
+    {
+      "slug": "storage-water",
+      "id": 2
+    },
+    {
+      "slug": "storage-cups",
+      "id": 3
+    },
+    {
+      "slug": "storage-bags",
+      "id": 4
+    },
+    {
+      "slug": "storage-dessert",
+      "id": 5
+    },
+    {
+      "slug": "storage-condiments",
+      "id": 6
+    },
+    {
+      "slug": "storage-packaging",
+      "id": 7
+    },
+    {
+      "slug": "storage-wraps",
+      "id": 8
+    },
+    {
+      "slug": "storage-food",
+      "id": 9
+    },
+    {
+      "slug": "fridge-cafe",
+      "id": 10
+    },
+    {
+      "slug": "fridge-dessert",
+      "id": 11
+    },
+    {
+      "slug": "fridge-alcohol",
+      "id": 12
+    },
+    {
+      "slug": "fridge-grabngo",
+      "id": 13
+    },
+    {
+      "slug": "fridge-rack",
+      "id": 14
+    },
+    {
+      "slug": "fridge-salad",
+      "id": 15
+    },
+    {
+      "slug": "fridge-prep",
+      "id": 16
+    },
+    {
+      "slug": "freezer-cafe",
+      "id": 17
+    },
+    {
+      "slug": "freezer-bread",
+      "id": 18
+    },
+    {
+      "slug": "freezer-boxes",
+      "id": 19
+    },
+    {
+      "slug": "operative-detergents",
+      "id": 20
+    },
+    {
+      "slug": "operative-bags",
+      "id": 21
+    },
+    {
+      "slug": "operative-equip",
+      "id": 22
+    }
+  ],
+  "dictionary": [
+    {
+      "slug": "morning",
+      "status": "outdated",
+      "type": "daypart",
+      "subtype": "",
+      "order": 1,
+      "note": "",
+      "translations": {
+        "Italian": "Apertura"
+      }
+    },
+    {
+      "slug": "intermediate",
+      "status": "outdated",
+      "type": "daypart",
+      "subtype": "",
+      "order": 2,
+      "note": "",
+      "translations": {
+        "Italian": "Intermezzo"
+      }
+    },
+    {
+      "slug": "evening",
+      "status": "outdated",
+      "type": "daypart",
+      "subtype": "",
+      "order": 3,
+      "note": "",
+      "translations": {
+        "Italian": "Chiusura"
+      }
+    },
+    {
+      "slug": "night",
+      "status": "outdated",
+      "type": "daypart",
+      "subtype": "",
+      "order": 4,
+      "note": "",
+      "translations": {
+        "Italian": "Notte"
+      }
+    },
+    {
+      "slug": "mccafe",
+      "status": "outdated",
+      "type": "location",
+      "subtype": "",
+      "order": 1,
+      "note": "",
+      "translations": {
+        "Italian": "McCafe"
+      }
+    },
+    {
+      "slug": "bdap",
+      "status": "outdated",
+      "type": "location",
+      "subtype": "",
+      "order": 2,
+      "note": "was beverages",
+      "translations": {
+        "Italian": "Beverage"
+      }
+    },
+    {
+      "slug": "mcdrive",
+      "status": "outdated",
+      "type": "location",
+      "subtype": "",
+      "order": 3,
+      "note": "was drive",
+      "translations": {
+        "Italian": "McDrive"
+      }
+    },
+    {
+      "slug": "oat",
+      "status": "outdated",
+      "type": "location",
+      "subtype": "",
+      "order": 4,
+      "note": "was front",
+      "translations": {
+        "Italian": "Front Counter"
+      }
+    },
+    {
+      "slug": "fries",
+      "status": "outdated",
+      "type": "location",
+      "subtype": "",
+      "order": 5,
+      "note": "",
+      "translations": {
+        "Italian": "Patate"
+      }
+    },
+    {
+      "slug": "mfy-2",
+      "status": "outdated",
+      "type": "location",
+      "subtype": "",
+      "order": 6,
+      "note": "was side-2",
+      "translations": {
+        "Italian": "Linea 2"
+      }
+    },
+    {
+      "slug": "mfy-4",
+      "status": "outdated",
+      "type": "location",
+      "subtype": "",
+      "order": 7,
+      "note": "was side-4",
+      "translations": {
+        "Italian": "Linea 4"
+      }
+    },
+    {
+      "slug": "mfy-3",
+      "status": "outdated",
+      "type": "location",
+      "subtype": "",
+      "order": 8,
+      "note": "was side-3",
+      "translations": {
+        "Italian": "Linea 3"
+      }
+    },
+    {
+      "slug": "mfy-1",
+      "status": "outdated",
+      "type": "location",
+      "subtype": "",
+      "order": 9,
+      "note": "was side-1",
+      "translations": {
+        "Italian": "Linea 1"
+      }
+    },
+    {
+      "slug": "grill",
+      "status": "outdated",
+      "type": "location",
+      "subtype": "",
+      "order": 10,
+      "note": "",
+      "translations": {
+        "Italian": "Griglia"
+      }
+    },
+    {
+      "slug": "cart",
+      "status": "outdated",
+      "type": "location",
+      "subtype": "",
+      "order": 11,
+      "note": "",
+      "translations": {
+        "Italian": "Carrello"
+      }
+    },
+    {
+      "slug": "dishwashing",
+      "status": "outdated",
+      "type": "location",
+      "subtype": "",
+      "order": 12,
+      "note": "",
+      "translations": {
+        "Italian": "Lavaggio"
+      }
+    },
+    {
+      "slug": "rear",
+      "status": "outdated",
+      "type": "location",
+      "subtype": "",
+      "order": 13,
+      "note": "",
+      "translations": {
+        "Italian": "Retro"
+      }
+    },
+    {
+      "slug": "walk-in",
+      "status": "outdated",
+      "type": "location",
+      "subtype": "",
+      "order": 14,
+      "note": "consider splitting into two locations",
+      "translations": {
+        "Italian": "Cella Positiva/Negativa"
+      }
+    },
+    {
+      "slug": "storeroom",
+      "status": "outdated",
+      "type": "location",
+      "subtype": "",
+      "order": 15,
+      "note": "",
+      "translations": {
+        "Italian": "Magazzino"
+      }
+    },
+    {
+      "slug": "floor",
+      "status": "outdated",
+      "type": "location",
+      "subtype": "",
+      "order": 16,
+      "note": "",
+      "translations": {
+        "Italian": "Floor"
+      }
+    },
+    {
+      "slug": "office",
+      "status": "outdated",
+      "type": "location",
+      "subtype": "",
+      "order": 17,
+      "note": "was \"management\"",
+      "translations": {
+        "Italian": "Ufficio"
+      }
+    },
+    {
+      "slug": "bop",
+      "status": "outdated",
+      "type": "location",
+      "subtype": "",
+      "order": null,
+      "note": "not used yet (no old area)",
+      "translations": {
+        "Italian": "Fritti"
+      }
+    },
+    {
+      "slug": "reorder",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "reorder",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Ordine"
+      }
+    },
+    {
+      "slug": "exp-milk",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Scadenza Latte"
+      }
+    },
+    {
+      "slug": "exp-cream",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Scadenza Panna"
+      }
+    },
+    {
+      "slug": "exp-book",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "guess: expiry logbook",
+      "translations": {
+        "Italian": "Scadenze Libro"
+      }
+    },
+    {
+      "slug": "exp-stock",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Scadenze Scorte"
+      }
+    },
+    {
+      "slug": "exp-oranges",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Scadenza Arance"
+      }
+    },
+    {
+      "slug": "pink-spoons",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "check",
+      "order": null,
+      "note": "guess: pink tasting spoons",
+      "translations": {
+        "Italian": "Cucchiaini Rosa"
+      }
+    },
+    {
+      "slug": "exp-mcfizz",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Scadenza McFizz"
+      }
+    },
+    {
+      "slug": "display-fridge",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "check",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Frigo Vetrina"
+      }
+    },
+    {
+      "slug": "exp-salad-mixed",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "product: food-salad-mixed",
+      "translations": {
+        "Italian": "Scadenza Insalate Miste"
+      }
+    },
+    {
+      "slug": "exp-mayo",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "product: dip-mayo?",
+      "translations": {
+        "Italian": "Scadenza Mayo"
+      }
+    },
+    {
+      "slug": "exp-cacio-e-pepe",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Scadenza Cacio e Pepe"
+      }
+    },
+    {
+      "slug": "exp-bacon-bits",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "product: bacon-bits",
+      "translations": {
+        "Italian": "Scadenza Bacon Bits"
+      }
+    },
+    {
+      "slug": "exp-cheddar",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Scadenza Cheddar"
+      }
+    },
+    {
+      "slug": "shutdown-fryer",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "shutdown",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Spegnimento Fryer"
+      }
+    },
+    {
+      "slug": "cover-fryer",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "cover",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Coperchi Fryer"
+      }
+    },
+    {
+      "slug": "exp-toast-fillings",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Scadenza Farciture Toast"
+      }
+    },
+    {
+      "slug": "exp-salad",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "product: food-salad-finished?",
+      "translations": {
+        "Italian": "Scadenza Insalate"
+      }
+    },
+    {
+      "slug": "exp-misc-fridge-fresh",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Scadenze Varie Frigo Fresco"
+      }
+    },
+    {
+      "slug": "exp-bread-line",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Scadenza Pane Linea"
+      }
+    },
+    {
+      "slug": "exp-tortilla-open",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "product: bun-tortilla?",
+      "translations": {
+        "Italian": "Scadenza Tortilla Busta Aperta"
+      }
+    },
+    {
+      "slug": "exp-tomatoes",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Scadenza Pomodori"
+      }
+    },
+    {
+      "slug": "clock-fried-fridge",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "clock",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Orologi Frigo Fritti"
+      }
+    },
+    {
+      "slug": "exp-misc-fridge-line",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Scadenze Varie Frigo Linea"
+      }
+    },
+    {
+      "slug": "exp-bbq",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Scadenza BBQ"
+      }
+    },
+    {
+      "slug": "shutdown-uhc",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "shutdown",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Spegnimento UHC"
+      }
+    },
+    {
+      "slug": "shutdown-counter",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "shutdown",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Spegnimento Banco"
+      }
+    },
+    {
+      "slug": "shutdown-toaster-steamer",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "shutdown",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Spegnimento Toaster/Steamer"
+      }
+    },
+    {
+      "slug": "exp-portion-cups",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "guess: bussolotti = small sauce cups",
+      "translations": {
+        "Italian": "Scadenze Bussolotti"
+      }
+    },
+    {
+      "slug": "exp-bacon",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Scadenza Bacon"
+      }
+    },
+    {
+      "slug": "trays-position",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "check",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Posizione Trays"
+      }
+    },
+    {
+      "slug": "clean-utensils",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "cleaning",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Pulizia Strumenti"
+      }
+    },
+    {
+      "slug": "exp-onion-shaker",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "product: food-onionshaker",
+      "translations": {
+        "Italian": "Scadenza Onion Shaker"
+      }
+    },
+    {
+      "slug": "exp-ketchup-bib",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "product: dip-ketchup / sauce-ketchupbib?",
+      "translations": {
+        "Italian": "Scadenza Ketchup Bib"
+      }
+    },
+    {
+      "slug": "clock-4-1",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "clock",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Orologi 4:1"
+      }
+    },
+    {
+      "slug": "cover-4-1",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "cover",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Coperchi 4:1"
+      }
+    },
+    {
+      "slug": "tempering-cart-retrieve",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "tempering",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Recupero Carrello Tempering"
+      }
+    },
+    {
+      "slug": "exp-sauce-tubes",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Scadenza Salse Tubo"
+      }
+    },
+    {
+      "slug": "tempering-cheddar-stack",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "tempering",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Tempering Cheddar a Pile"
+      }
+    },
+    {
+      "slug": "exp-handwash",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Scadenza Lavaggio Mani"
+      }
+    },
+    {
+      "slug": "trace-salads",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "trace",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Traccia Insalate"
+      }
+    },
+    {
+      "slug": "trace-bacon-bits",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "trace",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Traccia Bacon Bits"
+      }
+    },
+    {
+      "slug": "trace-corn-olives-carrots",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "trace",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Traccia Mais/Olive/Carote"
+      }
+    },
+    {
+      "slug": "exp-buckets",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Scadenza Secchi"
+      }
+    },
+    {
+      "slug": "exp-sink",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Scadenza Vasca"
+      }
+    },
+    {
+      "slug": "exp-bread",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Scadenza Pane"
+      }
+    },
+    {
+      "slug": "exp-tea",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Scadenza The"
+      }
+    },
+    {
+      "slug": "temp-cold-rooms",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "temperature",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Temperatura Celle"
+      }
+    },
+    {
+      "slug": "exp-onion-rehydrated",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Scadenza Cipolla Ricostruita"
+      }
+    },
+    {
+      "slug": "exp-fillet",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Scadenza Filetto"
+      }
+    },
+    {
+      "slug": "trace-tomatoes",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "trace",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Traccia Pomodori"
+      }
+    },
+    {
+      "slug": "exp-topping-bacio",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "product: topping-bacio",
+      "translations": {
+        "Italian": "Scadenza Topping Bacio"
+      }
+    },
+    {
+      "slug": "exp-topping-dubai",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "expiration",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Scadenza Topping Dubai"
+      }
+    },
+    {
+      "slug": "floor-indoor",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "floor",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Indoor"
+      }
+    },
+    {
+      "slug": "floor-outdoor",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "floor",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Outdoor"
+      }
+    },
+    {
+      "slug": "floor-drive-thru",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "floor",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Drive-Thru"
+      }
+    },
+    {
+      "slug": "work-assignments",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "management",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Work Assignments"
+      }
+    },
+    {
+      "slug": "breaks",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "management",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "Breaks"
+      }
+    },
+    {
+      "slug": "dfs",
+      "status": "outdated",
+      "type": "task",
+      "subtype": "management",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": "DFS"
+      }
+    },
+    {
+      "slug": "storage-cafe",
+      "status": "missing",
+      "type": "category",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "storage-water",
+      "status": "missing",
+      "type": "category",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "storage-cups",
+      "status": "missing",
+      "type": "category",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "storage-bags",
+      "status": "missing",
+      "type": "category",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "storage-dessert",
+      "status": "missing",
+      "type": "category",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "storage-condiments",
+      "status": "missing",
+      "type": "category",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "storage-packaging",
+      "status": "missing",
+      "type": "category",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "storage-wraps",
+      "status": "missing",
+      "type": "category",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "storage-food",
+      "status": "missing",
+      "type": "category",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "fridge-cafe",
+      "status": "missing",
+      "type": "category",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "fridge-dessert",
+      "status": "missing",
+      "type": "category",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "fridge-alcohol",
+      "status": "missing",
+      "type": "category",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "fridge-grabngo",
+      "status": "missing",
+      "type": "category",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "fridge-rack",
+      "status": "missing",
+      "type": "category",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "fridge-salad",
+      "status": "missing",
+      "type": "category",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "fridge-prep",
+      "status": "missing",
+      "type": "category",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "freezer-cafe",
+      "status": "missing",
+      "type": "category",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "freezer-bread",
+      "status": "missing",
+      "type": "category",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "freezer-boxes",
+      "status": "missing",
+      "type": "category",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "operative-detergents",
+      "status": "missing",
+      "type": "category",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "operative-bags",
+      "status": "missing",
+      "type": "category",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "operative-equip",
+      "status": "missing",
+      "type": "category",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "sauce-crispybacon",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "sauce-bigmac",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "sauce-mcchicken",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "sauce-caesar",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "sauce-fish",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "sauce-bigtasty",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "sauce-crunchy",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "sauce-creation-mediterranean",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "sauce-creation-roman",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "sauce-nachocheese",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "sauce-honeybbq",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "sauce-ketchupbib",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "sauce-mustardbib",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "sauce-bbqhoney",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "bun-regular",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "bun-royal",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "bun-bigmac",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "bun-shiny",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "bun-crunchy",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "bun-oval",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "bun-tortilla",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "bun-glutenfree",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "pancakes",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "bacon-bits",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "topping-bacio",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "topping-pistacchiokataifi",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "topping-crunchychoco",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "topping-hotfudge",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "topping-hotcaramel",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "topping-smarties",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "topping-oreo",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "mcfizz-sakura",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "cups-tray-4",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "cups-tray-2",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "cups-flurry",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "cups-shake-grimace",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "cups-shake",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "cups-sundae",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "cups-drinks-l",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "cups-drinks-m",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "cups-drinks-s",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "cups-courtesy",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "cups-lids-drink",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "cups-lids-sundae",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "cups-straws",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "jug-in-box-stock",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "food-ham",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "food-baconslices",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "food-saladmix",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "food-baconcooked",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "food-toast",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "food-salad-mixed",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "food-salad-finished",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "food-tomato-cherry",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "food-tomato-ready",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "food-tomato-slices",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "food-onionshaker",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "food-onionprep",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "food-pickles",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "food-saladbag-iceberg",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "food-saladtray-iceberg",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "food-onionbag-fresh",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "food-onionbag-fried",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "food-cheese-cheddar",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "food-cheese-whitecheddar",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "food-cheese-grana",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "fridge-beercan",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "fridge-beerbottle-red",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "fridge-beerbottle-unfiltered",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "fridge-tropicana",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "fridge-hm-parmesan",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "fridge-hm-apple",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "fridge-hm-grape",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "frige-hm-carrots",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "fridge-hm-actimel",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "drink-water-still",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "drink-water-carbonated",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "bag-carry-large",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "bag-carry-salad",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "bag-food-a",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "bag-food-b",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "bag-food-c",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "paper-tissues",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "paper-tissues-cafe",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "paper-spoons",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "paper-cutlery",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "dip-ketchup",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "dip-mayo",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "dip-bbq",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "dip-sweetsour",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "dip-hotdevil",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "dip-event-sajaboys",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "dip-event-huntrix",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "dip-event-honeymustard",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "food-saladserve-oil",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "food-saladserve-vinegar",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "food-saladserve-balsamic",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    },
+    {
+      "slug": "food-saladserve-breadsticks",
+      "status": "missing",
+      "type": "product",
+      "subtype": "",
+      "order": null,
+      "note": "",
+      "translations": {
+        "Italian": ""
+      }
+    }
+  ],
+  "products": [
+    {
+      "slug": "sauce-crispybacon",
+      "category": "fridge-rack",
+      "id": "04552",
+      "extension": "116",
+      "yield": 75,
+      "unit": 1
+    },
+    {
+      "slug": "sauce-bigmac",
+      "category": "fridge-rack",
+      "id": "00055",
+      "extension": "341",
+      "yield": 25,
+      "unit": 1
+    },
+    {
+      "slug": "sauce-mcchicken",
+      "category": "fridge-rack",
+      "id": "00010",
+      "extension": "070",
+      "yield": 37.3,
+      "unit": 1
+    },
+    {
+      "slug": "sauce-caesar",
+      "category": "fridge-rack",
+      "id": "10685",
+      "extension": "026",
+      "yield": 75,
+      "unit": 1
+    },
+    {
+      "slug": "sauce-fish",
+      "category": "fridge-rack",
+      "id": "00009",
+      "extension": "328",
+      "yield": 37.5,
+      "unit": 1
+    },
+    {
+      "slug": "sauce-bigtasty",
+      "category": "fridge-rack",
+      "id": "07919",
+      "extension": "101",
+      "yield": 37.5,
+      "unit": 1
+    },
+    {
+      "slug": "sauce-crunchy",
+      "category": "fridge-rack",
+      "id": "02970",
+      "extension": "104",
+      "yield": 25,
+      "unit": 1
+    },
+    {
+      "slug": "sauce-creation-mediterranean",
+      "category": "fridge-rack",
+      "id": "07970",
+      "extension": "063",
+      "yield": 25,
+      "unit": 1
+    },
+    {
+      "slug": "sauce-creation-roman",
+      "category": "fridge-rack",
+      "id": "17484",
+      "extension": "000",
+      "yield": 25,
+      "unit": 1
+    },
+    {
+      "slug": "sauce-nachocheese",
+      "category": "fridge-rack",
+      "id": "03467",
+      "extension": "080",
+      "yield": 16.67,
+      "unit": 1
+    },
+    {
+      "slug": "sauce-honeybbq",
+      "category": "fridge-rack",
+      "id": "04180",
+      "extension": "144",
+      "yield": 37.5,
+      "unit": 1
+    },
+    {
+      "slug": "sauce-ketchupbib",
+      "category": "fridge-rack",
+      "id": "02679",
+      "extension": "079",
+      "yield": 100,
+      "unit": 1
+    },
+    {
+      "slug": "sauce-mustardbib",
+      "category": "fridge-rack",
+      "id": "00026",
+      "extension": "054",
+      "yield": 1428.5,
+      "unit": 1
+    },
+    {
+      "slug": "sauce-bbqhoney",
+      "category": "fridge-rack",
+      "id": "04180",
+      "extension": "222",
+      "yield": 37.5,
+      "unit": 1
+    },
+    {
+      "slug": "bun-regular",
+      "category": "fridge-rack",
+      "id": "00001",
+      "extension": "911",
+      "yield": 68,
+      "unit": 1
+    },
+    {
+      "slug": "bun-royal",
+      "category": "fridge-rack",
+      "id": "00002",
+      "extension": "770",
+      "yield": 60,
+      "unit": 1
+    },
+    {
+      "slug": "bun-bigmac",
+      "category": "fridge-rack",
+      "id": "90003",
+      "extension": "588",
+      "yield": 30,
+      "unit": 1
+    },
+    {
+      "slug": "bun-shiny",
+      "category": "fridge-rack",
+      "id": "10332",
+      "extension": "057",
+      "yield": 40,
+      "unit": 1
+    },
+    {
+      "slug": "bun-crunchy",
+      "category": "fridge-rack",
+      "id": "17581",
+      "extension": "047",
+      "yield": 60,
+      "unit": 0.5
+    },
+    {
+      "slug": "bun-oval",
+      "category": "fridge-rack",
+      "id": "03463",
+      "extension": "330",
+      "yield": 48,
+      "unit": 0.5
+    },
+    {
+      "slug": "bun-tortilla",
+      "category": "fridge-rack",
+      "id": "02683",
+      "extension": "081",
+      "yield": 18,
+      "unit": 1
+    },
+    {
+      "slug": "bun-glutenfree",
+      "category": "fridge-rack",
+      "id": "12342",
+      "extension": "003",
+      "yield": 1,
+      "unit": 3
+    },
+    {
+      "slug": "pancakes",
+      "category": "fridge-rack",
+      "id": "05358",
+      "extension": "001",
+      "yield": 6,
+      "unit": 1
+    },
+    {
+      "slug": "bacon-bits",
+      "category": "fridge-rack",
+      "id": "00425",
+      "extension": "107",
+      "yield": 50,
+      "unit": 1
+    },
+    {
+      "slug": "topping-bacio",
+      "category": "fridge-rack",
+      "id": "99008",
+      "extension": "004",
+      "yield": 166.6,
+      "unit": -1
+    },
+    {
+      "slug": "topping-pistacchiokataifi",
+      "category": "fridge-rack",
+      "id": "20170",
+      "extension": "001",
+      "yield": 200,
+      "unit": -1
+    },
+    {
+      "slug": "topping-crunchychoco",
+      "category": "fridge-rack",
+      "id": "90867",
+      "extension": "000",
+      "yield": 98,
+      "unit": 1
+    },
+    {
+      "slug": "topping-hotfudge",
+      "category": "fridge-rack",
+      "id": "00065",
+      "extension": "023",
+      "yield": 33.8,
+      "unit": -1
+    },
+    {
+      "slug": "topping-hotcaramel",
+      "category": "fridge-rack",
+      "id": "00069",
+      "extension": "026",
+      "yield": 33.8,
+      "unit": -1
+    },
+    {
+      "slug": "topping-smarties",
+      "category": "fridge-rack",
+      "id": "01839",
+      "extension": "068",
+      "yield": 0,
+      "unit": -1
+    },
+    {
+      "slug": "topping-oreo",
+      "category": "fridge-rack",
+      "id": "03471",
+      "extension": "101",
+      "yield": 22.22,
+      "unit": -1
+    },
+    {
+      "slug": "mcfizz-sakura",
+      "category": "fridge-rack",
+      "id": "12599",
+      "extension": "004",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "cups-tray-4",
+      "category": "fridge-rack",
+      "id": "00397",
+      "extension": "117",
+      "yield": 240,
+      "unit": 25
+    },
+    {
+      "slug": "cups-tray-2",
+      "category": "fridge-rack",
+      "id": "00247",
+      "extension": "016",
+      "yield": 480,
+      "unit": 25
+    },
+    {
+      "slug": "cups-flurry",
+      "category": "fridge-rack",
+      "id": "06373",
+      "extension": "640",
+      "yield": 54,
+      "unit": 1
+    },
+    {
+      "slug": "cups-shake-grimace",
+      "category": "fridge-rack",
+      "id": "00191",
+      "extension": "141",
+      "yield": 110,
+      "unit": 1
+    },
+    {
+      "slug": "cups-shake",
+      "category": "fridge-rack",
+      "id": "90155",
+      "extension": "869",
+      "yield": 110,
+      "unit": 1
+    },
+    {
+      "slug": "cups-sundae",
+      "category": "fridge-rack",
+      "id": "90261",
+      "extension": "258",
+      "yield": 56,
+      "unit": 1
+    },
+    {
+      "slug": "cups-drinks-l",
+      "category": "fridge-rack",
+      "id": "00768",
+      "extension": "130",
+      "yield": 60,
+      "unit": 1
+    },
+    {
+      "slug": "cups-drinks-m",
+      "category": "fridge-rack",
+      "id": "07334",
+      "extension": "712",
+      "yield": 65,
+      "unit": 1
+    },
+    {
+      "slug": "cups-drinks-s",
+      "category": "fridge-rack",
+      "id": "00191",
+      "extension": "126",
+      "yield": 110,
+      "unit": 1
+    },
+    {
+      "slug": "cups-courtesy",
+      "category": "fridge-rack",
+      "id": "00101",
+      "extension": "242",
+      "yield": 110,
+      "unit": 1
+    },
+    {
+      "slug": "cups-lids-drink",
+      "category": "fridge-rack",
+      "id": "15268",
+      "extension": "012",
+      "yield": 45,
+      "unit": 1
+    },
+    {
+      "slug": "cups-lids-sundae",
+      "category": "fridge-rack",
+      "id": "00335",
+      "extension": "179",
+      "yield": 32,
+      "unit": 1
+    },
+    {
+      "slug": "cups-straws",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "jug-in-box-stock",
+      "category": "fridge-rack",
+      "id": "02589",
+      "extension": "489",
+      "yield": 2,
+      "unit": 1
+    },
+    {
+      "slug": "food-ham",
+      "category": "fridge-rack",
+      "id": "03601",
+      "extension": "176",
+      "yield": 30,
+      "unit": 1
+    },
+    {
+      "slug": "food-baconslices",
+      "category": "fridge-rack",
+      "id": "91197",
+      "extension": "125",
+      "yield": 28,
+      "unit": 1
+    },
+    {
+      "slug": "food-saladmix",
+      "category": "fridge-rack",
+      "id": "05239",
+      "extension": "080",
+      "yield": 5,
+      "unit": 1
+    },
+    {
+      "slug": "food-baconcooked",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 1,
+      "unit": 1
+    },
+    {
+      "slug": "food-toast",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 1,
+      "unit": 5
+    },
+    {
+      "slug": "food-salad-mixed",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "food-salad-finished",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 5,
+      "unit": 1
+    },
+    {
+      "slug": "food-tomato-cherry",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 4
+    },
+    {
+      "slug": "food-tomato-ready",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 8
+    },
+    {
+      "slug": "food-tomato-slices",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 5,
+      "unit": 1
+    },
+    {
+      "slug": "food-onionshaker",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": -1
+    },
+    {
+      "slug": "food-onionprep",
+      "category": "fridge-rack",
+      "id": "00056",
+      "extension": "072",
+      "yield": 0,
+      "unit": -1
+    },
+    {
+      "slug": "food-pickles",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": -1
+    },
+    {
+      "slug": "food-saladbag-iceberg",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 4,
+      "unit": 1
+    },
+    {
+      "slug": "food-saladtray-iceberg",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 1,
+      "unit": 1
+    },
+    {
+      "slug": "food-onionbag-fresh",
+      "category": "fridge-rack",
+      "id": "00028",
+      "extension": "325",
+      "yield": 25,
+      "unit": 1
+    },
+    {
+      "slug": "food-onionbag-fried",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "food-cheese-cheddar",
+      "category": "fridge-rack",
+      "id": "00013",
+      "extension": "333",
+      "yield": 140,
+      "unit": 1
+    },
+    {
+      "slug": "food-cheese-whitecheddar",
+      "category": "fridge-rack",
+      "id": "19285",
+      "extension": "002",
+      "yield": 176,
+      "unit": 1
+    },
+    {
+      "slug": "food-cheese-grana",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "fridge-beercan",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "fridge-beerbottle-red",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "fridge-beerbottle-unfiltered",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "fridge-tropicana",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "fridge-hm-parmesan",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "fridge-hm-apple",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 0.5
+    },
+    {
+      "slug": "fridge-hm-grape",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "frige-hm-carrots",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 0.5
+    },
+    {
+      "slug": "fridge-hm-actimel",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 6
+    },
+    {
+      "slug": "drink-water-still",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "drink-water-carbonated",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "bag-carry-large",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 25
+    },
+    {
+      "slug": "bag-carry-salad",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 25
+    },
+    {
+      "slug": "bag-food-a",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 25
+    },
+    {
+      "slug": "bag-food-b",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 25
+    },
+    {
+      "slug": "bag-food-c",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 25
+    },
+    {
+      "slug": "paper-tissues",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "paper-tissues-cafe",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "paper-spoons",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "paper-cutlery",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "dip-ketchup",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "dip-mayo",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "dip-bbq",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "dip-sweetsour",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "dip-hotdevil",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "dip-event-sajaboys",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "dip-event-huntrix",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "dip-event-honeymustard",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    },
+    {
+      "slug": "food-saladserve-oil",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": -1
+    },
+    {
+      "slug": "food-saladserve-vinegar",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": -1
+    },
+    {
+      "slug": "food-saladserve-balsamic",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": -1
+    },
+    {
+      "slug": "food-saladserve-breadsticks",
+      "category": "fridge-rack",
+      "id": "MISSING",
+      "extension": "MISSING",
+      "yield": 0,
+      "unit": 1
+    }
+  ]
+}

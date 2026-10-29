@@ -8,10 +8,10 @@ import { loadImporterConfig } from "./utils.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // ---- Config ----------------------------------------------------------------
-const KEY_FILE = path.resolve(__dirname, "./credentials.json");
+export const KEY_FILE = path.resolve(__dirname, "./credentials.json");
 export const TEMP_DIR = path.resolve(__dirname, "temp");
 
-function loadSpreadsheetId() {
+export function loadSpreadsheetId() {
   const { spreadsheetId } = loadImporterConfig(); // SPREADSHEET_ID from .env.local (or the environment)
   if (!spreadsheetId || spreadsheetId.startsWith("PUT_YOUR")) {
     throw new Error("SPREADSHEET_ID is not set: copy .env.local.example to .env.local and put the id of the Google Sheet in it");
@@ -35,7 +35,7 @@ function fileNameFor(sheetName) {
 }
 
 // Sheet names with spaces/special characters must be quoted in A1 notation.
-function quoteSheetName(title) {
+export function quoteSheetName(title) {
   return `'${title.replace(/'/g, "''")}'`;
 }
 

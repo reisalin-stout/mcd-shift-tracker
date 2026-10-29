@@ -44,22 +44,27 @@ const areas = () =>
     .sort((a, b) => a.orderId - b.orderId);
 const kid = (a, n) => `${a.id}|${n}`; // n = task name or product slug
 
+// Names: every displayed name is a translation of a slug, from the Dictionary (database.dictionary), in config.language.
+// A slug with no translation yet shows the raw slug, so it is easy to spot.
+const translations = Object.fromEntries(database.dictionary.map((e) => [e.slug, e.translations]));
+const tr = (slug) => translations[slug]?.[config.language] || slug;
+
 // Products (database.json) are referenced by slug from the stock lists in structure.json
 const products = database.products;
 const bySlug = Object.fromEntries(products.map((p) => [p.slug, p]));
-const pname = (slug) => bySlug[slug]?.name || slug; // unknown slugs show the raw slug, so the typo is visible
-// Restock step of a product (the Increment column): how much one tap of + / - changes the count. Missing or 0 counts by 1.
-const isFill = (slug) => bySlug[slug]?.increment < 0; // negative increment (-1) = "fill" product: no count, a Fill button instead of + / -
-const pstep = (slug) => { const n = bySlug[slug]?.increment; return n > 0 ? n : 1; };
-// Product code shown small under the name. Empty codes and the sheet's MISSING placeholder both show "MISSING" (in red-grey), so they get filled in
-const pcode = (slug) => { const p = bySlug[slug]; return !p ? '' : p.code && p.code !== 'MISSING' ? p.code : 'MISSING'; };
+const pname = tr;
+// Restock step of a product (the Unit column): how much one tap of + / - changes the count. Missing or 0 counts by 1.
+const isFill = (slug) => bySlug[slug]?.unit < 0; // negative unit (-1) = "fill" product: no count, a Fill button instead of + / -
+const pstep = (slug) => { const n = bySlug[slug]?.unit; return n > 0 ? n : 1; };
+// Product code shown small under the name: "<id>/<extension>". Without an id it shows "MISSING" (in red-grey), so it gets filled in
+const pcode = (slug) => { const p = bySlug[slug]; return !p ? '' : p.id ? (p.extension ? `${p.id}/${p.extension}` : p.id) : 'MISSING'; };
 const r2 = (n) => Math.round(n * 100) / 100; // counts can be fractional (0.5 steps): avoid 0.1 + 0.2 style noise
-// Categories: [{ id, slug, name, macro, adjustment }], in sheet order. Products and saved overrides refer to a
-// category by its slug; the name is only for display. id and macro are not used by the app yet.
-const categories = database.categories;
+// Categories: [{ slug, id }], sorted by id (the priority). Products and saved overrides refer to a category by its slug;
+// the display name is its translation. id is not used by the app yet.
+const categories = [...database.categories].sort((a, b) => a.id - b.id); // id = priority: grouped and listed in this order
 const catBySlug = Object.fromEntries(categories.map((c) => [c.slug, c]));
-const catName = (slug) => catBySlug[slug]?.name ?? slug; // unknown slugs show the raw slug
-const catDef = (slug) => catBySlug[slug]?.adjustment ?? 100; // default Adj % of the category
+const catName = tr; // unknown slugs show the raw slug
+const catDef = () => 100; // default Adj % of every category (the sheet no longer has an adjustment)
 // Category order: as listed in database.categories, then others by first appearance; '' = no category
 const categoryOrder = () => [...new Set([...categories.map((c) => c.slug), ...products.map((p) => p.category).filter(Boolean), ''])];
 
@@ -67,12 +72,12 @@ const categoryOrder = () => [...new Set([...categories.map((c) => c.slug), ...pr
 function validate() {
   const bad = [], seen = new Set(), slugs = new Set();
   for (const c of categories) {
-    if (!c.slug) bad.push(`Category without slug: ${c.name}`);
+    if (!c.slug) bad.push(`Category without slug: id ${c.id}`);
     else if (slugs.has(c.slug)) bad.push(`Duplicate category slug: ${c.slug}`);
     slugs.add(c.slug);
   }
   for (const p of products) {
-    if (!p.slug) bad.push(`Product without slug: ${p.name}`);
+    if (!p.slug) bad.push(`Product without slug: id ${p.id}`);
     else if (seen.has(p.slug)) bad.push(`Duplicate product slug: ${p.slug}`);
     seen.add(p.slug);
     if (p.category && !catBySlug[p.category]) bad.push(`${p.slug}: unknown category "${p.category}"`);
@@ -310,7 +315,7 @@ document.addEventListener('visibilitychange', () => {
 // Projection
 const BASE_GC = 1000; // default weights are defined for this guest count
 // Only products with a weight appear in the projection
-const items = products.filter((p) => p.weight > 0).map((p) => ({ slug: p.slug, name: p.name, cat: p.category || '', def: p.weight, yld: p.yield }));
+const items = products.filter((p) => p.weight > 0).map((p) => ({ slug: p.slug, name: pname(p.slug), cat: p.category || '', def: p.weight, yld: p.yield }));
 const WKEY = PREFIX + 'proj-weights'; // edited default weights (persistent)
 const gcKey = () => `${PREFIX}${date}:proj`; // guest count (per day, pruned with the rest)
 const YKEY = PREFIX + 'proj-yields'; // edited yields (persistent)
