@@ -172,7 +172,7 @@
     },
     {
       "slug": "sauce-honeybbq",
-      "category": "fridge-rack",
+      "category": "storage-food",
       "id": "04180",
       "extension": "144",
       "yield": 37.5,
@@ -180,7 +180,7 @@
     },
     {
       "slug": "sauce-ketchupbib",
-      "category": "fridge-rack",
+      "category": "storage-food",
       "id": "02679",
       "extension": "079",
       "yield": 100,
@@ -188,7 +188,7 @@
     },
     {
       "slug": "sauce-mustardbib",
-      "category": "fridge-rack",
+      "category": "storage-food",
       "id": "00026",
       "extension": "054",
       "yield": 1428.5,
@@ -196,7 +196,7 @@
     },
     {
       "slug": "sauce-bbqhoney",
-      "category": "fridge-rack",
+      "category": "storage-food",
       "id": "04180",
       "extension": "222",
       "yield": 37.5,
@@ -204,7 +204,7 @@
     },
     {
       "slug": "bun-regular",
-      "category": "fridge-rack",
+      "category": "freezer-bread",
       "id": "00001",
       "extension": "911",
       "yield": 68,
@@ -212,7 +212,7 @@
     },
     {
       "slug": "bun-royal",
-      "category": "fridge-rack",
+      "category": "freezer-bread",
       "id": "00002",
       "extension": "770",
       "yield": 60,
@@ -220,7 +220,7 @@
     },
     {
       "slug": "bun-bigmac",
-      "category": "fridge-rack",
+      "category": "freezer-bread",
       "id": "90003",
       "extension": "588",
       "yield": 30,
@@ -228,7 +228,7 @@
     },
     {
       "slug": "bun-shiny",
-      "category": "fridge-rack",
+      "category": "freezer-bread",
       "id": "10332",
       "extension": "057",
       "yield": 40,
@@ -236,7 +236,7 @@
     },
     {
       "slug": "bun-crunchy",
-      "category": "fridge-rack",
+      "category": "freezer-bread",
       "id": "17581",
       "extension": "047",
       "yield": 60,
@@ -244,7 +244,7 @@
     },
     {
       "slug": "bun-oval",
-      "category": "fridge-rack",
+      "category": "freezer-bread",
       "id": "03463",
       "extension": "330",
       "yield": 48,
@@ -252,7 +252,7 @@
     },
     {
       "slug": "bun-tortilla",
-      "category": "fridge-rack",
+      "category": "freezer-bread",
       "id": "02683",
       "extension": "081",
       "yield": 18,
@@ -260,7 +260,7 @@
     },
     {
       "slug": "bun-glutenfree",
-      "category": "fridge-rack",
+      "category": "freezer-boxes",
       "id": "12342",
       "extension": "003",
       "yield": 1,
@@ -268,7 +268,7 @@
     },
     {
       "slug": "pancakes",
-      "category": "fridge-rack",
+      "category": "freezer-boxes",
       "id": "05358",
       "extension": "001",
       "yield": 6,
@@ -276,7 +276,7 @@
     },
     {
       "slug": "bacon-bits",
-      "category": "fridge-rack",
+      "category": "freezer-boxes",
       "id": "00425",
       "extension": "107",
       "yield": 50,
@@ -284,7 +284,7 @@
     },
     {
       "slug": "topping-bacio",
-      "category": "fridge-rack",
+      "category": "storage-dessert",
       "id": "99008",
       "extension": "004",
       "yield": 166.6,
@@ -292,7 +292,7 @@
     },
     {
       "slug": "topping-pistacchiokataifi",
-      "category": "fridge-rack",
+      "category": "storage-dessert",
       "id": "20170",
       "extension": "001",
       "yield": 200,
@@ -300,7 +300,7 @@
     },
     {
       "slug": "topping-crunchychoco",
-      "category": "fridge-rack",
+      "category": "storage-dessert",
       "id": "90867",
       "extension": "000",
       "yield": 98,
@@ -308,7 +308,7 @@
     },
     {
       "slug": "topping-hotfudge",
-      "category": "fridge-rack",
+      "category": "storage-dessert",
       "id": "00065",
       "extension": "023",
       "yield": 33.8,
@@ -316,7 +316,7 @@
     },
     {
       "slug": "topping-hotcaramel",
-      "category": "fridge-rack",
+      "category": "storage-dessert",
       "id": "00069",
       "extension": "026",
       "yield": 33.8,
@@ -324,7 +324,7 @@
     },
     {
       "slug": "topping-smarties",
-      "category": "fridge-rack",
+      "category": "storage-dessert",
       "id": "01839",
       "extension": "068",
       "yield": 0,
@@ -332,7 +332,7 @@
     },
     {
       "slug": "topping-oreo",
-      "category": "fridge-rack",
+      "category": "storage-dessert",
       "id": "03471",
       "extension": "101",
       "yield": 22.22,
@@ -340,7 +340,7 @@
     },
     {
       "slug": "mcfizz-sakura",
-      "category": "fridge-rack",
+      "category": "storage-dessert",
       "id": "12599",
       "extension": "004",
       "yield": 0,
@@ -348,7 +348,7 @@
     },
     {
       "slug": "cups-tray-4",
-      "category": "fridge-rack",
+      "category": "storage-cups",
       "id": "00397",
       "extension": "117",
       "yield": 240,
@@ -356,7 +356,7 @@
     },
     {
       "slug": "cups-tray-2",
-      "category": "fridge-rack",
+      "category": "storage-cups",
       "id": "00247",
       "extension": "016",
       "yield": 480,
@@ -364,7 +364,7 @@
     },
     {
       "slug": "cups-flurry",
-      "category": "fridge-rack",
+      "category": "storage-cups",
       "id": "06373",
       "extension": "640",
       "yield": 54,
@@ -372,7 +372,7 @@
     },
     {
       "slug": "cups-shake-grimace",
-      "category": "fridge-rack",
+      "category": "storage-cups",
       "id": "00191",
       "extension": "141",
       "yield": 110,
@@ -380,7 +380,7 @@
     },
     {
       "slug": "cups-shake",
-      "category": "fridge-rack",
+      "category": "storage-cups",
       "id": "90155",
       "extension": "869",
       "yield": 110,
@@ -388,7 +388,7 @@
     },
     {
       "slug": "cups-sundae",
-      "category": "fridge-rack",
+      "category": "storage-cups",
       "id": "90261",
       "extension": "258",
       "yield": 56,
@@ -396,7 +396,7 @@
     },
     {
       "slug": "cups-drinks-l",
-      "category": "fridge-rack",
+      "category": "storage-cups",
       "id": "00768",
       "extension": "130",
       "yield": 60,
@@ -404,7 +404,7 @@
     },
     {
       "slug": "cups-drinks-m",
-      "category": "fridge-rack",
+      "category": "storage-cups",
       "id": "07334",
       "extension": "712",
       "yield": 65,
@@ -412,7 +412,7 @@
     },
     {
       "slug": "cups-drinks-s",
-      "category": "fridge-rack",
+      "category": "storage-cups",
       "id": "00191",
       "extension": "126",
       "yield": 110,
@@ -420,7 +420,7 @@
     },
     {
       "slug": "cups-courtesy",
-      "category": "fridge-rack",
+      "category": "storage-cups",
       "id": "00101",
       "extension": "242",
       "yield": 110,
@@ -428,7 +428,7 @@
     },
     {
       "slug": "cups-lids-drink",
-      "category": "fridge-rack",
+      "category": "storage-cups",
       "id": "15268",
       "extension": "012",
       "yield": 45,
@@ -436,7 +436,7 @@
     },
     {
       "slug": "cups-lids-sundae",
-      "category": "fridge-rack",
+      "category": "storage-cups",
       "id": "00335",
       "extension": "179",
       "yield": 32,
@@ -444,7 +444,7 @@
     },
     {
       "slug": "cups-straws",
-      "category": "fridge-rack",
+      "category": "storage-cups",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -452,7 +452,7 @@
     },
     {
       "slug": "jug-in-box-stock",
-      "category": "fridge-rack",
+      "category": "storage-water",
       "id": "02589",
       "extension": "489",
       "yield": 2,
@@ -460,7 +460,7 @@
     },
     {
       "slug": "food-ham",
-      "category": "fridge-rack",
+      "category": "fridge-prep",
       "id": "03601",
       "extension": "176",
       "yield": 30,
@@ -468,7 +468,7 @@
     },
     {
       "slug": "food-baconslices",
-      "category": "fridge-rack",
+      "category": "fridge-prep",
       "id": "91197",
       "extension": "125",
       "yield": 28,
@@ -476,7 +476,7 @@
     },
     {
       "slug": "food-saladmix",
-      "category": "fridge-rack",
+      "category": "fridge-salad",
       "id": "05239",
       "extension": "080",
       "yield": 5,
@@ -484,7 +484,7 @@
     },
     {
       "slug": "food-baconcooked",
-      "category": "fridge-rack",
+      "category": "fridge-prep",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 1,
@@ -492,7 +492,7 @@
     },
     {
       "slug": "food-toast",
-      "category": "fridge-rack",
+      "category": "fridge-prep",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 1,
@@ -500,7 +500,7 @@
     },
     {
       "slug": "food-salad-mixed",
-      "category": "fridge-rack",
+      "category": "fridge-salad",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -508,7 +508,7 @@
     },
     {
       "slug": "food-salad-finished",
-      "category": "fridge-rack",
+      "category": "fridge-salad",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 5,
@@ -516,7 +516,7 @@
     },
     {
       "slug": "food-tomato-cherry",
-      "category": "fridge-rack",
+      "category": "fridge-salad",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -524,7 +524,7 @@
     },
     {
       "slug": "food-tomato-ready",
-      "category": "fridge-rack",
+      "category": "fridge-salad",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -532,7 +532,7 @@
     },
     {
       "slug": "food-tomato-slices",
-      "category": "fridge-rack",
+      "category": "fridge-salad",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 5,
@@ -540,7 +540,7 @@
     },
     {
       "slug": "food-onionshaker",
-      "category": "fridge-rack",
+      "category": "fridge-salad",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -548,7 +548,7 @@
     },
     {
       "slug": "food-onionprep",
-      "category": "fridge-rack",
+      "category": "fridge-salad",
       "id": "00056",
       "extension": "072",
       "yield": 0,
@@ -556,7 +556,7 @@
     },
     {
       "slug": "food-pickles",
-      "category": "fridge-rack",
+      "category": "storage-food",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -564,7 +564,7 @@
     },
     {
       "slug": "food-saladbag-iceberg",
-      "category": "fridge-rack",
+      "category": "storage-bags",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 4,
@@ -572,7 +572,7 @@
     },
     {
       "slug": "food-saladtray-iceberg",
-      "category": "fridge-rack",
+      "category": "storage-bags",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 1,
@@ -580,7 +580,7 @@
     },
     {
       "slug": "food-onionbag-fresh",
-      "category": "fridge-rack",
+      "category": "storage-food",
       "id": "00028",
       "extension": "325",
       "yield": 25,
@@ -588,7 +588,7 @@
     },
     {
       "slug": "food-onionbag-fried",
-      "category": "fridge-rack",
+      "category": "storage-food",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -596,7 +596,7 @@
     },
     {
       "slug": "food-cheese-cheddar",
-      "category": "fridge-rack",
+      "category": "fridge-prep",
       "id": "00013",
       "extension": "333",
       "yield": 140,
@@ -604,7 +604,7 @@
     },
     {
       "slug": "food-cheese-whitecheddar",
-      "category": "fridge-rack",
+      "category": "fridge-prep",
       "id": "19285",
       "extension": "002",
       "yield": 176,
@@ -612,7 +612,7 @@
     },
     {
       "slug": "food-cheese-grana",
-      "category": "fridge-rack",
+      "category": "fridge-prep",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -620,7 +620,7 @@
     },
     {
       "slug": "fridge-beercan",
-      "category": "fridge-rack",
+      "category": "fridge-alcohol",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -628,7 +628,7 @@
     },
     {
       "slug": "fridge-beerbottle-red",
-      "category": "fridge-rack",
+      "category": "fridge-alcohol",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -636,7 +636,7 @@
     },
     {
       "slug": "fridge-beerbottle-unfiltered",
-      "category": "fridge-rack",
+      "category": "fridge-alcohol",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -644,7 +644,7 @@
     },
     {
       "slug": "fridge-tropicana",
-      "category": "fridge-rack",
+      "category": "fridge-alcohol",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -652,7 +652,7 @@
     },
     {
       "slug": "fridge-hm-parmesan",
-      "category": "fridge-rack",
+      "category": "fridge-grabngo",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -660,7 +660,7 @@
     },
     {
       "slug": "fridge-hm-apple",
-      "category": "fridge-rack",
+      "category": "fridge-grabngo",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -668,7 +668,7 @@
     },
     {
       "slug": "fridge-hm-grape",
-      "category": "fridge-rack",
+      "category": "fridge-grabngo",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -676,7 +676,7 @@
     },
     {
       "slug": "frige-hm-carrots",
-      "category": "fridge-rack",
+      "category": "fridge-grabngo",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -684,7 +684,7 @@
     },
     {
       "slug": "fridge-hm-actimel",
-      "category": "fridge-rack",
+      "category": "fridge-grabngo",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -692,7 +692,7 @@
     },
     {
       "slug": "drink-water-still",
-      "category": "fridge-rack",
+      "category": "storage-water",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -700,7 +700,7 @@
     },
     {
       "slug": "drink-water-carbonated",
-      "category": "fridge-rack",
+      "category": "storage-water",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -708,7 +708,7 @@
     },
     {
       "slug": "bag-carry-large",
-      "category": "fridge-rack",
+      "category": "storage-bags",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -716,7 +716,7 @@
     },
     {
       "slug": "bag-carry-salad",
-      "category": "fridge-rack",
+      "category": "storage-bags",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -724,7 +724,7 @@
     },
     {
       "slug": "bag-food-a",
-      "category": "fridge-rack",
+      "category": "storage-bags",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -732,7 +732,7 @@
     },
     {
       "slug": "bag-food-b",
-      "category": "fridge-rack",
+      "category": "storage-bags",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -740,7 +740,7 @@
     },
     {
       "slug": "bag-food-c",
-      "category": "fridge-rack",
+      "category": "storage-bags",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -748,7 +748,7 @@
     },
     {
       "slug": "paper-tissues",
-      "category": "fridge-rack",
+      "category": "storage-cups",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -756,7 +756,7 @@
     },
     {
       "slug": "paper-tissues-cafe",
-      "category": "fridge-rack",
+      "category": "storage-cups",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -764,7 +764,7 @@
     },
     {
       "slug": "paper-spoons",
-      "category": "fridge-rack",
+      "category": "storage-cups",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -772,7 +772,7 @@
     },
     {
       "slug": "paper-cutlery",
-      "category": "fridge-rack",
+      "category": "storage-cups",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -780,7 +780,7 @@
     },
     {
       "slug": "dip-ketchup",
-      "category": "fridge-rack",
+      "category": "storage-condiments",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -788,7 +788,7 @@
     },
     {
       "slug": "dip-mayo",
-      "category": "fridge-rack",
+      "category": "storage-condiments",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -796,7 +796,7 @@
     },
     {
       "slug": "dip-bbq",
-      "category": "fridge-rack",
+      "category": "storage-condiments",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -804,7 +804,7 @@
     },
     {
       "slug": "dip-sweetsour",
-      "category": "fridge-rack",
+      "category": "storage-condiments",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -812,7 +812,7 @@
     },
     {
       "slug": "dip-hotdevil",
-      "category": "fridge-rack",
+      "category": "storage-condiments",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -820,7 +820,7 @@
     },
     {
       "slug": "dip-event-sajaboys",
-      "category": "fridge-rack",
+      "category": "storage-condiments",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -828,7 +828,7 @@
     },
     {
       "slug": "dip-event-huntrix",
-      "category": "fridge-rack",
+      "category": "storage-condiments",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -836,7 +836,7 @@
     },
     {
       "slug": "dip-event-honeymustard",
-      "category": "fridge-rack",
+      "category": "storage-condiments",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -844,7 +844,7 @@
     },
     {
       "slug": "food-saladserve-oil",
-      "category": "fridge-rack",
+      "category": "storage-condiments",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -852,7 +852,7 @@
     },
     {
       "slug": "food-saladserve-vinegar",
-      "category": "fridge-rack",
+      "category": "storage-condiments",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -860,7 +860,7 @@
     },
     {
       "slug": "food-saladserve-balsamic",
-      "category": "fridge-rack",
+      "category": "storage-condiments",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,
@@ -868,7 +868,7 @@
     },
     {
       "slug": "food-saladserve-breadsticks",
-      "category": "fridge-rack",
+      "category": "storage-condiments",
       "id": "MISSING",
       "extension": "MISSING",
       "yield": 0,

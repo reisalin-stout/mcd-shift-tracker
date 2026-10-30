@@ -129,7 +129,7 @@ function restockBlock(a, rows, total) {
 }
 
 let view = 'dayparts';
-const PAGE_TITLES = { projection: 'Projection', extra: 'Extra hours', account: 'Account' }; // pages other than the shift list
+const PAGE_TITLES = { projection: 'Projection', extra: 'Extra hours', account: 'Account', restock: 'Restock' }; // pages other than the shift list
 function renderHeader() {
   const { name, timeframe } = dpInfo(daypart);
   $('#title').textContent = PAGE_TITLES[view] ?? name;
@@ -162,6 +162,203 @@ function render() {
 function setTask(k, status) { if (status) state.tasks[k] = status; else delete state.tasks[k]; save(); render(); }
 function setStockDone(k, v) { stockOf(k).done = v; save(); render(); }
 
+function renderRestock() {
+  // Collect all stock items with qty > 0 and not done for current daypart
+  const items = [];
+  for (const a of areas()) {
+    for (const slug of a.stock) {
+      const k = kid(a, slug);
+      const s = state.stock[k];
+      if (s && s.qty > 0 && !s.done) {
+        const p = bySlug[slug];
+        const catSlug = p?.category || '';
+        const catOrder = categories.findIndex((c) => c.slug === catSlug);
+        items.push({
+          area: a,
+          slug,
+          k,
+          name: pname(slug),
+          code: pcode(slug),
+          qty: s.qty,
+          isFill: isFill(slug),
+          step: pstep(slug),
+          catSlug,
+          catOrder: catOrder === -1 ? 999 : catOrder,
+        });
+      }
+    }
+  }
+
+  if (items.length === 0) {
+    $('#restock').innerHTML = `
+      <div class="restock-header">
+        <h2>Restock</h2>
+        <div class="restock-controls">
+          <select id="restockView" class="restock-select" disabled>
+            <option value="area">Usage Area</option>
+            <option value="storage">Storage Area</option>
+            <option value="delegation">Delegation</option>
+            <option value="category">Category</option>
+            <option value="front">Front Only</option>
+            <option value="kitchen">Kitchen Only</option>
+            <option value="mccafe">McCafé Only</option>
+            <option value="prep">Prep Only</option>
+          </select>
+        </div>
+        <div class="restock-actions">
+          <button id="restockExport" class="menu-btn" disabled>Export</button>
+        </div>
+      </div>
+      <div class="restock-empty">No items to restock in this daypart.</div>
+    `;
+    return;
+  }
+
+  // Get current view mode (persisted)
+  const viewMode = localStorage.getItem(PREFIX + 'restockView') || 'area';
+
+  // Build groups based on mode
+  const groups = buildRestockGroups(items, viewMode);
+
+  // Build HTML
+  let html = `
+    <div class="restock-header">
+      <h2>Restock</h2>
+      <div class="restock-controls">
+        <select id="restockView" class="restock-select">
+          <option value="area" ${viewMode === 'area' ? 'selected' : ''}>Usage Area</option>
+          <option value="storage" ${viewMode === 'storage' ? 'selected' : ''}>Storage Area</option>
+          <option value="delegation" ${viewMode === 'delegation' ? 'selected' : ''}>Delegation</option>
+          <option value="category" ${viewMode === 'category' ? 'selected' : ''}>Category</option>
+          <optgroup label="— Area Filters —">
+            <option value="front" ${viewMode === 'front' ? 'selected' : ''}>Front Only</option>
+            <option value="kitchen" ${viewMode === 'kitchen' ? 'selected' : ''}>Kitchen Only</option>
+            <option value="mccafe" ${viewMode === 'mccafe' ? 'selected' : ''}>McCafé Only</option>
+            <option value="prep" ${viewMode === 'prep' ? 'selected' : ''}>Prep Only</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="restock-actions">
+        <button id="restockExport" class="menu-btn">Export</button>
+      </div>
+    </div>
+    <div class="restock-table-wrapper">
+  `;
+
+  for (const group of groups) {
+    html += `
+      <div class="restock-group" data-group="${esc(group.id)}">
+        <div class="restock-group-header">
+          <h3>${esc(group.label)} <span class="restock-count">${group.items.length}</span></h3>
+          <button class="restock-clear-btn" data-group="${esc(group.id)}" title="Mark all in this group as done">Clear</button>
+        </div>
+        <table class="restock-table">
+          <thead><tr><th>Item</th><th>Qty</th><th>Actions</th></tr></thead>
+          <tbody>
+    `;
+    for (const item of group.items) {
+      const qtyDisplay = item.isFill ? 'Fill' : `x${item.qty}`;
+      html += `
+        <tr data-k="${esc(item.k)}" data-slug="${esc(item.slug)}">
+          <td class="restock-name">${esc(item.name)}${item.code ? `<small${item.code === 'MISSING' ? ' class="miss"' : ''}>${esc(item.code)}</small>` : ''}</td>
+          <td class="restock-qty">${esc(qtyDisplay)}</td>
+          <td class="restock-actions">
+            <button class="restock-done-btn" data-action="done" title="Mark Done">✓</button>
+          </td>
+        </tr>
+      `;
+    }
+    html += '</tbody></table></div>';
+  }
+  html += '</div>'; // close wrapper
+
+  $('#restock').innerHTML = html;
+}
+
+// Build groups based on grouping mode
+function buildRestockGroups(items, mode) {
+  // Delegation mapping: area.id -> delegation group
+  const delegationMap = {
+    'mccafe': 'mccafe',
+    'beverages': 'front', 'drive': 'front', 'front': 'front', 'floor': 'front', 'management': 'front',
+    'fries': 'kitchen', 'grill': 'kitchen', 'cart': 'kitchen', 'side-4': 'kitchen',
+    'side-1': 'prep', 'side-2': 'prep', 'side-3': 'prep', 'rear': 'prep', 'walk-in': 'prep', 'storeroom': 'prep', 'dishwashing': 'prep',
+  };
+  const delegationLabels = {
+    'mccafe': 'McCafé',
+    'front': 'Front',
+    'kitchen': 'Kitchen',
+    'prep': 'Prep',
+  };
+  const delegationOrder = ['mccafe', 'front', 'kitchen', 'prep'];
+
+  // Filter modes - filter items first, then group by delegation
+  const filterModes = ['front', 'kitchen', 'mccafe', 'prep'];
+  const isFilterMode = filterModes.includes(mode);
+
+  // Filter items if in filter mode
+  let filteredItems = items;
+  if (isFilterMode) {
+    filteredItems = items.filter(item => delegationMap[item.area.id] === mode);
+  }
+
+  // Determine grouping mode for filtered items
+  const groupMode = isFilterMode ? 'delegation' : mode;
+
+  // Group items
+  const groupMap = new Map();
+
+  for (const item of filteredItems) {
+    let groupId, groupLabel, groupOrder;
+
+    switch (groupMode) {
+      case 'storage': {
+        // Group by product category (storage area)
+        groupId = item.catSlug || 'uncategorized';
+        groupLabel = catName(groupId);
+        groupOrder = item.catOrder;
+        break;
+      }
+      case 'delegation': {
+        // Group by delegation area
+        groupId = delegationMap[item.area.id] || 'other';
+        groupLabel = delegationLabels[groupId] || groupId;
+        groupOrder = delegationOrder.indexOf(groupId);
+        if (groupOrder === -1) groupOrder = 999;
+        break;
+      }
+      case 'category': {
+        // Group by category priority (same as storage but sorted by priority)
+        groupId = item.catSlug || 'uncategorized';
+        groupLabel = catName(groupId);
+        groupOrder = item.catOrder;
+        break;
+      }
+      case 'area':
+      default: {
+        // Group by usage area (current behavior)
+        groupId = item.area.id;
+        groupLabel = item.area.name;
+        groupOrder = item.area.orderId;
+        break;
+      }
+    }
+
+    if (!groupMap.has(groupId)) {
+      groupMap.set(groupId, { id: groupId, label: groupLabel, order: groupOrder, items: [] });
+    }
+    groupMap.get(groupId).items.push(item);
+  }
+
+  // Sort items within each group by category priority
+  for (const group of groupMap.values()) {
+    group.items.sort((a, b) => a.catOrder - b.catOrder);
+  }
+
+  // Convert to array and sort groups by their order
+  return [...groupMap.values()].sort((a, b) => a.order - b.order);
+}
+
 // Restock dropdown: open/close in place (no re-render). The header opens/closes it; the same row at the bottom closes it
 // without scrolling back up (and then brings the header into view).
 list.addEventListener('click', (e) => {
@@ -193,6 +390,151 @@ list.addEventListener('click', (e) => {
   if (box) {
     const a = areas().find((x) => x.id === box.dataset.area), n = rsCount(a), badge = box.querySelector('.rs-n');
     badge.textContent = n; badge.hidden = !n;
+  }
+});
+
+// Restock page event handlers (event delegation on #restock)
+$('#restock').addEventListener('click', (e) => {
+  // View selector change
+  const viewSelect = e.target.closest('#restockView');
+  if (viewSelect) {
+    localStorage.setItem(PREFIX + 'restockView', viewSelect.value);
+    renderRestock();
+    return;
+  }
+
+  // Clear group button
+  const clearBtn = e.target.closest('.restock-clear-btn');
+  if (clearBtn) {
+    const groupId = clearBtn.dataset.group;
+    const viewMode = localStorage.getItem(PREFIX + 'restockView') || 'area';
+
+    // Find all items in this group and mark as done
+    for (const a of areas()) {
+      for (const slug of a.stock) {
+        const k = kid(a, slug);
+        const s = state.stock[k];
+        if (s && s.qty > 0 && !s.done) {
+          const p = bySlug[slug];
+          const catSlug = p?.category || '';
+          let itemGroupId;
+
+          const delegationMap = {
+            'mccafe': 'mccafe',
+            'beverages': 'front', 'drive': 'front', 'front': 'front', 'floor': 'front', 'management': 'front',
+            'fries': 'kitchen', 'grill': 'kitchen', 'cart': 'kitchen', 'side-4': 'kitchen',
+            'side-1': 'prep', 'side-2': 'prep', 'side-3': 'prep', 'rear': 'prep', 'walk-in': 'prep', 'storeroom': 'prep', 'dishwashing': 'prep',
+          };
+
+          switch (viewMode) {
+            case 'storage':
+            case 'category':
+              itemGroupId = catSlug || 'uncategorized';
+              break;
+            case 'delegation':
+            case 'front':
+            case 'kitchen':
+            case 'mccafe':
+            case 'prep':
+              itemGroupId = delegationMap[a.id] || 'other';
+              break;
+            case 'area':
+            default:
+              itemGroupId = a.id;
+          }
+
+          if (itemGroupId === groupId) {
+            s.done = true;
+          }
+        }
+      }
+    }
+    save();
+    renderRestock();
+    render(); // update dropdown badges
+    toast('Group marked done');
+    return;
+  }
+
+  const doneBtn = e.target.closest('.restock-done-btn');
+  if (doneBtn) {
+    const row = doneBtn.closest('tr');
+    const k = row.dataset.k;
+    const s = state.stock[k];
+    if (!s) return;
+
+    s.done = true;
+    save();
+    renderRestock();
+    render(); // update dropdown badges
+    toast('Marked done');
+    return;
+  }
+});
+
+// Export Modal handlers
+const exportModal = $('#restockExportModal');
+const exportModalText = $('#exportModalText');
+
+function openExportModal() {
+  const viewMode = localStorage.getItem(PREFIX + 'restockView') || 'area';
+  const items = [];
+  for (const a of areas()) {
+    for (const slug of a.stock) {
+      const k = kid(a, slug);
+      const s = state.stock[k];
+      if (s && s.qty > 0 && !s.done) {
+        items.push({ area: a, slug, k, s });
+      }
+    }
+  }
+  if (items.length === 0) return;
+
+  const groups = buildRestockGroups(items, viewMode);
+  const out = groups.map(group => {
+    const rows = group.items.map(item =>
+      isFill(item.slug) ? `Fill ${pname(item.slug)}` : `x${item.s.qty} ${pname(item.slug)}`
+    );
+    return rows.length ? `${group.label}\n${rows.join('\n')}` : '';
+  }).filter(Boolean);
+
+  const text = out.join('\n\n');
+  exportModalText.textContent = text;
+  exportModal.hidden = false;
+  setTimeout(() => $('#exportModalClose').focus(), 0);
+}
+
+function closeExportModal() {
+  exportModal.hidden = true;
+  exportModalText.textContent = '';
+}
+
+// Export button in restock header
+$('#restock').addEventListener('click', (e) => {
+  const exportBtn = e.target.closest('#restockExport');
+  if (exportBtn) {
+    openExportModal();
+    return;
+  }
+});
+
+// Modal event handlers (on document for overlay clicks)
+document.addEventListener('click', (e) => {
+  if (e.target.closest('#exportModalCopy')) {
+    const text = exportModalText.textContent;
+    if (text) copy(text, 'Export copied');
+    return;
+  }
+  if (e.target.closest('#exportModalClose') || e.target.closest('.modal-close') || e.target.closest('.modal-overlay')) {
+    closeExportModal();
+    return;
+  }
+});
+
+// ESC key to close modal
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !exportModal.hidden) {
+    closeExportModal();
   }
 });
 
@@ -243,10 +585,11 @@ list.addEventListener('pointercancel', endGesture);
 // Menu
 const toggleMenu = (v) => { document.body.classList.toggle('open', v); if (!v) disarmClear(); };
 // Pages: the shift list ('dayparts'), 'projection', 'extra' (extra hours, Firebase) and 'account' (sign in / out)
-const PAGES = { dayparts: list, projection: $('#proj'), extra: $('#extra'), account: $('#account') };
+const PAGES = { dayparts: list, projection: $('#proj'), extra: $('#extra'), account: $('#account'), restock: $('#restock') };
 function setView(v) {
   if (v === 'extra' && view !== 'extra') extraHours.enter();
   if (v !== 'extra' && view === 'extra') extraHours.leave();
+  if (v === 'restock') renderRestock();
   view = v;
   document.body.dataset.view = v;
   for (const [name, el] of Object.entries(PAGES)) el.hidden = name !== v;
@@ -283,27 +626,6 @@ async function copy(text, msg) {
   }
   toast(msg); toggleMenu(false);
 }
-$('#expTasks').onclick = () => {
-  const out = areas().map((a) => {
-    const open = a.tasks.filter((t) => !state.tasks[kid(a, t)]);
-    return open.length ? `${a.name}\n${open.map((t) => `- ${t}`).join('\n')}` : '';
-  }).filter(Boolean);
-  out.length ? copy(out.join('\n\n'), 'Open tasks copied') : toast('No open tasks');
-};
-$('#expStock').onclick = () => {
-  // Sum the same product across areas (e.g. Jug in Box), then group by category
-  const tot = new Map();
-  for (const a of areas())
-    for (const slug of a.stock) {
-      const q = state.stock[kid(a, slug)]?.qty;
-      if (q > 0) tot.set(slug, r2((tot.get(slug) || 0) + q));
-    }
-  const out = categoryOrder().map((c) => {
-    const rows = [...tot].filter(([slug]) => (bySlug[slug]?.category || '') === c).map(([slug, q]) => isFill(slug) ? `Fill ${pname(slug)}` : `x${q} ${pname(slug)}`);
-    return rows.length ? (c ? `${catName(c)}\n` : '') + rows.join('\n') : '';
-  }).filter(Boolean);
-  out.length ? copy(out.join('\n\n'), 'Restock list copied') : toast('Nothing to restock');
-};
 
 // Re-check the day when the app comes back to the foreground
 document.addEventListener('visibilitychange', () => {

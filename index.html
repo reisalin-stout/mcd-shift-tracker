@@ -30,9 +30,6 @@
         <button class="grp-h" data-view="dayparts"><span>Dayparts</span><span class="chev">&rsaquo;</span></button>
         <div class="grp-b">
           <div id="dayparts"></div>
-          <h3>Export</h3>
-          <button class="menu-btn" id="expTasks">Copy open tasks</button>
-          <button class="menu-btn" id="expStock">Copy restock list</button>
         </div>
       </div>
       <div class="grp" data-g="projection">
@@ -44,6 +41,9 @@
       </div>
       <div class="grp leaf" data-g="extra">
         <button class="grp-h" data-view="extra"><span>Extra hours</span></button>
+      </div>
+      <div class="grp leaf" data-g="restock">
+        <button class="grp-h" data-view="restock"><span>Restock</span></button>
       </div>
       <div class="drawer-foot">
         <div class="grp leaf" data-g="account">
@@ -74,6 +74,23 @@
     </main>
     <main id="extra" hidden></main>
     <main id="account" hidden></main>
+    <main id="restock" hidden></main>
+    <div id="restockExportModal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="exportModalTitle">
+      <div class="modal-overlay"></div>
+      <div class="modal-box">
+        <div class="modal-header">
+          <h3 id="exportModalTitle">Export Restock List</h3>
+          <button class="modal-close" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-content">
+          <pre id="exportModalText" readonly></pre>
+        </div>
+        <div class="modal-footer">
+          <button id="exportModalCopy" class="primary">Copy</button>
+          <button id="exportModalClose" class="secondary">Close</button>
+        </div>
+      </div>
+    </div>
     <div id="toast"></div>
     <script type="module" src="/src/main.js"></script>
   </body>
